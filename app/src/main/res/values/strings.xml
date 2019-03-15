@@ -14,4 +14,11 @@
     <string name="error_mat_khau_qua_ngan">Mật khẩu tối thiểu 6 ký tự</string>
     <string name="error_dang_nhap_that_bai">Tên tài khoản hoặc mật khẩu không đúng</string>
     <string name="error_truong_bat_buoc">Trường này là bắt buộc</string>
+
+    <!-- Main activity -->
+    <string name="title_activity_main">MainActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="avatar">Hình đại diện</string>
+    <string name="action_settings">Settings</string>
 </resources>

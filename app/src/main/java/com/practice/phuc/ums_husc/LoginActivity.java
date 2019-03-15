@@ -3,6 +3,7 @@ package com.practice.phuc.ums_husc;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -225,6 +226,8 @@ public class LoginActivity extends AppCompatActivity {
 
             if (success) {
                 Toast.makeText(LoginActivity.this, "Login success !!!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
             } else {
                 txtMatKhau.setError(getString(R.string.error_dang_nhap_that_bai));
                 txtMatKhau.requestFocus();

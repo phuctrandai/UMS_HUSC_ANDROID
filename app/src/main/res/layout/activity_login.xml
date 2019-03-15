@@ -56,7 +56,6 @@
             android:id="@+id/til_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
             android:layout_marginBottom="@dimen/text_input_layout_vertical_margin">
 
             <AutoCompleteTextView
@@ -66,7 +65,8 @@
                 android:hint="@string/prompt_ma_sinh_vien"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:text="15T1021129" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -87,7 +87,8 @@
                 android:imeOptions="actionUnspecified"
                 android:inputType="textPassword"
                 android:maxLines="1"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:text="123456" />
 
         </android.support.design.widget.TextInputLayout>
 

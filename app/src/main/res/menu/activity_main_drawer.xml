@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_tinTuc"
+            android:icon="@drawable/ic_assignment"
+            android:title="Tin tức - thông báo" />
+        <item
+            android:id="@+id/nav_thoiKhoaBieu"
+            android:icon="@drawable/ic_today"
+            android:title="Thời khóa biểu học tập" />
+        <item
+            android:id="@+id/nav_tinNhan"
+            android:icon="@drawable/ic_message"
+            android:title="Tin nhắn" />
+        <item
+            android:id="@+id/nav_caiDat"
+            android:icon="@drawable/ic_settings"
+            android:title="Cài đặt" />
+    </group>
+
+    <item android:title="Cá nhân">
+        <menu>
+            <item
+                android:id="@+id/nav_lyLich"
+                android:icon="@drawable/ic_account"
+                android:title="Lý lịch cá nhân" />
+            <item
+                android:id="@+id/nav_doiMatKhau"
+                android:icon="@drawable/ic_vpn_key"
+                android:title="Đổi mật khảu" />
+            <item
+                android:id="@+id/nav_dangXuat"
+                android:title="Đăng xuất"
+                android:icon="@drawable/ic_exit"/>
+        </menu>
+    </item>
+
+    <item android:title="Trợ giúp">
+        <menu>
+            <item
+                android:id="@+id/nav_thongTinUngDung"
+                android:icon="@drawable/ic_info"
+                android:title="Thông tin về ứng dụng" />
+        </menu>
+    </item>
+
+</menu>
