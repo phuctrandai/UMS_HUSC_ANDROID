@@ -21,13 +21,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.practice.phuc.ums_husc.Helper.NetworkUtil;
+import com.practice.phuc.ums_husc.Helper.Reference;
+import com.practice.phuc.ums_husc.Model.SINHVIEN;
+import com.squareup.moshi.Json;
+
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.sql.Ref;
 import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -81,9 +90,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
+     * Thuc hien validate thong tin dang nhap
+     * Neu hop le, tien hanh dang nhap
      */
     private void attemptLogin() {
         if (mAuthTask != null) {
@@ -123,22 +131,28 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
+            // There was an error; don't attempt login and focus the first form field with an error.
             focusView.requestFocus();
+        } else if (NetworkUtil.getConnectivityStatus(LoginActivity.this) == NetworkUtil.TYPE_NOT_CONNECTED) {
+            Toast.makeText(this, getString(R.string.network_not_available), Toast.LENGTH_SHORT).show();
         } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
+            // Show a progress spinner, and kick off a background task to perform the user login attempt.
             showProgress(true);
             mAuthTask = new UserLoginTask(maSinhVien, matKhau);
             mAuthTask.execute((String) null);
         }
     }
 
+    /**
+     * Validate ma sinh vien
+     */
     private boolean isMaSinhVienValid(String maSinhVien) {
         return maSinhVien.contains("T");
     }
 
+    /**
+     * Validate mat khau
+     */
     private boolean isPasswordValid(String password) {
         return password.length() >= 6;
     }
@@ -194,17 +208,14 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(String... params) {
-            // TODO: attempt authentication against a network service.
-            PostData(params);
+            boolean result;
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
+                result = login(mMaSinhVien, mMatKhau);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
-                return false;
+                result = false;
             }
-
-            // TODO: register the new account here.
-            return true;
+            return result;
         }
 
         @Override
@@ -215,7 +226,7 @@ public class LoginActivity extends AppCompatActivity {
             if (success) {
                 Toast.makeText(LoginActivity.this, "Login success !!!", Toast.LENGTH_SHORT).show();
             } else {
-                txtMatKhau.setError(getString(R.string.error_mat_khau_khong_dung));
+                txtMatKhau.setError(getString(R.string.error_dang_nhap_that_bai));
                 txtMatKhau.requestFocus();
             }
         }
@@ -226,30 +237,31 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(false);
         }
 
-        public String PostData(String[] valuse) {
-            String s = "";
-            OkHttpClient okHttpClient = new OkHttpClient();
-            RequestBody formBody = new FormBody.Builder()
-//                    .add("maSinhVien", valuse[0])
-//                    .add("matKhau", valuse[1])
-//                    .add("search", "Jurassic Park")
-                    .build();
-            Request request = new Request.Builder()
-//                    .url("")
-                    .url("http://192.168.1.106:56353/api/Values")
-                    .build();
-            okHttpClient.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    Log.d("UMS_HUSC", "Lỗi !!!" + e.getMessage());
-                }
+        public boolean login(String maSinhVien, String matKhau) {
+            final OkHttpClient okHttpClient = new OkHttpClient();
+            boolean isSuccess = false;
 
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    Log.d("UMS_HUSC", response.body().string());
+            // Tao doi tuong sinh vien dang json
+            String sinhVienJson = new SINHVIEN(maSinhVien, matKhau).toJSON();
+            // Dua vao request body
+            RequestBody body = RequestBody.create(
+                    MediaType.parse("application/json; charset=utf-8"), sinhVienJson);
+            // Tao request
+            Request request = new Request.Builder()
+                    .url(Reference.HOST + Reference.LOGIN_API).post(body).build();
+
+            Response response = null;
+            try {
+                response = okHttpClient.newCall(request).execute();
+                if (response != null) {
+                    Log.d("UMS_HUSC", response.code() + response.body().string());
+                    isSuccess = response.code() == Reference.OK;
                 }
-            });
-            return s;
+            } catch (IOException e) {
+                e.printStackTrace();
+                isSuccess = false;
+            }
+            return isSuccess;
         }
     }
 }

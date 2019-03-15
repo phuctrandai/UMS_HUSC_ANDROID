@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">UMS HUSC</string>
+
+    <!-- Strings for networking -->
+    <string name="network_not_available">Không có kết nối Internet</string>
+
     <!-- Strings related to login -->
     <string name="prompt_ma_sinh_vien">Mã sinh viên</string>
     <string name="prompt_mat_khau">Mật khẩu</string>
@@ -8,6 +12,6 @@
     <string name="action_dang_nhap_short">Đăng nhập</string>
     <string name="error_ma_sinh_vien_khong_hop_le">Mã sinh viên không hợp lệ</string>
     <string name="error_mat_khau_qua_ngan">Mật khẩu tối thiểu 6 ký tự</string>
-    <string name="error_mat_khau_khong_dung">Mật khẩu không đúng</string>
+    <string name="error_dang_nhap_that_bai">Tên tài khoản hoặc mật khẩu không đúng</string>
     <string name="error_truong_bat_buoc">Trường này là bắt buộc</string>
 </resources>
