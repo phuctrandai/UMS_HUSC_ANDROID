@@ -4,10 +4,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Debug;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -25,32 +26,21 @@ import android.widget.Toast;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.Model.SINHVIEN;
-import com.squareup.moshi.Json;
-
-import org.json.JSONObject;
 
 import java.io.IOException;
-import java.sql.Ref;
-import java.util.ArrayList;
-import java.util.List;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-/**
- * A login screen that offers login via email/password.
- */
 public class LoginActivity extends AppCompatActivity {
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
     private UserLoginTask mAuthTask = null;
+
+    // Keep login information
+    SharedPreferences sharedPreferences = null;
+    SharedPreferences.Editor editor = null;
 
     // UI references.
     private AutoCompleteTextView txtMaSinhVien;
@@ -63,6 +53,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         // Set up the login form.
         txtMaSinhVien = (AutoCompleteTextView) findViewById(R.id.txt_ma_sinh_vien);
         txtMatKhau = (EditText) findViewById(R.id.txt_mat_khau);
@@ -88,12 +79,26 @@ public class LoginActivity extends AppCompatActivity {
         mProgressViewLayout = findViewById(R.id.login_progress_layout);
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        // Lay thong tin dang nhap tu truoc
+        sharedPreferences = getSharedPreferences("sinhVien", MODE_PRIVATE);
+        editor = sharedPreferences.edit();
     }
 
-    /**
-     * Thuc hien validate thong tin dang nhap
-     * Neu hop le, tien hanh dang nhap
-     */
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+        if (localLogin()) {
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+            LoginActivity.this.finish();
+        }
+    }
+
+
+    // Thuc hien validate thong tin dang nhap
+    // Neu hop le, tien hanh dang nhap
     private void attemptLogin() {
         if (mAuthTask != null) {
             return;
@@ -144,23 +149,17 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Validate ma sinh vien
-     */
+    // Validate ma sinh vien
     private boolean isMaSinhVienValid(String maSinhVien) {
         return maSinhVien.contains("T");
     }
 
-    /**
-     * Validate mat khau
-     */
+    // Validate mat khau
     private boolean isPasswordValid(String password) {
         return password.length() >= 6;
     }
 
-    /**
-     * Shows the progress UI and hides the login form.
-     */
+    // Hien thi hinh anh dang tai du lieu
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
@@ -194,9 +193,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Thuc hien kiem tra thong tin dang nhap
-     */
+    // Thuc hien kiem tra thong tin dang nhap
     public class UserLoginTask extends AsyncTask<String, Void, Boolean> {
 
         private final String mMaSinhVien;
@@ -211,9 +208,13 @@ public class LoginActivity extends AppCompatActivity {
         protected Boolean doInBackground(String... params) {
             boolean result;
             try {
-                result = login(mMaSinhVien, mMatKhau);
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
+                Thread.sleep(1500);
+
+                if (mMaSinhVien == null && mMatKhau == null) {
+                    result = localLogin();
+                } else
+                    result = postLogin(mMaSinhVien, mMatKhau);
+            } catch (Exception e) {
                 result = false;
             }
             return result;
@@ -222,13 +223,13 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
-            showProgress(false);
 
             if (success) {
-                Toast.makeText(LoginActivity.this, "Login success !!!", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
+                LoginActivity.this.finish();
             } else {
+                showProgress(false);
                 txtMatKhau.setError(getString(R.string.error_dang_nhap_that_bai));
                 txtMatKhau.requestFocus();
             }
@@ -239,33 +240,52 @@ public class LoginActivity extends AppCompatActivity {
             mAuthTask = null;
             showProgress(false);
         }
+    }
 
-        public boolean login(String maSinhVien, String matKhau) {
-            final OkHttpClient okHttpClient = new OkHttpClient();
-            boolean isSuccess = false;
+    // Dang nhap voi thong tin da luu tren may
+    private boolean localLogin() {
+        // Kiem tra da dang nhap truoc do chua
+        SharedPreferences sp = LoginActivity.this.getSharedPreferences("sinhVien", MODE_PRIVATE);
+        String maSinhVien = sp.getString("maSinhVien", null);
+        String matKhau = sp.getString("matKhau", null);
 
-            // Tao doi tuong sinh vien dang json
-            String sinhVienJson = new SINHVIEN(maSinhVien, matKhau).toJSON();
-            // Dua vao request body
-            RequestBody body = RequestBody.create(
-                    MediaType.parse("application/json; charset=utf-8"), sinhVienJson);
-            // Tao request
-            Request request = new Request.Builder()
-                    .url(Reference.HOST + Reference.LOGIN_API).post(body).build();
+        if (maSinhVien != null && matKhau != null)
+            return true;
 
-            Response response = null;
-            try {
-                response = okHttpClient.newCall(request).execute();
-                if (response != null) {
-                    Log.d("UMS_HUSC", response.code() + response.body().string());
-                    isSuccess = response.code() == Reference.OK;
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                isSuccess = false;
+        return false;
+    }
+
+    // Dang nhap voi thong tin nhap vao
+    public boolean postLogin(String maSinhVien, String matKhau) {
+        final OkHttpClient okHttpClient = new OkHttpClient();
+        boolean isSuccess = false;
+
+        // Tao doi tuong sinh vien dang json
+        String sinhVienJson = new SINHVIEN(maSinhVien, matKhau).toJSON();
+        // Dua vao request body
+        RequestBody body = RequestBody.create(
+                MediaType.parse("application/json; charset=utf-8"), sinhVienJson);
+        // Tao request
+        Request request = new Request.Builder()
+                .url(Reference.HOST + Reference.LOGIN_API).post(body).build();
+
+        Response response = null;
+        try {
+            response = okHttpClient.newCall(request).execute();
+            if (response != null) {
+                Log.d("UMS_HUSC", response.code() + response.body().string());
+                isSuccess = response.code() == Reference.OK;
             }
-            return isSuccess;
+        } catch (IOException e) {
+            e.printStackTrace();
+            isSuccess = false;
         }
+        // Luu thong tin dang nhap, se tu dong dang nhap cho lan sau
+        editor.putString("maSinhVien", maSinhVien);
+        editor.putString("matKhau", matKhau);
+        editor.commit();
+
+        return isSuccess;
     }
 }
 
