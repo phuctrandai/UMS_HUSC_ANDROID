@@ -3,24 +3,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_tinTuc"
-            android:icon="@drawable/ic_assignment"
-            android:title="Tin tức - thông báo" />
-        <item
-            android:id="@+id/nav_thoiKhoaBieu"
-            android:icon="@drawable/ic_today"
-            android:title="Thời khóa biểu học tập" />
-        <item
-            android:id="@+id/nav_tinNhan"
-            android:icon="@drawable/ic_message"
-            android:title="Tin nhắn" />
-        <item
-            android:id="@+id/nav_caiDat"
-            android:icon="@drawable/ic_settings"
-            android:title="Cài đặt" />
-    </group>
+    <item
+        android:id="@+id/nav_tinTuc"
+        android:icon="@drawable/ic_assignment"
+        android:title="Tin tức - thông báo" />
+    <item
+        android:id="@+id/nav_thoiKhoaBieu"
+        android:icon="@drawable/ic_today"
+        android:title="Thời khóa biểu học tập" />
+    <item
+        android:id="@+id/nav_tinNhan"
+        android:icon="@drawable/ic_message"
+        android:title="Tin nhắn" />
+    <item
+        android:id="@+id/nav_caiDat"
+        android:icon="@drawable/ic_settings"
+        android:title="Cài đặt" />
 
     <item android:title="Cá nhân">
         <menu>
@@ -34,8 +32,8 @@
                 android:title="Đổi mật khảu" />
             <item
                 android:id="@+id/nav_dangXuat"
-                android:title="Đăng xuất"
-                android:icon="@drawable/ic_exit"/>
+                android:icon="@drawable/ic_exit"
+                android:title="Đăng xuất" />
         </menu>
     </item>
 
