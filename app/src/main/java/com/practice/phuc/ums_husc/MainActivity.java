@@ -93,6 +93,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_resume:
                 startActivity(new Intent(MainActivity.this, ResumeActivity.class));
                 break;
+            case R.id.nav_sign_out:
+                logOut();
+                break;
             default: break;
         }
 
