@@ -3,46 +3,48 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <item
-        android:id="@+id/nav_tinTuc"
-        android:icon="@drawable/ic_assignment"
-        android:title="Tin tức - thông báo" />
-    <item
-        android:id="@+id/nav_thoiKhoaBieu"
-        android:icon="@drawable/ic_today"
-        android:title="Thời khóa biểu học tập" />
-    <item
-        android:id="@+id/nav_tinNhan"
-        android:icon="@drawable/ic_message"
-        android:title="Tin nhắn" />
-    <item
-        android:id="@+id/nav_caiDat"
-        android:icon="@drawable/ic_settings"
-        android:title="Cài đặt" />
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_news"
+            android:icon="@drawable/ic_assignment"
+            android:title="@string/title_nav_news" />
+        <item
+            android:id="@+id/nav_timetable"
+            android:icon="@drawable/ic_today"
+            android:title="@string/title_nav_timetable" />
+        <item
+            android:id="@+id/nav_message"
+            android:icon="@drawable/ic_message"
+            android:title="@string/title_nav_message" />
+        <item
+            android:id="@+id/nav_setting"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/title_nav_setting" />
+    </group>
 
     <item android:title="Cá nhân">
         <menu>
             <item
-                android:id="@+id/nav_lyLich"
+                android:id="@+id/nav_resume"
                 android:icon="@drawable/ic_account"
-                android:title="Lý lịch cá nhân" />
+                android:title="@string/title_nav_resume" />
             <item
-                android:id="@+id/nav_doiMatKhau"
+                android:id="@+id/nav_change_password"
                 android:icon="@drawable/ic_vpn_key"
-                android:title="Đổi mật khảu" />
+                android:title="@string/title_nav_change_password" />
             <item
-                android:id="@+id/nav_dangXuat"
+                android:id="@+id/nav_sign_out"
                 android:icon="@drawable/ic_exit"
-                android:title="Đăng xuất" />
+                android:title="@string/title_nav_sign_out" />
         </menu>
     </item>
 
     <item android:title="Trợ giúp">
         <menu>
             <item
-                android:id="@+id/nav_thongTinUngDung"
+                android:id="@+id/nav_app_info"
                 android:icon="@drawable/ic_info"
-                android:title="Thông tin về ứng dụng" />
+                android:title="@string/title_nav_app_info" />
         </menu>
     </item>
 

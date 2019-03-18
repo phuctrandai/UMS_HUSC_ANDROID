@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -13,9 +16,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +30,7 @@ public class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setTitle("Tin tức - thông báo");
+        setTitle(getString(R.string.title_nav_news));
 
         // set up navigation drawer
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -32,9 +38,15 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        navigationView.getMenu().getItem(0).setCheckable(true);
+
+        if (savedInstanceState == null) {
+            // set selected navigation item
+            navigationView.setCheckedItem(R.id.nav_news);
+            // set first fragment
+            replaceFragment(new MainFragment());
+        }
     }
 
     @Override
@@ -73,20 +85,27 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.nav_dangXuat) {
-            logOut();
-        }
-        else if (id == R.id.nav_lyLich) {
-            Intent intent = new Intent(MainActivity.this, ResumeActivity.class);
-            startActivity(intent);
-        }
-        else if (id == R.id.nav_doiMatKhau) {
-
+        switch (id) {
+            case R.id.nav_news:
+                setTitle(getString(R.string.title_nav_news));
+                replaceFragment(new MainFragment());
+                break;
+            case R.id.nav_resume:
+                startActivity(new Intent(MainActivity.this, ResumeActivity.class));
+                break;
+            default: break;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    // Add fragment to back stack
+    protected void replaceFragment(Fragment fragment) {
+        FragmentManager fmgr = getSupportFragmentManager();
+        FragmentTransaction ft = fmgr.beginTransaction();
+        ft.replace(R.id.frame_layout, fragment).commit();
     }
 
     // Dang xuat tai khoan hien tai

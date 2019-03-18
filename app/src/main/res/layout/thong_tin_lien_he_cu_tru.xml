@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_thongTinLienHeCuTru"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/layout_thongTinChung"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
+    android:visibility="visible">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:paddingTop="8dp"
+        android:paddingRight="8dp"
+        android:paddingBottom="8dp"
+        android:shrinkColumns="0">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_span="2"
+                android:text="Thông tin liên hệ, địa chỉ cư trú hiện tại:"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/btn_suaThongTinLienHeCuTru"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="end|fill_horizontal"
+                android:background="@android:color/transparent"
+                android:drawableRight="@drawable/ic_edit" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_phone_android_black_18dp"
+                android:drawablePadding="12dp"
+                android:paddingLeft="14dp"
+                android:paddingRight="14dp"
+                android:text="Di động:" />
+
+            <TextView
+                android:id="@+id/tv_telephone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="094690161"
+                android:textColor="@android:color/black" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_local_phone_black_18dp"
+                android:drawablePadding="12dp"
+                android:paddingLeft="14dp"
+                android:paddingRight="14dp"
+                android:text="Cố định:" />
+
+            <TextView
+                android:id="@+id/tv_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="0234 3535282"
+                android:textColor="@android:color/black" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_email_black_18dp"
+                android:drawablePadding="12dp"
+                android:paddingLeft="14dp"
+                android:paddingRight="14dp"
+                android:text="Email:" />
+
+            <TextView
+                android:id="@+id/tv_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="trandaiphuc.1501@gmail.com"
+                android:textColor="@android:color/black" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_home_black_18dp"
+                android:drawablePadding="12dp"
+                android:paddingLeft="14dp"
+                android:paddingRight="14dp"
+                android:text="Hình thức cư trú:" />
+
+            <TextView
+                android:id="@+id/tv_hinhThucCuTru"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Theo hộ khẩu thường trú"
+                android:textColor="@android:color/black" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_date_range_black_18dp"
+                android:drawablePadding="12dp"
+                android:paddingLeft="14dp"
+                android:paddingRight="14dp"
+                android:text="Bắt đầu cư trú:" />
+
+            <TextView
+                android:id="@+id/tv_ngayBatDauCuTru"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="15/01/1997"
+                android:textColor="@android:color/black" />
+        </TableRow>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_location_on_black_18dp"
+                android:drawablePadding="12dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="60dp"
+                android:text="Cư trú tại:" />
+
+            <TextView
+                android:id="@+id/tv_diaChiCuTru"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="15/336 Tăng Bạt Hổ, Phường Phú Bình, Thành Phố Huế, Thừa Thiên Huế, Việt Nam"
+                android:textColor="@android:color/black" />
+        </LinearLayout>
+
+    </TableLayout>
+
+</android.support.v7.widget.CardView>

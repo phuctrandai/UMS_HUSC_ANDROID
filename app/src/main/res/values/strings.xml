@@ -22,8 +22,14 @@
     <string name="avatar">Hình đại diện</string>
     <string name="action_settings">Settings</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Navigation drawer menu -->
+    <string name="title_nav_news">Thông báo và tin tức</string>
+    <string name="title_nav_timetable">Thời khóa biểu</string>
+    <string name="title_nav_message">Tin nhắn</string>
+    <string name="title_nav_setting">Cài đặt</string>
+    <string name="title_nav_resume">Lý lịch cá nhân</string>
+    <string name="title_nav_change_password">Đổi mật khẩu</string>
+    <string name="title_nav_sign_out">Đăng xuất</string>
+    <string name="title_nav_app_info">Thông tin về ứng dụng</string>
     <string name="title_activity_resume">ResumeActivity</string>
-    <string name="title_activity_main2">Main2Activity</string>
 </resources>
