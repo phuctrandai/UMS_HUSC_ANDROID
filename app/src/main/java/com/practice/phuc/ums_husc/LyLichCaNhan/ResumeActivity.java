@@ -1,4 +1,4 @@
-package com.practice.phuc.ums_husc;
+package com.practice.phuc.ums_husc.LyLichCaNhan;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -14,13 +14,20 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.practice.phuc.ums_husc.Adapter.SectionsPagerAdapter;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
+import com.practice.phuc.ums_husc.R;
+import com.practice.phuc.ums_husc.ViewModel.VLyLichCaNhan;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -33,7 +40,13 @@ public class ResumeActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private ViewGroup mProgressViewLayout;
     private View mLoadingView;
+    private View mNetworkError;
     private View mLyLichLayout;
+    private TextView mThongBaoLoi;
+
+    Moshi moshi;
+    Type usersType;
+    JsonAdapter<VLyLichCaNhan> jsonAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +58,9 @@ public class ResumeActivity extends AppCompatActivity {
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager.setOffscreenPageLimit(3);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
-
+        tabLayout.setupWithViewPager(mViewPager);
 
         Button btnBack = findViewById(R.id.btn_back);
         btnBack.setOnClickListener(new View.OnClickListener() {
@@ -59,15 +73,21 @@ public class ResumeActivity extends AppCompatActivity {
         mProgressViewLayout = findViewById(R.id.loading_progress_layout);
         mLyLichLayout = findViewById(R.id.layout_lyLich);
         mLoadingView = findViewById(R.id.loading_progress);
+        mNetworkError = findViewById(R.id.layout_thongBaoKhongCoMang);
+        mThongBaoLoi = findViewById(R.id.tv_thongBaoLoi);
+
+        moshi = new Moshi.Builder().build();
+        usersType = Types.newParameterizedType(VLyLichCaNhan.class);
+        jsonAdapter = moshi.adapter(usersType);
 
         attempLoadLyLich();
     }
 
     private void attempLoadLyLich() {
-        showProgress(true);
         if (NetworkUtil.getConnectivityStatus(ResumeActivity.this) == NetworkUtil.TYPE_NOT_CONNECTED) {
-            Toast.makeText(this, getString(R.string.network_not_available), Toast.LENGTH_LONG).show();
+            showError(true);
         } else {
+            showProgress(true);
             new LoadLyLichTastk().execute((String) null);
         }
     }
@@ -79,13 +99,21 @@ public class ResumeActivity extends AppCompatActivity {
         protected Boolean doInBackground(String... params) {
             boolean result = true;
             try {
-                mSectionsPagerAdapter.setThongTin(null, null,
-                        null, null,null, null);
-                mViewPager.setAdapter(mSectionsPagerAdapter);
-                tabLayout.setupWithViewPager(mViewPager);
-                Thread.sleep(1500);
-            } catch (Exception e) {
+                Thread.sleep(500);
 
+                String json = loadLyLich("15T1021129");
+                Log.d("UMS_json:", json);
+                VLyLichCaNhan lyLichCaNhan = jsonAdapter.fromJson(json);
+
+                mSectionsPagerAdapter.setThongTin(lyLichCaNhan.getThongTinChung(),
+                        lyLichCaNhan.getThongTinLienHe(),
+                        lyLichCaNhan.getQueQuan(),
+                        lyLichCaNhan.getThuongTru(),
+                        lyLichCaNhan.getDacDiemBanThan(),
+                        lyLichCaNhan.getLichSuBanThan());
+            } catch (Exception e) {
+                Log.d("UMS_HUSC_doInBackground", e.getMessage());
+                e.printStackTrace();
                 result = false;
             }
             return result;
@@ -93,13 +121,16 @@ public class ResumeActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            showProgress(false);
+            mViewPager.setAdapter(mSectionsPagerAdapter);
 
             if (success) {
-                //ThongTinChungFragment.displayThongTinChung();
+                Log.d("UMS_onPostExecute:", success + "");
             } else {
-
+                mThongBaoLoi.setText(getString(R.string.error_time_out));
+                showError(true);
+                Log.d("UMS_onPostExecute:", success + "");
             }
+            showProgress(false);
         }
 
         @Override
@@ -109,32 +140,29 @@ public class ResumeActivity extends AppCompatActivity {
     }
 
     private String loadLyLich(String maSinhVien) {
+        String result = "";
         final OkHttpClient okHttpClient = new OkHttpClient();
         // Tao request
         Request request = new Request.Builder()
-                .url(Reference.HOST + Reference.LOAD_LY_LICH_API + "?masinhvien=" + maSinhVien)
+                .url(Reference.HOST + Reference.LOAD_LY_LICH_API + "?maSinhVien=" + maSinhVien)
                 .get().build();
 
         Response response = null;
         try {
             response = okHttpClient.newCall(request).execute();
             if (response != null) {
-                Log.d("UMS_HUSC", response.code() + response.body().string());
                 if (response.code() == Reference.OK)
-                    return response.body().string();
+                    result = response.body().string();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "";
+        return result;
     }
 
     // Hien thi hinh anh dang tai du lieu
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
@@ -156,10 +184,14 @@ public class ResumeActivity extends AppCompatActivity {
                 }
             });
         } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
             mLoadingView.setVisibility(show ? View.VISIBLE : View.GONE);
             mProgressViewLayout.setVisibility(show ? View.GONE : View.VISIBLE);
         }
+    }
+
+    private void showError(final boolean show) {
+        mLyLichLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+        mProgressViewLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+        mNetworkError.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 }

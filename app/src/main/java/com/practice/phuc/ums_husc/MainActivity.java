@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,7 +17,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.FrameLayout;
+
+import com.practice.phuc.ums_husc.LyLichCaNhan.ResumeActivity;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -91,7 +93,12 @@ public class MainActivity extends AppCompatActivity
                 replaceFragment(new MainFragment());
                 break;
             case R.id.nav_resume:
-                startActivity(new Intent(MainActivity.this, ResumeActivity.class));
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startActivity(new Intent(MainActivity.this, ResumeActivity.class));
+                    }
+                }, 400);
                 break;
             case R.id.nav_sign_out:
                 logOut();

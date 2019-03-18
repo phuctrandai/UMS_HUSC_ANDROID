@@ -10,5 +10,5 @@ public final class Reference {
     /* Login */
     public static final String LOGIN_API = "api/sinhvien/login";
 
-    public static final String LOAD_LY_LICH_API = "api/sinhvien/lylichcanhan";
+    public static final String LOAD_LY_LICH_API = "api/SinhVien/LyLichCaNhan";
 }

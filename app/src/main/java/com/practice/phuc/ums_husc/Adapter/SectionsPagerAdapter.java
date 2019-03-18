@@ -1,13 +1,14 @@
 package com.practice.phuc.ums_husc.Adapter;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.practice.phuc.ums_husc.DacDiemBanThanFragment;
-import com.practice.phuc.ums_husc.LienHeCuTruFragment;
+import com.practice.phuc.ums_husc.LyLichCaNhan.DacDiemBanThanFragment;
+import com.practice.phuc.ums_husc.LyLichCaNhan.LienHeCuTruFragment;
 import com.practice.phuc.ums_husc.Model.LICHSUBANTHAN;
-import com.practice.phuc.ums_husc.ThongTinChungFragment;
+import com.practice.phuc.ums_husc.LyLichCaNhan.ThongTinChungFragment;
 import com.practice.phuc.ums_husc.ViewModel.VDacDiemBanThan;
 import com.practice.phuc.ums_husc.ViewModel.VQueQuan;
 import com.practice.phuc.ums_husc.ViewModel.VThongTinChung;
@@ -39,25 +40,30 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         this.lichSuBanThan = lichSuBanThan;
     }
 
+    public void displayThongTin() {
+        for (int i = 0; i < getCount(); i++){
+
+        }
+    }
+
     @Override
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
                 ThongTinChungFragment c0 = new ThongTinChungFragment();
-                c0.setThongTin(this.thongTinChung);
-                c0.displayThongTin();
+                c0.setThongTin(thongTinChung);
                 return c0;
             case 1:
                 LienHeCuTruFragment c1 = new LienHeCuTruFragment();
-
+                c1.setThongTin(thongTinLienHe, thuongTru, queQuan);
                 return c1;
             case 2:
                 DacDiemBanThanFragment c2 = new DacDiemBanThanFragment();
+                c2.setThongTin(dacDiemBanThan);
                 return c2;
             default:
                 ThongTinChungFragment d = new ThongTinChungFragment();
                 d.setThongTin(this.thongTinChung);
-                d.displayThongTin();
                 return d;
         }
     }

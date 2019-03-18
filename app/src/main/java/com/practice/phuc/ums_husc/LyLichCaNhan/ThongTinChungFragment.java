@@ -1,7 +1,7 @@
-package com.practice.phuc.ums_husc;
+package com.practice.phuc.ums_husc.LyLichCaNhan;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.practice.phuc.ums_husc.R;
 import com.practice.phuc.ums_husc.ViewModel.VThongTinChung;
 
 public class ThongTinChungFragment extends Fragment {
@@ -44,23 +45,24 @@ public class ThongTinChungFragment extends Fragment {
 
         displayThongTin();
 
+        Log.d("UMS", "Create thong tin chung !!!");
         return view;
     }
 
     public void setThongTin(VThongTinChung thongTinChung) {
-        ThongTinChungFragment.thongTinChung = thongTinChung;
+        this.thongTinChung = thongTinChung;
     }
 
     public void displayThongTin() {
         if (thongTinChung != null) {
-            mGioiTinh.setText(thongTinChung.getGioiTinh());
-            mNgaySinh.setText(thongTinChung.getNgaySinh());
+            mGioiTinh.setText(thongTinChung.getGioiTinh() == true ? "Nam" : "Nữ");
+            mNgaySinh.setText(thongTinChung.getNgaySinh().substring(0, 10));
             mNoiSinh.setText(thongTinChung.getNoiSinh());
             mQuocTich.setText(thongTinChung.getTenQuocGia());
             mDanToc.setText(thongTinChung.getTenDanToc());
             mTonGiao.setText(thongTinChung.getTenTonGiao());
             mSoCMND.setText(thongTinChung.getSoCMND());
-            mNgayCapCMND.setText(thongTinChung.getNgayCap());
+            mNgayCapCMND.setText(thongTinChung.getNgayCap().substring(0, 10));
             mNoiCapCMND.setText(thongTinChung.getNoiCap());
         }
     }

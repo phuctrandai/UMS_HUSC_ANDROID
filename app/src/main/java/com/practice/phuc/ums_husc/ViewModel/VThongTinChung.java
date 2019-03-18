@@ -2,7 +2,7 @@ package com.practice.phuc.ums_husc.ViewModel;
 
 public class VThongTinChung {
     private String HoTen;
-    private String GioiTinh;
+    private boolean GioiTinh;
     private String NgaySinh;
     private String NoiSinh;
     private String TenQuocGia;
@@ -22,11 +22,11 @@ public class VThongTinChung {
         HoTen = hoTen;
     }
 
-    public String getGioiTinh() {
+    public boolean getGioiTinh() {
         return GioiTinh;
     }
 
-    public void setGioiTinh(String gioiTinh) {
+    public void setGioiTinh(boolean gioiTinh) {
         GioiTinh = gioiTinh;
     }
 
@@ -110,7 +110,7 @@ public class VThongTinChung {
         MaSinhVien = maSinhVien;
     }
 
-    public VThongTinChung(String hoTen, String gioiTinh, String ngaySinh, String noiSinh,
+    public VThongTinChung(String hoTen, boolean gioiTinh, String ngaySinh, String noiSinh,
                           String tenQuocGia, String tenDanToc, String soCMND,
                           String noiCap, String ngayCap,
                           String tenTonGiao, String anhDaiDien, String maSinhVien) {

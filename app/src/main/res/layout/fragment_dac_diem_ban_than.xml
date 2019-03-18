@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ResumeActivity$PlaceholderFragment"
+    tools:context=".LyLichCaNhan.ResumeActivity"
     android:id="@+id/fragment_dacDiemBanThan">
 
     <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -43,13 +43,17 @@
             </TableRow>
 
             <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:id="@+id/layout_thanhPhanXuatThan"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp">
 
                 <TextView
-                    android:paddingLeft="14dp"
-                    android:paddingRight="32dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="32dp"
                     android:text="Thành phần xuất thân:" />
 
                 <TextView
@@ -66,8 +70,8 @@
 
                 <TextView
                     android:layout_weight="1"
-                    android:paddingLeft="14dp"
-                    android:paddingRight="32dp"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="32dp"
                     android:text="Diện ưu tiên gia đình:" />
 
                 <TextView
@@ -83,8 +87,8 @@
 
                 <TextView
                     android:layout_weight="1"
-                    android:paddingLeft="14dp"
-                    android:paddingRight="32dp"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="32dp"
                     android:text="Diện ưu tiên bản thân:" />
 
                 <TextView
@@ -99,8 +103,8 @@
                 android:layout_marginBottom="8dp">
 
                 <TextView
-                    android:paddingLeft="14dp"
-                    android:paddingRight="32dp"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="32dp"
                     android:text="Tình trạng hôn nhân:" />
 
                 <TextView
