@@ -17,11 +17,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.LyLichCaNhan.ResumeActivity;
 
+import org.w3c.dom.Text;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private SharedPreferences sharedPreferences = null;
 
     private NavigationView navigationView;
 
@@ -49,6 +55,8 @@ public class MainActivity extends AppCompatActivity
             // set first fragment
             replaceFragment(new MainFragment());
         }
+
+        hienThiThongTinCaNhan();
     }
 
     @Override
@@ -75,7 +83,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_thongBao) {
             return true;
         }
 
@@ -130,10 +138,12 @@ public class MainActivity extends AppCompatActivity
                 SharedPreferences.Editor editor = getSharedPreferences("sinhVien", MODE_PRIVATE).edit();
                 editor.remove("maSinhVien");
                 editor.remove("matKhau");
+                editor.remove("hoTen");
+                editor.remove("nganhHoc");
+                editor.remove("khoaHoc");
                 editor.commit();
 
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                intent.putExtra("vuaDangXuat", true);
                 startActivity(intent);
                 MainActivity.this.finish();
             }
@@ -146,5 +156,25 @@ public class MainActivity extends AppCompatActivity
         });
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+    }
+
+    // Hien thi thong tin ca nhan
+    private void hienThiThongTinCaNhan() {
+        View headerView = navigationView.getHeaderView(0);
+        TextView tvMaSinhVien = headerView.findViewById(R.id.tv_maSinhVien);
+        TextView tvHoTen = headerView.findViewById(R.id.tv_hoTen);
+        TextView tvKhoaHoc = headerView.findViewById(R.id.tv_khoaHoc);
+        TextView tvNganhHoc = headerView.findViewById(R.id.tv_nganhHoc);
+
+        sharedPreferences = getSharedPreferences("sinhVien", MODE_PRIVATE);
+        String maSinhVien = sharedPreferences.getString("maSinhVien", "");
+        String hoTen = sharedPreferences.getString("hoTen", "");
+        String khoaHoc = sharedPreferences.getString("khoaHoc", "");
+        String nganhHoc = sharedPreferences.getString("nganhHoc", "");
+
+        tvMaSinhVien.setText(maSinhVien);
+        tvHoTen.setText(hoTen);
+        tvKhoaHoc.setText(khoaHoc);
+        tvNganhHoc.setText(nganhHoc);
     }
 }

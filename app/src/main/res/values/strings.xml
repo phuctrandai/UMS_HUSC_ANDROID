@@ -21,7 +21,8 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="avatar">Hình đại diện</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_tinNhan">Tin nhắn</string>
+    <string name="action_thongBao">Thông báo</string>
 
     <!-- Navigation drawer menu -->
     <string name="title_nav_news">Thông báo và tin tức</string>

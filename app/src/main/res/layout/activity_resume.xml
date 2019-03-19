@@ -45,7 +45,7 @@
         android:paddingEnd="0dp">
 
         <TextView
-            android:id="@+id/tv_full_name"
+            android:id="@+id/tv_hoTen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="6dp"
@@ -56,18 +56,19 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tv_student_id"
+            android:id="@+id/tv_maSinhVien"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tv_full_name"
+            android:layout_below="@id/tv_hoTen"
             android:text="15T1021129"
             android:textAlignment="center"
             android:textColor="@android:color/black" />
 
         <TextView
+            android:id="@+id/tv_khoaHocNganhHoc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tv_student_id"
+            android:layout_below="@id/tv_maSinhVien"
             android:text="Khóa 39 Công nghệ phần mềm"
             android:textAlignment="center"
             android:textColor="@android:color/black" />

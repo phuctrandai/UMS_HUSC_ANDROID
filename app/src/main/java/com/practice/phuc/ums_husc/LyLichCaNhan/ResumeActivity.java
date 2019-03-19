@@ -3,6 +3,7 @@ package com.practice.phuc.ums_husc.LyLichCaNhan;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -83,7 +84,9 @@ public class ResumeActivity extends AppCompatActivity {
         attempLoadLyLich();
     }
 
+    // Kiem tra truoc khi lay thong tin ly lich
     private void attempLoadLyLich() {
+        hienThiThongTinCaNhan();
         if (NetworkUtil.getConnectivityStatus(ResumeActivity.this) == NetworkUtil.TYPE_NOT_CONNECTED) {
             showError(true);
         } else {
@@ -139,6 +142,7 @@ public class ResumeActivity extends AppCompatActivity {
         }
     }
 
+    // Lay thong tin ly lich tu may chu ve
     private String loadLyLich(String maSinhVien) {
         String result = "";
         final OkHttpClient okHttpClient = new OkHttpClient();
@@ -189,9 +193,27 @@ public class ResumeActivity extends AppCompatActivity {
         }
     }
 
+    // Hien thi thong bao loi len man hinh
     private void showError(final boolean show) {
         mLyLichLayout.setVisibility(show ? View.GONE : View.VISIBLE);
         mProgressViewLayout.setVisibility(show ? View.GONE : View.VISIBLE);
         mNetworkError.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    // Hien thi thong tin ca nhan
+    private void hienThiThongTinCaNhan() {
+        TextView tvMaSinhVien = findViewById(R.id.tv_maSinhVien);
+        TextView tvHoTen = findViewById(R.id.tv_hoTen);
+        TextView tvKhoaHocNganhHoc = findViewById(R.id.tv_khoaHocNganhHoc);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("sinhVien", MODE_PRIVATE);
+        String maSinhVien = sharedPreferences.getString("maSinhVien", "");
+        String hoTen = sharedPreferences.getString("hoTen", "");
+        String khoaHoc = sharedPreferences.getString("khoaHoc", "");
+        String nganhHoc = sharedPreferences.getString("nganhHoc", "");
+
+        tvMaSinhVien.setText(maSinhVien);
+        tvHoTen.setText(hoTen);
+        tvKhoaHocNganhHoc.setText(khoaHoc + " - " + nganhHoc);
     }
 }

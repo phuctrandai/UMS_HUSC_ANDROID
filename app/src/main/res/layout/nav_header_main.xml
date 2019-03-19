@@ -35,7 +35,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="4dp"
-        android:text="15T1021129"
+        android:text="Mã sinh viên"
         android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/tv_khoaHoc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Khóa 39"
+        android:textColor="@android:color/white"/>
+    <TextView
+        android:id="@+id/tv_nganhHoc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Công nghệ thông tin"
+        android:textColor="@android:color/white"/>
 
 </LinearLayout>
