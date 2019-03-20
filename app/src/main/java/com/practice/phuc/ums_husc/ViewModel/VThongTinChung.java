@@ -2,8 +2,9 @@ package com.practice.phuc.ums_husc.ViewModel;
 
 public class VThongTinChung {
     private String HoTen;
-    private String GioiTinh;
+    private boolean GioiTinh;
     private String NgaySinh;
+    private VNoiSinh NoiSinh;
     private String TenQuocGia;
     private String TenDanToc;
     private String SoCMND;
@@ -21,11 +22,11 @@ public class VThongTinChung {
         HoTen = hoTen;
     }
 
-    public String getGioiTinh() {
+    public boolean getGioiTinh() {
         return GioiTinh;
     }
 
-    public void setGioiTinh(String gioiTinh) {
+    public void setGioiTinh(boolean gioiTinh) {
         GioiTinh = gioiTinh;
     }
 
@@ -35,6 +36,14 @@ public class VThongTinChung {
 
     public void setNgaySinh(String ngaySinh) {
         NgaySinh = ngaySinh;
+    }
+
+    public VNoiSinh getNoiSinh() {
+        return NoiSinh;
+    }
+
+    public void setNoiSinh(VNoiSinh noiSinh) {
+        NoiSinh = noiSinh;
     }
 
     public String getTenQuocGia() {
@@ -101,12 +110,14 @@ public class VThongTinChung {
         MaSinhVien = maSinhVien;
     }
 
-    public VThongTinChung(String hoTen, String gioiTinh, String ngaySinh, String tenQuocGia,
-                          String tenDanToc, String soCMND, String noiCap, String ngayCap,
+    public VThongTinChung(String hoTen, boolean gioiTinh, String ngaySinh, VNoiSinh noiSinh,
+                          String tenQuocGia, String tenDanToc, String soCMND,
+                          String noiCap, String ngayCap,
                           String tenTonGiao, String anhDaiDien, String maSinhVien) {
         HoTen = hoTen;
         GioiTinh = gioiTinh;
         NgaySinh = ngaySinh;
+        NoiSinh = noiSinh;
         TenQuocGia = tenQuocGia;
         TenDanToc = tenDanToc;
         SoCMND = soCMND;

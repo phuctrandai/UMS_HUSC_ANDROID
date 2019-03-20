@@ -12,7 +12,7 @@ public class VDacDiemBanThan {
     private String NoiKetNapDoan;
     private String NgayVaoDang;
     private String NoiKetNapDang;
-    private String  NgayChinhThucVaoDang;
+    private String NgayChinhThucVaoDang;
 
     public String getMaSinhVien() {
         return MaSinhVien;

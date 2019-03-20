@@ -26,8 +26,14 @@ import android.widget.Toast;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.Model.SINHVIEN;
+import com.practice.phuc.ums_husc.ViewModel.VLyLichCaNhan;
+import com.practice.phuc.ums_husc.ViewModel.VThongTinCaNhan;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -41,6 +47,11 @@ public class LoginActivity extends AppCompatActivity {
     // Keep login information
     SharedPreferences sharedPreferences = null;
     SharedPreferences.Editor editor = null;
+
+    // Cast json to model
+    Moshi moshi;
+    Type usersType;
+    JsonAdapter<VThongTinCaNhan> jsonAdapter;
 
     // UI references.
     private AutoCompleteTextView txtMaSinhVien;
@@ -83,6 +94,10 @@ public class LoginActivity extends AppCompatActivity {
         // Lay thong tin dang nhap tu truoc
         sharedPreferences = getSharedPreferences("sinhVien", MODE_PRIVATE);
         editor = sharedPreferences.edit();
+
+        moshi = new Moshi.Builder().build();
+        usersType = Types.newParameterizedType(VThongTinCaNhan.class);
+        jsonAdapter = moshi.adapter(usersType);
     }
 
     @Override
@@ -208,7 +223,7 @@ public class LoginActivity extends AppCompatActivity {
         protected Boolean doInBackground(String... params) {
             boolean result;
             try {
-                Thread.sleep(1500);
+                Thread.sleep(500);
 
                 if (mMaSinhVien == null && mMatKhau == null) {
                     result = localLogin();
@@ -259,6 +274,7 @@ public class LoginActivity extends AppCompatActivity {
     public boolean postLogin(String maSinhVien, String matKhau) {
         final OkHttpClient okHttpClient = new OkHttpClient();
         boolean isSuccess = false;
+        String thongTinCaNhanJson = "";
 
         // Tao doi tuong sinh vien dang json
         String sinhVienJson = new SINHVIEN(maSinhVien, matKhau).toJSON();
@@ -273,7 +289,7 @@ public class LoginActivity extends AppCompatActivity {
         try {
             response = okHttpClient.newCall(request).execute();
             if (response != null) {
-                Log.d("UMS_HUSC", response.code() + response.body().string());
+                thongTinCaNhanJson = response.body().string();
                 isSuccess = response.code() == Reference.OK;
             }
         } catch (IOException e) {
@@ -281,6 +297,14 @@ public class LoginActivity extends AppCompatActivity {
             isSuccess = false;
         }
         // Luu thong tin dang nhap, se tu dong dang nhap cho lan sau
+        try {
+            VThongTinCaNhan vThongTinCaNhan = jsonAdapter.fromJson(thongTinCaNhanJson);
+            editor.putString("hoTen", vThongTinCaNhan.getHoTen());
+            editor.putString("nganhHoc", vThongTinCaNhan.getTenNganh());
+            editor.putString("khoaHoc", vThongTinCaNhan.getKhoaHoc());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         editor.putString("maSinhVien", maSinhVien);
         editor.putString("matKhau", matKhau);
         editor.commit();

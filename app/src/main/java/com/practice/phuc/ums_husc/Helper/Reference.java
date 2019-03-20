@@ -8,5 +8,7 @@ public final class Reference {
     public static final String HOST = "http://192.168.1.106:8082/";
 
     /* Login */
-    public static final String LOGIN_API = "api/sinhvien/login";
+    public static final String LOGIN_API = "api/sinhvien/dangnhap";
+
+    public static final String LOAD_LY_LICH_API = "api/SinhVien/LyLichCaNhan";
 }

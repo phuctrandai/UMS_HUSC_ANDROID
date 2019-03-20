@@ -14,16 +14,43 @@
     <string name="error_mat_khau_qua_ngan">Mật khẩu tối thiểu 6 ký tự</string>
     <string name="error_dang_nhap_that_bai">Tên tài khoản hoặc mật khẩu không đúng</string>
     <string name="error_truong_bat_buoc">Trường này là bắt buộc</string>
+    <string name="error_time_out">Không thể kết nối đến máy chủ</string>
 
     <!-- Main activity -->
     <string name="title_activity_main">MainActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="avatar">Hình đại diện</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_tinNhan">Tin nhắn</string>
+    <string name="action_thongBao">Thông báo</string>
+
+    <!-- Navigation drawer menu -->
+    <string name="title_nav_news">Thông báo và tin tức</string>
+    <string name="title_nav_timetable">Thời khóa biểu</string>
+    <string name="title_nav_message">Tin nhắn</string>
+    <string name="title_nav_setting">Cài đặt</string>
+    <string name="title_nav_resume">Lý lịch cá nhân</string>
+    <string name="title_nav_change_password">Đổi mật khẩu</string>
+    <string name="title_nav_sign_out">Đăng xuất</string>
+    <string name="title_nav_app_info">Thông tin về ứng dụng</string>
+    <string name="title_activity_resume">ResumeActivity</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_resume">ResumeActivity</string>
-    <string name="title_activity_main2">Main2Activity</string>
+    <string name="title_activity_detail_news">Chi tiết thông báo</string>
+    <string name="large_text">
+        "Material is the metaphor.\n\n"
+
+        "A material metaphor is the unifying theory of a rationalized space and a system of motion."
+        "The material is grounded in tactile reality, inspired by the study of paper and ink, yet "
+        "technologically advanced and open to imagination and magic.\n"
+        "Surfaces and edges of the material provide visual cues that are grounded in reality. The "
+        "use of familiar tactile attributes helps users quickly understand affordances. Yet the "
+        "flexibility of the material creates new affordances that supercede those in the physical "
+        "world, without breaking the rules of physics.\n"
+        "The fundamentals of light, surface, and movement are key to conveying how objects move, "
+        "interact, and exist in space and in relation to each other. Realistic lighting shows "
+        "seams, divides space, and indicates moving parts.\n\n"
+    </string>
+    <string name="action_settings">Settings</string>
 </resources>
