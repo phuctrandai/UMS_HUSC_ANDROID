@@ -5,7 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +15,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,51 +23,67 @@ import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.LyLichCaNhan.ResumeActivity;
 
-import org.w3c.dom.Text;
-
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private SharedPreferences sharedPreferences = null;
-
     private NavigationView navigationView;
+    private ActionBarDrawerToggle toggle;
+
+    private String currentFragment;
+    private int currentNavItem;
+    private FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // set up toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle(getString(R.string.title_nav_news));
 
         // set up navigation drawer
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        initFragmentManager();
+
         if (savedInstanceState == null) {
             // set selected navigation item
             navigationView.setCheckedItem(R.id.nav_news);
-            // set first fragment
-            replaceFragment(new MainFragment());
-        }
 
-        hienThiThongTinCaNhan();
+            // set first fragment
+            initFragment(MainFragment.newInstance(this));
+
+            // hien thi thong tin tai khoan
+            hienThiThongTinCaNhan();
+        }
     }
 
     @Override
     public void onBackPressed() {
+        Log.d("UMS_HUSC", "Back pressed !!!");
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (currentFragment.equals(MainFragment.class.getName())) {
+            finish();
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     @Override
@@ -90,40 +107,136 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
+        if (currentNavItem != id) {
+            currentNavItem = id;
+            switch (id) {
+                case R.id.nav_news:
 
-        switch (id) {
-            case R.id.nav_news:
-                setTitle(getString(R.string.title_nav_news));
-                replaceFragment(new MainFragment());
-                break;
-            case R.id.nav_resume:
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        startActivity(new Intent(MainActivity.this, ResumeActivity.class));
-                    }
-                }, 400);
-                break;
-            case R.id.nav_sign_out:
-                logOut();
-                break;
-            default: break;
+                    setTitle(getString(R.string.title_nav_news));
+                    replaceFragment(MainFragment.newInstance(this));
+                    break;
+                case R.id.nav_timetable:
+
+                    setTitle(getString(R.string.title_nav_timetable));
+                    replaceFragment(ScheduleFragment.newInstance(this));
+                    break;
+                case R.id.nav_message:
+
+                    setTitle(getString(R.string.title_nav_message));
+                    replaceFragment(MessageFragment.newInstance(this));
+                    break;
+                case R.id.nav_resume:
+
+                    currentNavItem = R.id.nav_resume;
+                    startActivity(new Intent(MainActivity.this, ResumeActivity.class));
+                    break;
+                case R.id.nav_sign_out:
+
+                    logOut();
+                    break;
+                default:
+                    break;
+            }
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
+    // Khoi tao fragment manager
+    private void initFragmentManager() {
+        fragmentManager = getSupportFragmentManager();
+        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                Log.d("UMS_HUSC", "Back stack changed !!");
+                Fragment fragment = fragmentManager.findFragmentById(R.id.frame_layout);
+                if (fragment != null) {
+                    Log.d("UMS_HUSC", "TAG: " + fragment.getTag());
+                    updateByFragmentTag(fragment.getTag());
+                }
+            }
+        });
+    }
+
+    // Khoi tao fragment dau tien
+    private void initFragment(Fragment fragment) {
+        currentNavItem = R.id.nav_news;
+        currentFragment = fragment.getClass().getName();
+
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.replace(R.id.frame_layout, fragment, currentFragment).commit();
+    }
+
     // Add fragment to back stack
     protected void replaceFragment(Fragment fragment) {
-        FragmentManager fmgr = getSupportFragmentManager();
-        FragmentTransaction ft = fmgr.beginTransaction();
-        ft.replace(R.id.frame_layout, fragment).commit();
+        String fragmentTag = fragment.getClass().getName();
+        currentFragment = fragmentTag;
+        Log.d("UMS_HUSC", "Current fragment: " + currentFragment);
+
+        if (fragment.getClass().getName().equals(MainFragment.class.getName())) {
+            for (int i = 0; i < fragmentManager.getBackStackEntryCount(); ++i) {
+                fragmentManager.popBackStack();
+            }
+        }
+
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+        ft.replace(R.id.frame_layout, fragment, fragmentTag);
+        ft.addToBackStack(null);
+        ft.commit();
+        Log.d("UMS_HUSC", "Back stack entry count: " + fragmentManager.getBackStackEntryCount());
+    }
+
+    // Update UI when press back
+    private void updateByFragmentTag(String fragmentTag) {
+        if (fragmentTag.equals(MainFragment.class.getName())) {
+            setTitle(getString(R.string.title_nav_news));
+            navigationView.setCheckedItem(R.id.nav_news);
+            currentFragment = fragmentTag;
+            currentNavItem = R.id.nav_news;
+
+            showDrawerButton(true);
+            return;
+
+        } else if (fragmentTag.equals(MessageFragment.class.getName())) {
+            setTitle(getString(R.string.title_nav_message));
+            navigationView.setCheckedItem(R.id.nav_message);
+            currentFragment = fragmentTag;
+            currentNavItem = R.id.nav_message;
+
+        } else if (fragmentTag.equals(ScheduleFragment.class.getName())) {
+            setTitle(getString(R.string.title_nav_timetable));
+            navigationView.setCheckedItem(R.id.nav_timetable);
+            currentFragment = fragmentTag;
+            currentNavItem = R.id.nav_timetable;
+        }
+        showDrawerButton(false);
+    }
+
+    // Switch drawer nav button / back button
+    private void showDrawerButton(boolean show) {
+        if (show) {
+            toggle.setDrawerIndicatorEnabled(true);
+            toggle.setToolbarNavigationClickListener(null);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            getSupportActionBar().setDisplayShowHomeEnabled(false);
+            toggle.syncState();
+        } else {
+            toggle.setDrawerIndicatorEnabled(false);
+            toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
     }
 
     // Dang xuat tai khoan hien tai
@@ -166,7 +279,7 @@ public class MainActivity extends AppCompatActivity
         TextView tvKhoaHoc = headerView.findViewById(R.id.tv_khoaHoc);
         TextView tvNganhHoc = headerView.findViewById(R.id.tv_nganhHoc);
 
-        sharedPreferences = getSharedPreferences("sinhVien", MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences("sinhVien", MODE_PRIVATE);
         String maSinhVien = sharedPreferences.getString("maSinhVien", "");
         String hoTen = sharedPreferences.getString("hoTen", "");
         String khoaHoc = sharedPreferences.getString("khoaHoc", "");
@@ -177,4 +290,5 @@ public class MainActivity extends AppCompatActivity
         tvKhoaHoc.setText(khoaHoc);
         tvNganhHoc.setText(nganhHoc);
     }
+
 }

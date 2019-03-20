@@ -4,7 +4,7 @@ public class VThongTinChung {
     private String HoTen;
     private boolean GioiTinh;
     private String NgaySinh;
-    private String NoiSinh;
+    private VNoiSinh NoiSinh;
     private String TenQuocGia;
     private String TenDanToc;
     private String SoCMND;
@@ -38,11 +38,11 @@ public class VThongTinChung {
         NgaySinh = ngaySinh;
     }
 
-    public String getNoiSinh() {
+    public VNoiSinh getNoiSinh() {
         return NoiSinh;
     }
 
-    public void setNoiSinh(String noiSinh) {
+    public void setNoiSinh(VNoiSinh noiSinh) {
         NoiSinh = noiSinh;
     }
 
@@ -110,7 +110,7 @@ public class VThongTinChung {
         MaSinhVien = maSinhVien;
     }
 
-    public VThongTinChung(String hoTen, boolean gioiTinh, String ngaySinh, String noiSinh,
+    public VThongTinChung(String hoTen, boolean gioiTinh, String ngaySinh, VNoiSinh noiSinh,
                           String tenQuocGia, String tenDanToc, String soCMND,
                           String noiCap, String ngayCap,
                           String tenTonGiao, String anhDaiDien, String maSinhVien) {

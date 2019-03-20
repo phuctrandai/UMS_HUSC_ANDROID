@@ -55,9 +55,13 @@ public class ThongTinChungFragment extends Fragment {
 
     public void displayThongTin() {
         if (thongTinChung != null) {
-            mGioiTinh.setText(thongTinChung.getGioiTinh() == true ? "Nam" : "Nữ");
+            String gioiTinh = thongTinChung.getGioiTinh() ? "Nam" : "Nữ";
+            String noiSinh = thongTinChung.getNoiSinh().getTenThanhPho()
+                    + ", " + thongTinChung.getNoiSinh().getTenQuocGia();
+
+            mGioiTinh.setText(gioiTinh);
             mNgaySinh.setText(thongTinChung.getNgaySinh().substring(0, 10));
-            mNoiSinh.setText(thongTinChung.getNoiSinh());
+            mNoiSinh.setText(noiSinh);
             mQuocTich.setText(thongTinChung.getTenQuocGia());
             mDanToc.setText(thongTinChung.getTenDanToc());
             mTonGiao.setText(thongTinChung.getTenTonGiao());
