@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -37,13 +38,17 @@ import okhttp3.Response;
 public class ResumeActivity extends AppCompatActivity {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
+
+    // UI
     private TabLayout tabLayout;
     private ViewPager mViewPager;
     private ViewGroup mProgressViewLayout;
-    private View mLoadingView;
     private View mNetworkError;
     private View mLyLichLayout;
     private TextView mThongBaoLoi;
+    private TextView tvMaSinhVien;
+    private TextView tvHoTen;
+    private TextView tvKhoaHocNganhHoc;
 
     Moshi moshi;
     Type usersType;
@@ -54,16 +59,35 @@ public class ResumeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_resume);
 
+        // Animation
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        // Set up toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        // Bind UI
+        mProgressViewLayout = findViewById(R.id.loading_progress_layout);
+        mLyLichLayout = findViewById(R.id.layout_lyLich);
+        mNetworkError = findViewById(R.id.layout_thongBaoKhongCoMang);
+        mThongBaoLoi = findViewById(R.id.tv_thongBaoLoi);
         mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setOffscreenPageLimit(3);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
-
+        tvMaSinhVien = findViewById(R.id.tv_maSinhVien);
+        tvHoTen = findViewById(R.id.tv_hoTen);
+        tvKhoaHocNganhHoc = findViewById(R.id.tv_khoaHocNganhHoc);
         Button btnBack = findViewById(R.id.btn_back);
+        Button btnTryAgain = findViewById(R.id.btn_thuLai);
+
+        // Cast json to model
+        moshi = new Moshi.Builder().build();
+        usersType = Types.newParameterizedType(VLyLichCaNhan.class);
+        jsonAdapter = moshi.adapter(usersType);
+
+        // Set up view pager
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mViewPager.setOffscreenPageLimit(mSectionsPagerAdapter.getCount());
+
+        // Set up back button
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,16 +95,21 @@ public class ResumeActivity extends AppCompatActivity {
             }
         });
 
-        mProgressViewLayout = findViewById(R.id.loading_progress_layout);
-        mLyLichLayout = findViewById(R.id.layout_lyLich);
-        mLoadingView = findViewById(R.id.loading_progress);
-        mNetworkError = findViewById(R.id.layout_thongBaoKhongCoMang);
-        mThongBaoLoi = findViewById(R.id.tv_thongBaoLoi);
+        // Set up try again button
+        btnTryAgain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showError(false);
+                attempLoadLyLich();
+            }
+        });
+    }
 
-        moshi = new Moshi.Builder().build();
-        usersType = Types.newParameterizedType(VLyLichCaNhan.class);
-        jsonAdapter = moshi.adapter(usersType);
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
 
+        // Load thong tin ly lich
         attempLoadLyLich();
     }
 
@@ -88,124 +117,107 @@ public class ResumeActivity extends AppCompatActivity {
     private void attempLoadLyLich() {
         hienThiThongTinCaNhan();
         if (NetworkUtil.getConnectivityStatus(ResumeActivity.this) == NetworkUtil.TYPE_NOT_CONNECTED) {
+            mThongBaoLoi.setText(getString(R.string.network_not_available));
             showError(true);
         } else {
-            showProgress(true);
             new LoadLyLichTastk().execute((String) null);
         }
     }
 
     // Thuc hien lay thong tin ly lich ca nhan
     public class LoadLyLichTastk extends AsyncTask<String, Void, Boolean> {
+        private Response mRespose = null;
+        private String mErrorMessage = "";
+
+        @Override
+        protected void onPreExecute() {
+            showProgress(true);
+        }
 
         @Override
         protected Boolean doInBackground(String... params) {
-            boolean result = true;
             try {
-                Thread.sleep(500);
+                SharedPreferences sharedPreferences = getSharedPreferences("sinhVien", MODE_PRIVATE);
+                String maSinhVien = sharedPreferences.getString("maSinhVien", "");
 
-                String json = loadLyLich("15T1021129");
-                Log.d("UMS_json:", json);
-                VLyLichCaNhan lyLichCaNhan = jsonAdapter.fromJson(json);
-
-                mSectionsPagerAdapter.setThongTin(lyLichCaNhan.getThongTinChung(),
-                        lyLichCaNhan.getThongTinLienHe(),
-                        lyLichCaNhan.getQueQuan(),
-                        lyLichCaNhan.getThuongTru(),
-                        lyLichCaNhan.getDacDiemBanThan(),
-                        lyLichCaNhan.getLichSuBanThan());
+                mRespose = loadLyLich(maSinhVien);
+                if (mRespose == null) {
+                    mErrorMessage = getString(R.string.error_time_out);
+                    return false;
+                } else {
+                    if (mRespose.code() == Reference.OK) {
+                        String json = null;
+                        try {
+                            json = mRespose.body().string();
+                            VLyLichCaNhan lyLichCaNhan = jsonAdapter.fromJson(json);
+                            mSectionsPagerAdapter.setThongTin(lyLichCaNhan.getThongTinChung(),
+                                    lyLichCaNhan.getThongTinLienHe(),
+                                    lyLichCaNhan.getQueQuan(),
+                                    lyLichCaNhan.getThuongTru(),
+                                    lyLichCaNhan.getDacDiemBanThan(),
+                                    lyLichCaNhan.getLichSuBanThan());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        return true;
+                    } else if (mRespose.code() == Reference.NOT_FOUND) {
+                        mErrorMessage = getString(R.string.error_time_out);
+                    } else {
+                        mErrorMessage = getString(R.string.error_time_out);
+                    }
+                    return false;
+                }
             } catch (Exception e) {
-                Log.d("UMS_HUSC_doInBackground", e.getMessage());
+                Log.d("DEBUG", e.getMessage());
                 e.printStackTrace();
-                result = false;
+                return false;
             }
-            return result;
         }
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            mViewPager.setAdapter(mSectionsPagerAdapter);
-
             if (success) {
-                Log.d("UMS_onPostExecute:", success + "");
+                mViewPager.setAdapter(mSectionsPagerAdapter);
+                tabLayout.setupWithViewPager(mViewPager);
+                showProgress(false);
             } else {
-                mThongBaoLoi.setText(getString(R.string.error_time_out));
+                setError(mErrorMessage);
                 showError(true);
-                Log.d("UMS_onPostExecute:", success + "");
             }
-            showProgress(false);
-        }
-
-        @Override
-        protected void onCancelled() {
-            showProgress(false);
+            Log.d("DEBUG", success + " - ResumeActivity - On post excute");
         }
     }
 
     // Lay thong tin ly lich tu may chu ve
-    private String loadLyLich(String maSinhVien) {
-        String result = "";
-        final OkHttpClient okHttpClient = new OkHttpClient();
-        // Tao request
-        Request request = new Request.Builder()
-                .url(Reference.HOST + Reference.LOAD_LY_LICH_API + "?maSinhVien=" + maSinhVien)
-                .get().build();
+    private Response loadLyLich(String maSinhVien) {
+        String url = Reference.HOST + Reference.LOAD_LY_LICH_API + "?maSinhVien=" + maSinhVien;
 
-        Response response = null;
-        try {
-            response = okHttpClient.newCall(request).execute();
-            if (response != null) {
-                if (response.code() == Reference.OK)
-                    result = response.body().string();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return result;
+        return NetworkUtil.makeRequest(url, null);
     }
 
     // Hien thi hinh anh dang tai du lieu
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+        mLyLichLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+        mProgressViewLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+        mNetworkError.setVisibility(View.GONE);
+    }
 
-            mProgressViewLayout.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLyLichLayout.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressViewLayout.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            mProgressViewLayout.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoadingView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressViewLayout.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            mLoadingView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressViewLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+    // Set tin nhan loi
+    private void setError(String error) {
+        if (mThongBaoLoi != null) {
+            mThongBaoLoi.setText(getString(R.string.error_time_out));
         }
     }
 
     // Hien thi thong bao loi len man hinh
     private void showError(final boolean show) {
         mLyLichLayout.setVisibility(show ? View.GONE : View.VISIBLE);
-        mProgressViewLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+        mProgressViewLayout.setVisibility(View.GONE);
         mNetworkError.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     // Hien thi thong tin ca nhan
     private void hienThiThongTinCaNhan() {
-        TextView tvMaSinhVien = findViewById(R.id.tv_maSinhVien);
-        TextView tvHoTen = findViewById(R.id.tv_hoTen);
-        TextView tvKhoaHocNganhHoc = findViewById(R.id.tv_khoaHocNganhHoc);
-
         SharedPreferences sharedPreferences = getSharedPreferences("sinhVien", MODE_PRIVATE);
         String maSinhVien = sharedPreferences.getString("maSinhVien", "");
         String hoTen = sharedPreferences.getString("hoTen", "");

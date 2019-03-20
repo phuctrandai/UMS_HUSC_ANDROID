@@ -92,6 +92,12 @@ public class MainFragment extends Fragment {
         super.onPause();
     }
 
+    @Override
+    public void onResume() {
+
+        super.onResume();
+    }
+
     public class LoadThongBaoTask extends AsyncTask<String, Void, Boolean> {
         @Override
         protected void onPreExecute() {

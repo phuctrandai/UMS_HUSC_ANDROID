@@ -28,7 +28,7 @@ public class NewsRecyclerDataAdapter extends RecyclerView.Adapter<NewsRecyclerDa
 
     @NonNull
     @Override
-    public NewsRecyclerDataAdapter.DataViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public  DataViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.news_item, viewGroup, false);
         return new DataViewHolder(itemView);
     }
@@ -44,7 +44,7 @@ public class NewsRecyclerDataAdapter extends RecyclerView.Adapter<NewsRecyclerDa
         final String thoiGianDangStr = thoiGianDang.substring(0, 10) + " " + thoiGianDang.substring(11, 16);
         viewHolder.tvThoiGianDang.setText(thoiGianDangStr);
 
-        final String noiDungStr = noiDung.substring(0, noiDung.length() / 2) + "...";
+        final String noiDungStr = noiDung.substring(0, noiDung.length() / 3) + "...";
         viewHolder.tvNoiDung.setText(noiDungStr);
 
         viewHolder.setItemClickListener(new ItemClickListener() {

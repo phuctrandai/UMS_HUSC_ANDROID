@@ -3,6 +3,14 @@ package com.practice.phuc.ums_husc.Helper;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
+
+import java.io.IOException;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class NetworkUtil {
     public static int TYPE_WIFI = 1;
@@ -36,5 +44,21 @@ public class NetworkUtil {
             status = "Not connected to Internet";
         }
         return status;
+    }
+
+    public static Response makeRequest(String url, RequestBody requestBody) {
+        final OkHttpClient okHttpClient = new OkHttpClient();
+        Request request = null;
+        if (requestBody != null) {
+            request = new Request.Builder().url(url).post(requestBody).build();
+        } else {
+            request = new Request.Builder().url(url).get().build();
+        }
+        try {
+            return okHttpClient.newCall(request).execute();
+        } catch (IOException e) {
+//            Log.d("DEBUG", e.getMessage());
+            return null;
+        }
     }
 }

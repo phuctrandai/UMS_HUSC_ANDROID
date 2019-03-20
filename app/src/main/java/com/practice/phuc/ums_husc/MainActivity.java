@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -37,6 +38,9 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // animation
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
         // set up toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -74,7 +78,23 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else if (currentFragment.equals(MainFragment.class.getName())) {
-            finish();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Thông báo");
+            builder.setMessage("Thoát ứng dụng ?");
+            builder.setCancelable(false);
+            builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    MainActivity.this.finish();
+                }
+            });
+            builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            builder.create().show();
         } else {
             super.onBackPressed();
         }
@@ -109,39 +129,40 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
+        final int id = item.getItemId();
+        Log.d("DEBUG", id + " - current nav item id");
         if (currentNavItem != id) {
-            currentNavItem = id;
-            switch (id) {
-                case R.id.nav_news:
-
-                    setTitle(getString(R.string.title_nav_news));
-                    replaceFragment(MainFragment.newInstance(this));
-                    break;
-                case R.id.nav_timetable:
-
-                    setTitle(getString(R.string.title_nav_timetable));
-                    replaceFragment(ScheduleFragment.newInstance(this));
-                    break;
-                case R.id.nav_message:
-
-                    setTitle(getString(R.string.title_nav_message));
-                    replaceFragment(MessageFragment.newInstance(this));
-                    break;
-                case R.id.nav_resume:
-
-                    currentNavItem = R.id.nav_resume;
-                    startActivity(new Intent(MainActivity.this, ResumeActivity.class));
-                    break;
-                case R.id.nav_sign_out:
-
-                    logOut();
-                    break;
-                default:
-                    break;
-            }
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    switch (id) {
+                        case R.id.nav_news:
+                            currentNavItem = R.id.nav_news;
+                            setTitle(getString(R.string.title_nav_news));
+                            replaceFragment(MainFragment.newInstance(MainActivity.this));
+                            break;
+                        case R.id.nav_timetable:
+                            currentNavItem = R.id.nav_timetable;
+                            setTitle(getString(R.string.title_nav_timetable));
+                            replaceFragment(ScheduleFragment.newInstance(MainActivity.this));
+                            break;
+                        case R.id.nav_message:
+                            currentNavItem = R.id.nav_message;
+                            setTitle(getString(R.string.title_nav_message));
+                            replaceFragment(MessageFragment.newInstance(MainActivity.this));
+                            break;
+                        case R.id.nav_resume:
+                            startActivity(new Intent(MainActivity.this, ResumeActivity.class));
+                            break;
+                        case R.id.nav_sign_out:
+                            logOut();
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }, 300);
         }
-
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -176,7 +197,7 @@ public class MainActivity extends AppCompatActivity
     protected void replaceFragment(Fragment fragment) {
         String fragmentTag = fragment.getClass().getName();
         currentFragment = fragmentTag;
-        Log.d("UMS_HUSC", "Current fragment: " + currentFragment);
+        Log.d("DEBUG", "Current fragment: " + currentFragment);
 
         if (fragment.getClass().getName().equals(MainFragment.class.getName())) {
             for (int i = 0; i < fragmentManager.getBackStackEntryCount(); ++i) {
@@ -187,9 +208,9 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
         ft.replace(R.id.frame_layout, fragment, fragmentTag);
-        ft.addToBackStack(null);
+        ft.addToBackStack(fragmentTag);
         ft.commit();
-        Log.d("UMS_HUSC", "Back stack entry count: " + fragmentManager.getBackStackEntryCount());
+        Log.d("DEBUG", "Back stack entry count: " + fragmentManager.getBackStackEntryCount());
     }
 
     // Update UI when press back
@@ -231,7 +252,7 @@ public class MainActivity extends AppCompatActivity
             toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onBackPressed();
+                    replaceFragment(MainFragment.newInstance(MainActivity.this));
                 }
             });
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -254,7 +275,8 @@ public class MainActivity extends AppCompatActivity
                 editor.remove("hoTen");
                 editor.remove("nganhHoc");
                 editor.remove("khoaHoc");
-                editor.commit();
+//                editor.commit();
+                editor.apply();
 
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);

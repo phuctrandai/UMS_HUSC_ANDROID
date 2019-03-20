@@ -8,7 +8,9 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.service.autofill.RegexValidator;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -20,6 +22,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +47,8 @@ import okhttp3.Response;
 public class LoginActivity extends AppCompatActivity {
     private UserLoginTask mAuthTask = null;
 
+    protected Response responseLogin;
+
     // Keep login information
     SharedPreferences sharedPreferences = null;
     SharedPreferences.Editor editor = null;
@@ -54,7 +59,8 @@ public class LoginActivity extends AppCompatActivity {
     JsonAdapter<VThongTinCaNhan> jsonAdapter;
 
     // UI references.
-    private AutoCompleteTextView txtMaSinhVien;
+    LinearLayout linearLayout;
+    private EditText txtMaSinhVien;
     private EditText txtMatKhau;
     private ViewGroup mProgressViewLayout;
     private View mProgressView;
@@ -65,9 +71,19 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        moshi = new Moshi.Builder().build();
+        usersType = Types.newParameterizedType(VThongTinCaNhan.class);
+        jsonAdapter = moshi.adapter(usersType);
+
+        // Bind UI
+        linearLayout = findViewById(R.id.linearLayout);
+        mProgressViewLayout = findViewById(R.id.login_progress_layout);
+        mLoginFormView = findViewById(R.id.login_form);
+        mProgressView = findViewById(R.id.login_progress);
+
         // Set up the login form.
-        txtMaSinhVien = (AutoCompleteTextView) findViewById(R.id.txt_ma_sinh_vien);
-        txtMatKhau = (EditText) findViewById(R.id.txt_mat_khau);
+        txtMaSinhVien = findViewById(R.id.txt_ma_sinh_vien);
+        txtMatKhau = findViewById(R.id.txt_mat_khau);
         txtMatKhau.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -79,46 +95,38 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        responseLogin = null;
+        // Lay thong tin dang nhap tu truoc
+        sharedPreferences = getSharedPreferences("sinhVien", MODE_PRIVATE);
+
         Button btnLogin = (Button) findViewById(R.id.btn_login);
         btnLogin.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                if (NetworkUtil.getConnectivityStatus(LoginActivity.this) == NetworkUtil.TYPE_NOT_CONNECTED) {
+                    Snackbar snackbar = Snackbar.make(linearLayout,
+                            getString(R.string.network_not_available), Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                } else {
+                    attemptLogin();
+                }
             }
         });
-
-        mProgressViewLayout = findViewById(R.id.login_progress_layout);
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
-
-        // Lay thong tin dang nhap tu truoc
-        sharedPreferences = getSharedPreferences("sinhVien", MODE_PRIVATE);
-        editor = sharedPreferences.edit();
-
-        moshi = new Moshi.Builder().build();
-        usersType = Types.newParameterizedType(VThongTinCaNhan.class);
-        jsonAdapter = moshi.adapter(usersType);
     }
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-
         if (localLogin()) {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
             LoginActivity.this.finish();
         }
+        super.onPostCreate(savedInstanceState);
     }
-
 
     // Thuc hien validate thong tin dang nhap
     // Neu hop le, tien hanh dang nhap
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
-
         // Reset errors.
         txtMaSinhVien.setError(null);
         txtMatKhau.setError(null);
@@ -154,11 +162,8 @@ public class LoginActivity extends AppCompatActivity {
         if (cancel) {
             // There was an error; don't attempt login and focus the first form field with an error.
             focusView.requestFocus();
-        } else if (NetworkUtil.getConnectivityStatus(LoginActivity.this) == NetworkUtil.TYPE_NOT_CONNECTED) {
-            Toast.makeText(this, getString(R.string.network_not_available), Toast.LENGTH_SHORT).show();
         } else {
-            // Show a progress spinner, and kick off a background task to perform the user login attempt.
-            showProgress(true);
+
             mAuthTask = new UserLoginTask(maSinhVien, matKhau);
             mAuthTask.execute((String) null);
         }
@@ -175,37 +180,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     // Hien thi hinh anh dang tai du lieu
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            mProgressViewLayout.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressViewLayout.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            mProgressViewLayout.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressViewLayout.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressViewLayout.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
+        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mProgressViewLayout.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     // Thuc hien kiem tra thong tin dang nhap
@@ -220,39 +198,63 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         @Override
+        protected void onPreExecute() {
+            showProgress(true);
+        }
+
+        @Override
         protected Boolean doInBackground(String... params) {
-            boolean result;
             try {
                 Thread.sleep(500);
-
-                if (mMaSinhVien == null && mMatKhau == null) {
-                    result = localLogin();
-                } else
-                    result = postLogin(mMaSinhVien, mMatKhau);
+                responseLogin = postLogin(mMaSinhVien, mMatKhau);
             } catch (Exception e) {
-                result = false;
+                return false;
             }
-            return result;
+            return true;
         }
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
+            Log.d("DEBUG", success + " - do login");
 
-            if (success) {
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
-                LoginActivity.this.finish();
+            if (success && (responseLogin != null)) {
+                Log.d("DEBUG", "Login response code: " + responseLogin.code());
+                if (responseLogin.code() == Reference.OK) {
+                    try {
+                        String thongTinCaNhanJson = responseLogin.body().string();
+                        VThongTinCaNhan vThongTinCaNhan = jsonAdapter.fromJson(thongTinCaNhanJson);
+
+                        // Luu thong tin dang nhap, se tu dong dang nhap cho lan sau
+                        editor = sharedPreferences.edit();
+                        editor.putString("hoTen", vThongTinCaNhan.getHoTen());
+                        editor.putString("nganhHoc", vThongTinCaNhan.getTenNganh());
+                        editor.putString("khoaHoc", vThongTinCaNhan.getKhoaHoc());
+                        editor.putString("maSinhVien", mMaSinhVien);
+                        editor.putString("matKhau", mMatKhau);
+                        editor.apply();
+
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        LoginActivity.this.finish();
+                        return;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else if (responseLogin.code() == Reference.NOT_FOUND) {
+                    Snackbar.make(linearLayout,
+                            getString(R.string.error_dang_nhap_that_bai),
+                            Snackbar.LENGTH_LONG).show();
+                    txtMatKhau.requestFocus();
+                } else {
+                    Snackbar.make(linearLayout,
+                            getString(R.string.error_server_not_response),
+                            Snackbar.LENGTH_LONG).show();
+                }
             } else {
-                showProgress(false);
-                txtMatKhau.setError(getString(R.string.error_dang_nhap_that_bai));
-                txtMatKhau.requestFocus();
+                Snackbar.make(linearLayout,
+                        getString(R.string.error_server_not_response),
+                        Snackbar.LENGTH_LONG).show();
             }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
             showProgress(false);
         }
     }
@@ -264,52 +266,24 @@ public class LoginActivity extends AppCompatActivity {
         String maSinhVien = sp.getString("maSinhVien", null);
         String matKhau = sp.getString("matKhau", null);
 
-        if (maSinhVien != null && matKhau != null)
+        if ((maSinhVien != null) && (matKhau != null))
             return true;
 
         return false;
     }
 
     // Dang nhap voi thong tin nhap vao
-    public boolean postLogin(String maSinhVien, String matKhau) {
-        final OkHttpClient okHttpClient = new OkHttpClient();
-        boolean isSuccess = false;
-        String thongTinCaNhanJson = "";
+    public Response postLogin(String maSinhVien, String matKhau) {
 
         // Tao doi tuong sinh vien dang json
         String sinhVienJson = new SINHVIEN(maSinhVien, matKhau).toJSON();
+
         // Dua vao request body
         RequestBody body = RequestBody.create(
                 MediaType.parse("application/json; charset=utf-8"), sinhVienJson);
-        // Tao request
-        Request request = new Request.Builder()
-                .url(Reference.HOST + Reference.LOGIN_API).post(body).build();
 
-        Response response = null;
-        try {
-            response = okHttpClient.newCall(request).execute();
-            if (response != null) {
-                thongTinCaNhanJson = response.body().string();
-                isSuccess = response.code() == Reference.OK;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            isSuccess = false;
-        }
-        // Luu thong tin dang nhap, se tu dong dang nhap cho lan sau
-        try {
-            VThongTinCaNhan vThongTinCaNhan = jsonAdapter.fromJson(thongTinCaNhanJson);
-            editor.putString("hoTen", vThongTinCaNhan.getHoTen());
-            editor.putString("nganhHoc", vThongTinCaNhan.getTenNganh());
-            editor.putString("khoaHoc", vThongTinCaNhan.getKhoaHoc());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        editor.putString("maSinhVien", maSinhVien);
-        editor.putString("matKhau", matKhau);
-        editor.commit();
-
-        return isSuccess;
+        // Lay response
+        return NetworkUtil.makeRequest(Reference.HOST + Reference.LOGIN_API, body);
     }
 }
 

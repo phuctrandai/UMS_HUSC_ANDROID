@@ -12,15 +12,15 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="160dp"
-        android:background="@android:color/white">
+        android:background="@color/colorPrimary">
 
         <Button
             android:id="@+id/btn_back"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:drawableLeft="@drawable/ic_arrow_back"
-            android:paddingLeft="10dp" />
+            android:drawableStart="@drawable/ic_arrow_back"
+            android:paddingStart="10dp" />
 
         <ImageView
             android:id="@+id/iv_background"
@@ -29,20 +29,21 @@
             android:scaleX="2"
             android:src="@mipmap/beach" />
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/iv_avatar"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/ic_account_circle_black" />
+            android:src="@mipmap/avt" />
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        android:paddingStart="4dp"
-        android:paddingEnd="0dp">
+        android:background="@color/colorPrimary"
+        android:paddingTop="4dp"
+        android:paddingBottom="8dp">
 
         <TextView
             android:id="@+id/tv_hoTen"
@@ -51,7 +52,7 @@
             android:paddingBottom="6dp"
             android:text="Trần Đại Phúc"
             android:textAlignment="center"
-            android:textColor="@android:color/black"
+            android:textColor="@android:color/white"
             android:textSize="24sp"
             android:textStyle="bold" />
 
@@ -60,18 +61,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/tv_hoTen"
-            android:text="15T1021129"
+            android:text="Mã sinh viên"
             android:textAlignment="center"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/white" />
 
         <TextView
             android:id="@+id/tv_khoaHocNganhHoc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/tv_maSinhVien"
-            android:text="Khóa 39 Công nghệ phần mềm"
+            android:text="Khóa - Ngành học"
             android:textAlignment="center"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/white" />
     </RelativeLayout>
 
     <!-- Loading progress -->
@@ -118,12 +119,24 @@
             android:drawablePadding="6dp"
             android:text="@string/network_not_available"
             android:textSize="22sp" />
+
+        <Button
+            android:id="@+id/btn_thuLai"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_thongBaoLoi"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:background="@color/colorPrimary"
+            android:text="@string/try_again"
+            android:textColor="@android:color/white" />
     </RelativeLayout>
 
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/layout_lyLich"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/activity_vertical_margin">
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/appbar"

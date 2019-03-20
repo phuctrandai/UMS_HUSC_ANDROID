@@ -3,11 +3,13 @@
 
     <!-- Strings for networking -->
     <string name="network_not_available">Không có kết nối Internet</string>
+    <string name="error_server_not_response">Không thể kết nối đến máy chủ</string>
+    <string name="try_again">Thử lại</string>
 
     <!-- Strings related to login -->
     <string name="prompt_ma_sinh_vien">Mã sinh viên</string>
     <string name="prompt_mat_khau">Mật khẩu</string>
-    <string name="prompt_dang_kiem_tra_thong_tin">Đang kiểm tra thông tin...</string>
+    <string name="prompt_dang_kiem_tra_thong_tin">Đang kiểm tra thông tin &#8230;</string>
     <string name="action_dang_nhap">Đăng nhập</string>
     <string name="action_dang_nhap_short">Đăng nhập</string>
     <string name="error_ma_sinh_vien_khong_hop_le">Mã sinh viên không hợp lệ</string>
@@ -33,7 +35,6 @@
     <string name="title_nav_change_password">Đổi mật khẩu</string>
     <string name="title_nav_sign_out">Đăng xuất</string>
     <string name="title_nav_app_info">Thông tin về ứng dụng</string>
-    <string name="title_activity_resume">ResumeActivity</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -50,7 +51,6 @@
         "world, without breaking the rules of physics.\n"
         "The fundamentals of light, surface, and movement are key to conveying how objects move, "
         "interact, and exist in space and in relation to each other. Realistic lighting shows "
-        "seams, divides space, and indicates moving parts.\n\n"
+        "seams, divides space, and indicates moving parts."
     </string>
-    <string name="action_settings">Settings</string>
 </resources>
