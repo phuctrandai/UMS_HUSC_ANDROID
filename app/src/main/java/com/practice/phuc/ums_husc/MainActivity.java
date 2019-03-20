@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -37,6 +38,9 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // animation
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
         // set up toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -109,37 +113,42 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
+        final int id = item.getItemId();
         if (currentNavItem != id) {
             currentNavItem = id;
-            switch (id) {
-                case R.id.nav_news:
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    switch (id) {
+                        case R.id.nav_news:
 
-                    setTitle(getString(R.string.title_nav_news));
-                    replaceFragment(MainFragment.newInstance(this));
-                    break;
-                case R.id.nav_timetable:
+                            setTitle(getString(R.string.title_nav_news));
+                            replaceFragment(MainFragment.newInstance(MainActivity.this));
+                            break;
+                        case R.id.nav_timetable:
 
-                    setTitle(getString(R.string.title_nav_timetable));
-                    replaceFragment(ScheduleFragment.newInstance(this));
-                    break;
-                case R.id.nav_message:
+                            setTitle(getString(R.string.title_nav_timetable));
+                            replaceFragment(ScheduleFragment.newInstance(MainActivity.this));
+                            break;
+                        case R.id.nav_message:
 
-                    setTitle(getString(R.string.title_nav_message));
-                    replaceFragment(MessageFragment.newInstance(this));
-                    break;
-                case R.id.nav_resume:
+                            setTitle(getString(R.string.title_nav_message));
+                            replaceFragment(MessageFragment.newInstance(MainActivity.this));
+                            break;
+                        case R.id.nav_resume:
 
-                    currentNavItem = R.id.nav_resume;
-                    startActivity(new Intent(MainActivity.this, ResumeActivity.class));
-                    break;
-                case R.id.nav_sign_out:
+                            currentNavItem = R.id.nav_resume;
+                            startActivity(new Intent(MainActivity.this, ResumeActivity.class));
+                            break;
+                        case R.id.nav_sign_out:
 
-                    logOut();
-                    break;
-                default:
-                    break;
-            }
+                            logOut();
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }, 400);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
