@@ -53,4 +53,9 @@
         "interact, and exist in space and in relation to each other. Realistic lighting shows "
         "seams, divides space, and indicates moving parts."
     </string>
+
+    <!-- THONG BAO -->
+    <string name="channel_name">UMS-HUSC</string>
+    <string name="channel_description">UMS-HUSC-Description</string>
+    <string name="chanel_id">15011997</string>
 </resources>

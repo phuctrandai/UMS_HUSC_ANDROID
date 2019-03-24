@@ -1,14 +1,12 @@
 package com.practice.phuc.ums_husc;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.service.autofill.RegexValidator;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -19,17 +17,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
-import com.practice.phuc.ums_husc.Model.SINHVIEN;
-import com.practice.phuc.ums_husc.ViewModel.VLyLichCaNhan;
 import com.practice.phuc.ums_husc.ViewModel.VThongTinCaNhan;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -39,15 +34,11 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 
 import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity {
-    private UserLoginTask mAuthTask = null;
-
-    protected Response responseLogin;
+    private Response responseLogin = null;
 
     // Keep login information
     SharedPreferences sharedPreferences = null;
@@ -59,9 +50,10 @@ public class LoginActivity extends AppCompatActivity {
     JsonAdapter<VThongTinCaNhan> jsonAdapter;
 
     // UI references.
-    LinearLayout linearLayout;
+    private LinearLayout linearLayout;
     private EditText txtMaSinhVien;
     private EditText txtMatKhau;
+    private Button btnLogin;
     private ViewGroup mProgressViewLayout;
     private View mProgressView;
     private View mLoginFormView;
@@ -71,19 +63,52 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(this);
+
+        initAll();
+
+        createNotificationChannel();
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        if (localLogin()) {
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+            LoginActivity.this.finish();
+        }
+        super.onPostCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(this);
+    }
+
+    private void initAll() {
+        bindUI();
+        initLoginForm();
+
         moshi = new Moshi.Builder().build();
         usersType = Types.newParameterizedType(VThongTinCaNhan.class);
         jsonAdapter = moshi.adapter(usersType);
+        // Lay thong tin dang nhap tu truoc
+        sharedPreferences = getSharedPreferences("sinhVien", MODE_PRIVATE);
+    }
 
-        // Bind UI
+    private void bindUI(){
         linearLayout = findViewById(R.id.linearLayout);
         mProgressViewLayout = findViewById(R.id.login_progress_layout);
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-
-        // Set up the login form.
         txtMaSinhVien = findViewById(R.id.txt_ma_sinh_vien);
         txtMatKhau = findViewById(R.id.txt_mat_khau);
+        btnLogin = (Button) findViewById(R.id.btn_login);
+    }
+
+    private void initLoginForm() {
+        // Set up the login form.
         txtMatKhau.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -94,12 +119,6 @@ public class LoginActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-        responseLogin = null;
-        // Lay thong tin dang nhap tu truoc
-        sharedPreferences = getSharedPreferences("sinhVien", MODE_PRIVATE);
-
-        Button btnLogin = (Button) findViewById(R.id.btn_login);
         btnLogin.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -114,16 +133,6 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        if (localLogin()) {
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
-            LoginActivity.this.finish();
-        }
-        super.onPostCreate(savedInstanceState);
-    }
-
     // Thuc hien validate thong tin dang nhap
     // Neu hop le, tien hanh dang nhap
     private void attemptLogin() {
@@ -131,7 +140,6 @@ public class LoginActivity extends AppCompatActivity {
         txtMaSinhVien.setError(null);
         txtMatKhau.setError(null);
 
-        // Store values at the time of the login attempt.
         String maSinhVien = txtMaSinhVien.getText().toString();
         String matKhau = txtMatKhau.getText().toString();
 
@@ -164,7 +172,7 @@ public class LoginActivity extends AppCompatActivity {
             focusView.requestFocus();
         } else {
 
-            mAuthTask = new UserLoginTask(maSinhVien, matKhau);
+            UserLoginTask mAuthTask = new UserLoginTask(maSinhVien, matKhau);
             mAuthTask.execute((String) null);
         }
     }
@@ -177,13 +185,6 @@ public class LoginActivity extends AppCompatActivity {
     // Validate mat khau
     private boolean isPasswordValid(String password) {
         return password.length() >= 6;
-    }
-
-    // Hien thi hinh anh dang tai du lieu
-    private void showProgress(final boolean show) {
-        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        mProgressViewLayout.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     // Thuc hien kiem tra thong tin dang nhap
@@ -206,7 +207,7 @@ public class LoginActivity extends AppCompatActivity {
         protected Boolean doInBackground(String... params) {
             try {
                 Thread.sleep(500);
-                responseLogin = postLogin(mMaSinhVien, mMatKhau);
+                responseLogin = onlineLogin(mMaSinhVien, mMatKhau);
             } catch (Exception e) {
                 return false;
             }
@@ -219,7 +220,7 @@ public class LoginActivity extends AppCompatActivity {
 
             if (success && (responseLogin != null)) {
                 Log.d("DEBUG", "Login response code: " + responseLogin.code());
-                if (responseLogin.code() == Reference.OK) {
+                if (responseLogin.code() == NetworkUtil.OK) {
                     try {
                         String thongTinCaNhanJson = responseLogin.body().string();
                         VThongTinCaNhan vThongTinCaNhan = jsonAdapter.fromJson(thongTinCaNhanJson);
@@ -240,7 +241,7 @@ public class LoginActivity extends AppCompatActivity {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                } else if (responseLogin.code() == Reference.NOT_FOUND) {
+                } else if (responseLogin.code() == NetworkUtil.NOT_FOUND) {
                     Snackbar.make(linearLayout,
                             getString(R.string.error_dang_nhap_that_bai),
                             Snackbar.LENGTH_LONG).show();
@@ -273,17 +274,38 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     // Dang nhap voi thong tin nhap vao
-    public Response postLogin(String maSinhVien, String matKhau) {
-
-        // Tao doi tuong sinh vien dang json
-        String sinhVienJson = new SINHVIEN(maSinhVien, matKhau).toJSON();
-
-        // Dua vao request body
-        RequestBody body = RequestBody.create(
-                MediaType.parse("application/json; charset=utf-8"), sinhVienJson);
-
+    private Response onlineLogin(String maSinhVien, String matKhau) {
+        RequestBody requestBody = RequestBody.create(
+                MediaType.parse("application/xml; charset=utf-8"), ""
+        );
         // Lay response
-        return NetworkUtil.makeRequest(Reference.HOST + Reference.LOGIN_API, body);
+        return NetworkUtil.makeRequest(Reference.getLoginApiUrl(maSinhVien, matKhau),
+                true,
+                requestBody);
+    }
+
+    // Hien thi hinh anh dang tai du lieu
+    private void showProgress(final boolean show) {
+        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mProgressViewLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    public void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+
+            NotificationChannel channel = new NotificationChannel(getString(R.string.chanel_id), name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }
 

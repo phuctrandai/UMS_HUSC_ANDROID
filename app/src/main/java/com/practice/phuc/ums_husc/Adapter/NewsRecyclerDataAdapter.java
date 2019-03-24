@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.DetailNewsActivity;
-import com.practice.phuc.ums_husc.MainActivity;
+import com.practice.phuc.ums_husc.Helper.JustifyTextInTextView;
 import com.practice.phuc.ums_husc.Model.THONGBAO;
 import com.practice.phuc.ums_husc.R;
 
@@ -36,26 +36,24 @@ public class NewsRecyclerDataAdapter extends RecyclerView.Adapter<NewsRecyclerDa
     @Override
     public void onBindViewHolder(@NonNull NewsRecyclerDataAdapter.DataViewHolder viewHolder, int i) {
         final String tieuDe = thongBaoList.get(i).getTieuDe();
-        String thoiGianDang = thongBaoList.get(i).getThoiGianDang();
+        final String thoiGianDang = thongBaoList.get(i).getThoiGianDang();
         final String noiDung = thongBaoList.get(i).getNoiDung();
 
         viewHolder.tvTieuDe.setText(tieuDe);
+        JustifyTextInTextView.justify(viewHolder.tvTieuDe);
 
         final String thoiGianDangStr = thoiGianDang.substring(0, 10) + " " + thoiGianDang.substring(11, 16);
         viewHolder.tvThoiGianDang.setText(thoiGianDangStr);
-
-        final String noiDungStr = noiDung.substring(0, noiDung.length() / 3) + "...";
-        viewHolder.tvNoiDung.setText(noiDungStr);
 
         viewHolder.setItemClickListener(new ItemClickListener() {
             @Override
             public void onClick(View view, int position, boolean isLongClick) {
                 Bundle bundle = new Bundle();
-                bundle.putString("tieuDe", tieuDe);
-                bundle.putString("thoiGianDang", thoiGianDangStr);
-                bundle.putString("noiDung", noiDung);
+                bundle.putString("title", tieuDe);
+                bundle.putString("postTime", thoiGianDangStr);
+                bundle.putString("body", noiDung);
                 Intent intent = new Intent(context, DetailNewsActivity.class);
-                intent.putExtra("baiDang", bundle);
+                intent.putExtra("news", bundle);
                 context.startActivity(intent);
             }
         });
@@ -72,7 +70,6 @@ public class NewsRecyclerDataAdapter extends RecyclerView.Adapter<NewsRecyclerDa
     public static class DataViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView tvTieuDe;
         private TextView tvThoiGianDang;
-        private TextView tvNoiDung;
 
         private ItemClickListener itemClickListener;
 
@@ -81,7 +78,6 @@ public class NewsRecyclerDataAdapter extends RecyclerView.Adapter<NewsRecyclerDa
 
             tvTieuDe = itemView.findViewById(R.id.tv_tieuDe);
             tvThoiGianDang = itemView.findViewById(R.id.tv_thoiGianDang);
-            tvNoiDung = itemView.findViewById(R.id.tv_noiDung);
 
             itemView.setOnClickListener(this);
         }

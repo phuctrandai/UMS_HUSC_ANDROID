@@ -3,7 +3,6 @@ package com.practice.phuc.ums_husc.Helper;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
 
 import java.io.IOException;
 
@@ -17,17 +16,22 @@ public class NetworkUtil {
     public static int TYPE_MOBILE = 2;
     public static int TYPE_NOT_CONNECTED = 0;
 
+    /* Status response code */
+    public static final int OK = 200;
+    public static final int NOT_FOUND = 404;
 
     public static int getConnectivityStatus(Context context) {
+        if (context == null) return TYPE_WIFI;
+
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         if (null != activeNetwork) {
-            if(activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)
+            if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)
                 return TYPE_WIFI;
 
-            if(activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE)
+            if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE)
                 return TYPE_MOBILE;
         }
         return TYPE_NOT_CONNECTED;
@@ -46,10 +50,10 @@ public class NetworkUtil {
         return status;
     }
 
-    public static Response makeRequest(String url, RequestBody requestBody) {
+    public static Response makeRequest(String url, boolean isPostMethod, RequestBody requestBody) {
         final OkHttpClient okHttpClient = new OkHttpClient();
         Request request = null;
-        if (requestBody != null) {
+        if (isPostMethod) {
             request = new Request.Builder().url(url).post(requestBody).build();
         } else {
             request = new Request.Builder().url(url).get().build();

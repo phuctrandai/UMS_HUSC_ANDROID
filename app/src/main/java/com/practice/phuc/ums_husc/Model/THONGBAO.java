@@ -7,7 +7,6 @@ public class THONGBAO {
     private String TieuDe;
     private String NoiDung;
     private String ThoiGianDang;
-    private List<LIENKET> LIENKETs;
 
     public int getMaThongBao() {
         return MaThongBao;
@@ -41,20 +40,12 @@ public class THONGBAO {
         ThoiGianDang = thoiGianDang;
     }
 
-    public List<LIENKET> getLIENKETs() {
-        return LIENKETs;
-    }
-
-    public void setLIENKETs(List<LIENKET> LIENKETs) {
-        this.LIENKETs = LIENKETs;
-    }
 
     public THONGBAO(int maThongBao, String tieuDe, String noiDung, String thoiGianDang, List<LIENKET> LIENKETs) {
         MaThongBao = maThongBao;
         TieuDe = tieuDe;
         NoiDung = noiDung;
         ThoiGianDang = thoiGianDang;
-        this.LIENKETs = LIENKETs;
     }
 
     public THONGBAO() {

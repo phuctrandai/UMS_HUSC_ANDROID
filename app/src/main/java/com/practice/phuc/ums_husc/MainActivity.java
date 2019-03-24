@@ -22,14 +22,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.practice.phuc.ums_husc.LyLichCaNhan.ResumeActivity;
+import com.practice.phuc.ums_husc.Helper.FireBaseIDTask;
+import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
+import com.practice.phuc.ums_husc.LyLichCaNhanModule.ResumeActivity;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
+    // UI
     private NavigationView navigationView;
     private ActionBarDrawerToggle toggle;
-
+    // param
     private String currentFragment;
     private int currentNavItem;
     private FragmentManager fragmentManager;
@@ -39,35 +41,22 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // animation
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-
-        // set up toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        setTitle(getString(R.string.title_nav_news));
-
-        // set up navigation drawer
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        initAll();
 
         initFragmentManager();
+        // set first fragment
+        initFragment(MainFragment.newInstance(this));
+        // hien thi thong tin tai khoan
+        showAccountInfo();
+        //
+        saveTokenForAccount();
+    }
 
-        if (savedInstanceState == null) {
-            // set selected navigation item
-            navigationView.setCheckedItem(R.id.nav_news);
-
-            // set first fragment
-            initFragment(MainFragment.newInstance(this));
-
-            // hien thi thong tin tai khoan
-            hienThiThongTinCaNhan();
-        }
+    @Override
+    protected void onResume() {
+        Log.d("DEBUG", "ON RESUME Main activity");
+        MyFireBaseMessagingService.context = this;
+        super.onResume();
     }
 
     @Override
@@ -77,6 +66,7 @@ public class MainActivity extends AppCompatActivity
 
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+
         } else if (currentFragment.equals(MainFragment.class.getName())) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Thông báo");
@@ -98,12 +88,6 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
     }
 
     @Override
@@ -168,57 +152,40 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    // Khoi tao fragment manager
-    private void initFragmentManager() {
-        fragmentManager = getSupportFragmentManager();
-        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
-            @Override
-            public void onBackStackChanged() {
-                Log.d("UMS_HUSC", "Back stack changed !!");
-                Fragment fragment = fragmentManager.findFragmentById(R.id.frame_layout);
-                if (fragment != null) {
-                    Log.d("UMS_HUSC", "TAG: " + fragment.getTag());
-                    updateByFragmentTag(fragment.getTag());
-                }
-            }
-        });
-    }
-
-    // Khoi tao fragment dau tien
-    private void initFragment(Fragment fragment) {
-        currentNavItem = R.id.nav_news;
-        currentFragment = fragment.getClass().getName();
-
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.replace(R.id.frame_layout, fragment, currentFragment).commit();
-    }
-
     // Add fragment to back stack
     protected void replaceFragment(Fragment fragment) {
         String fragmentTag = fragment.getClass().getName();
-        currentFragment = fragmentTag;
-        Log.d("DEBUG", "Current fragment: " + currentFragment);
-
-        if (fragment.getClass().getName().equals(MainFragment.class.getName())) {
-            for (int i = 0; i < fragmentManager.getBackStackEntryCount(); ++i) {
-                fragmentManager.popBackStack();
-            }
-        }
-
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-        ft.replace(R.id.frame_layout, fragment, fragmentTag);
-        ft.addToBackStack(fragmentTag);
+
+        Log.d("DEBUG", "Current fragment: " + currentFragment);
+        updateByFragmentTag(fragmentTag);
+
+        if (fragmentTag.equals(MainFragment.class.getName())) {
+            Fragment temp = fragmentManager.findFragmentByTag(fragmentTag);
+            if (temp == null) {
+                ft.replace(R.id.frame_layout, fragment, fragmentTag);
+                ft.addToBackStack(fragmentTag);
+            } else {
+                for (int i = 0; i < fragmentManager.getBackStackEntryCount() - 1; ++i) {
+                    fragmentManager.popBackStack();
+                }
+                ft.replace(R.id.frame_layout, temp, fragment.getTag());
+            }
+        } else {
+            ft.replace(R.id.frame_layout, fragment, fragmentTag);
+            ft.addToBackStack(fragmentTag);
+        }
         ft.commit();
         Log.d("DEBUG", "Back stack entry count: " + fragmentManager.getBackStackEntryCount());
     }
 
     // Update UI when press back
     private void updateByFragmentTag(String fragmentTag) {
+        currentFragment = fragmentTag;
         if (fragmentTag.equals(MainFragment.class.getName())) {
             setTitle(getString(R.string.title_nav_news));
             navigationView.setCheckedItem(R.id.nav_news);
-            currentFragment = fragmentTag;
             currentNavItem = R.id.nav_news;
 
             showDrawerButton(true);
@@ -227,13 +194,11 @@ public class MainActivity extends AppCompatActivity
         } else if (fragmentTag.equals(MessageFragment.class.getName())) {
             setTitle(getString(R.string.title_nav_message));
             navigationView.setCheckedItem(R.id.nav_message);
-            currentFragment = fragmentTag;
             currentNavItem = R.id.nav_message;
 
         } else if (fragmentTag.equals(ScheduleFragment.class.getName())) {
             setTitle(getString(R.string.title_nav_timetable));
             navigationView.setCheckedItem(R.id.nav_timetable);
-            currentFragment = fragmentTag;
             currentNavItem = R.id.nav_timetable;
         }
         showDrawerButton(false);
@@ -253,6 +218,7 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onClick(View v) {
                     replaceFragment(MainFragment.newInstance(MainActivity.this));
+
                 }
             });
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -260,41 +226,51 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    // Dang xuat tai khoan hien tai
-    private void logOut() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Thông báo");
-        builder.setMessage("Bạn chắc chắn muốn đăng xuất ?");
-        builder.setCancelable(false);
-        builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                SharedPreferences.Editor editor = getSharedPreferences("sinhVien", MODE_PRIVATE).edit();
-                editor.remove("maSinhVien");
-                editor.remove("matKhau");
-                editor.remove("hoTen");
-                editor.remove("nganhHoc");
-                editor.remove("khoaHoc");
-//                editor.commit();
-                editor.apply();
+    // Khoi tao
+    private void initAll() {
+        // animation
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
-                MainActivity.this.finish();
-            }
-        });
-        builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {
+        // set up toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        setTitle(getString(R.string.title_nav_news));
+
+        // set up navigation drawer
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    // Khoi tao fragment manager
+    private void initFragmentManager() {
+        fragmentManager = getSupportFragmentManager();
+        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
+            public void onBackStackChanged() {
+                Log.d("UMS_HUSC", "Back stack changed !!");
+                Fragment fragment = fragmentManager.findFragmentById(R.id.frame_layout);
+                if (fragment != null) {
+                    Log.d("UMS_HUSC", "TAG: " + fragment.getTag());
+                    updateByFragmentTag(fragment.getTag());
+                }
             }
         });
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
+    }
+
+    // Khoi tao fragment dau tien
+    private void initFragment(Fragment fragment) {
+        currentNavItem = R.id.nav_news;
+        currentFragment = MainFragment.class.getName();
+        navigationView.setCheckedItem(R.id.nav_news);
+        replaceFragment(fragment);
     }
 
     // Hien thi thong tin ca nhan
-    private void hienThiThongTinCaNhan() {
+    private void showAccountInfo() {
         View headerView = navigationView.getHeaderView(0);
         TextView tvMaSinhVien = headerView.findViewById(R.id.tv_maSinhVien);
         TextView tvHoTen = headerView.findViewById(R.id.tv_hoTen);
@@ -313,4 +289,55 @@ public class MainActivity extends AppCompatActivity
         tvNganhHoc.setText(nganhHoc);
     }
 
+    // Luu token cua app vao database
+    private void saveTokenForAccount() {
+        String maSinhVien = getSharedPreferences("sinhVien", MODE_PRIVATE)
+                .getString("maSinhVien", null);
+        String token = getSharedPreferences("FIREBASE", MODE_PRIVATE)
+                .getString("TOKEN", null);
+        FireBaseIDTask.saveTokenForAccount(maSinhVien, token);
+    }
+
+    // Xoa token cua app khoi database
+    private void deleteTokenForAccount() {
+        String maSinhVien = getSharedPreferences("sinhVien", MODE_PRIVATE)
+                .getString("maSinhVien", null);
+        String token = getSharedPreferences("FIREBASE", MODE_PRIVATE)
+                .getString("TOKEN", null);
+        FireBaseIDTask.deleteTokenFromAccount(maSinhVien, token);
+    }
+
+    // Dang xuat tai khoan hien tai
+    private void logOut() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Thông báo");
+        builder.setMessage("Bạn chắc chắn muốn đăng xuất ?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteTokenForAccount();
+
+                SharedPreferences.Editor editor = getSharedPreferences("sinhVien", MODE_PRIVATE).edit();
+                editor.remove("maSinhVien");
+                editor.remove("matKhau");
+                editor.remove("hoTen");
+                editor.remove("nganhHoc");
+                editor.remove("khoaHoc");
+                editor.apply();
+
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                MainActivity.this.finish();
+            }
+        });
+        builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
 }

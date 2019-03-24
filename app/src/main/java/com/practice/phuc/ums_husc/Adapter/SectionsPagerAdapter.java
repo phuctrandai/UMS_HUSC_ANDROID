@@ -1,14 +1,13 @@
 package com.practice.phuc.ums_husc.Adapter;
 
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.practice.phuc.ums_husc.LyLichCaNhan.DacDiemBanThanFragment;
-import com.practice.phuc.ums_husc.LyLichCaNhan.LienHeCuTruFragment;
+import com.practice.phuc.ums_husc.LyLichCaNhanModule.DacDiemBanThanFragment;
+import com.practice.phuc.ums_husc.LyLichCaNhanModule.LienHeCuTruFragment;
 import com.practice.phuc.ums_husc.Model.LICHSUBANTHAN;
-import com.practice.phuc.ums_husc.LyLichCaNhan.ThongTinChungFragment;
+import com.practice.phuc.ums_husc.LyLichCaNhanModule.ThongTinChungFragment;
 import com.practice.phuc.ums_husc.ViewModel.VDacDiemBanThan;
 import com.practice.phuc.ums_husc.ViewModel.VQueQuan;
 import com.practice.phuc.ums_husc.ViewModel.VThongTinChung;
