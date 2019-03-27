@@ -10,6 +10,8 @@ public final class Reference {
 
     public static final String LOAD_THONG_BAO_API = "api/SinhVien/ThongBao/";
 
+    public static final String LOAD_TIN_NHAN_DEN_API = "api/SinhVien/TinNhanDen/";
+
     public static final String SAVE_TOKEN_API = "api/fcm/save/";
 
     public static final String DELETE_TOKEN_API = "api/fcm/delete/";

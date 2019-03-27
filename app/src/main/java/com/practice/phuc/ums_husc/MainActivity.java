@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity
             builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    MainActivity.this.finish();
+                    MainActivity.this.finishAfterTransition();
                 }
             });
             builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity
             });
             builder.create().show();
         } else {
-            super.onBackPressed();
+            replaceFragment(MainFragment.newInstance(this));
         }
     }
 
@@ -98,16 +99,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_thongBao) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -145,7 +141,7 @@ public class MainActivity extends AppCompatActivity
                             break;
                     }
                 }
-            }, 300);
+            }, 400);
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -156,26 +152,34 @@ public class MainActivity extends AppCompatActivity
     protected void replaceFragment(Fragment fragment) {
         String fragmentTag = fragment.getClass().getName();
         FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 
         Log.d("DEBUG", "Current fragment: " + currentFragment);
         updateByFragmentTag(fragmentTag);
 
-        if (fragmentTag.equals(MainFragment.class.getName())) {
-            Fragment temp = fragmentManager.findFragmentByTag(fragmentTag);
-            if (temp == null) {
-                ft.replace(R.id.frame_layout, fragment, fragmentTag);
-                ft.addToBackStack(fragmentTag);
-            } else {
-                for (int i = 0; i < fragmentManager.getBackStackEntryCount() - 1; ++i) {
-                    fragmentManager.popBackStack();
-                }
-                ft.replace(R.id.frame_layout, temp, fragment.getTag());
-            }
+        Fragment temp = fragmentManager.findFragmentByTag(fragmentTag);
+        if (temp != null) {
+            ft.replace(R.id.frame_layout, temp, fragmentTag);
         } else {
             ft.replace(R.id.frame_layout, fragment, fragmentTag);
             ft.addToBackStack(fragmentTag);
         }
+
+//        if (fragmentTag.equals(MainFragment.class.getName())) {
+//            Fragment temp = fragmentManager.findFragmentByTag(fragmentTag);
+//            if (temp == null) {
+//                ft.replace(R.id.frame_layout, fragment, fragmentTag);
+//                ft.addToBackStack(fragmentTag);
+//            } else {
+//                for (int i = 0; i < fragmentManager.getBackStackEntryCount() - 1; ++i) {
+//                    fragmentManager.popBackStack();
+//                }
+//                ft.replace(R.id.frame_layout, temp, fragment.getTag());
+//            }
+//        } else {
+//            ft.replace(R.id.frame_layout, fragment, fragmentTag);
+//            ft.addToBackStack(fragmentTag);
+//        }
         ft.commit();
         Log.d("DEBUG", "Back stack entry count: " + fragmentManager.getBackStackEntryCount());
     }
@@ -188,7 +192,7 @@ public class MainActivity extends AppCompatActivity
             navigationView.setCheckedItem(R.id.nav_news);
             currentNavItem = R.id.nav_news;
 
-            showDrawerButton(true);
+//            showDrawerButton(true);
             return;
 
         } else if (fragmentTag.equals(MessageFragment.class.getName())) {
@@ -201,7 +205,7 @@ public class MainActivity extends AppCompatActivity
             navigationView.setCheckedItem(R.id.nav_timetable);
             currentNavItem = R.id.nav_timetable;
         }
-        showDrawerButton(false);
+//        showDrawerButton(false);
     }
 
     // Switch drawer nav button / back button
@@ -287,6 +291,11 @@ public class MainActivity extends AppCompatActivity
         tvHoTen.setText(hoTen);
         tvKhoaHoc.setText(khoaHoc);
         tvNganhHoc.setText(nganhHoc);
+
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        String message = "Xin chào " + hoTen;
+        Snackbar snackbar = Snackbar.make(drawerLayout, message, Snackbar.LENGTH_LONG);
+        snackbar.show();
     }
 
     // Luu token cua app vao database

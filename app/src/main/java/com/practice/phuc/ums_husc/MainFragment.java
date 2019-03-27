@@ -3,19 +3,20 @@ package com.practice.phuc.ums_husc;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.AbsListView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.Adapter.NewsRecyclerDataAdapter;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
@@ -27,16 +28,23 @@ import com.squareup.moshi.Types;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Response;
 
-public class MainFragment extends Fragment {
-    private LoadThongBaoTask mLoadThongBaoTask;
-    private Context context;
-    private List<THONGBAO> thongBaoList;
+public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+    private LoadNewsTask mLoadNewsTask;
+    private Context mContext;
+    private List<THONGBAO> mThongBaoList;
     private Bundle mBundle;
     private String mErrorMessage;
+    private NewsRecyclerDataAdapter mAdapter;
+    private int currentItems, totalItems, scrollOutItems;
+    private boolean mIsScrolling;
+
+    private Snackbar mNotNetworkSnackbar;
+    private Snackbar mErrorSnackbar;
 
     private final String STATUS_KEY = "statusKey";
     private final int STATUS_LOADING = 0;
@@ -50,12 +58,9 @@ public class MainFragment extends Fragment {
     JsonAdapter<List<THONGBAO>> jsonAdapter;
 
     // UI
+    SwipeRefreshLayout mSwipeRefreshLayout;
     RecyclerView rvItems;
-    LinearLayout mThongBaoLayout;
-    RelativeLayout mProgressViewLayout;
-    RelativeLayout mNetworkError;
-    TextView mThongBaoLoi;
-    Button mThuLai;
+    LinearLayout mLoadMoreLayout;
 
     public MainFragment() {
         // Required empty public constructor
@@ -63,7 +68,7 @@ public class MainFragment extends Fragment {
 
     public static MainFragment newInstance(Context context) {
         MainFragment mainFragment = new MainFragment();
-        mainFragment.context = context;
+        mainFragment.mContext = context;
         return mainFragment;
     }
 
@@ -72,6 +77,9 @@ public class MainFragment extends Fragment {
         Log.d("DEBUG", "On create MainFragment");
         mBundle = new Bundle();
         mBundle.putInt(STATUS_KEY, STATUS_LOADING);
+        mThongBaoList = new ArrayList<>();
+        mAdapter = new NewsRecyclerDataAdapter(mThongBaoList, mContext);
+        mIsScrolling = false;
         super.onCreate(savedInstanceState);
     }
 
@@ -84,96 +92,156 @@ public class MainFragment extends Fragment {
 
         // Bind UI
         rvItems = (RecyclerView) view.findViewById(R.id.rv_thongBao);
-        mThongBaoLayout = view.findViewById(R.id.layout_thongBao);
-        mProgressViewLayout = view.findViewById(R.id.loading_progress_layout);
-        mNetworkError = view.findViewById(R.id.layout_thongBaoKhongCoMang);
-        mThongBaoLoi = view.findViewById(R.id.tv_thongBaoLoi);
-        mThuLai = view.findViewById(R.id.btn_thuLai);
+        mLoadMoreLayout = view.findViewById(R.id.load_more_layout);
 
-        // Set up recycler view
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false);
-        rvItems.setLayoutManager(layoutManager);
-        rvItems.setHasFixedSize(true);
+        setUpRecyclerView();
 
-        // Set up button thu lai
-        mThuLai.setOnClickListener(new View.OnClickListener() {
+        initSwipeRefreshLayout(view);
+
+        if (NetworkUtil.getConnectivityStatus(mContext) != NetworkUtil.TYPE_NOT_CONNECTED)
+            mBundle.putInt(STATUS_KEY, STATUS_LOADING);
+
+        mSwipeRefreshLayout.post(new Runnable() {
             @Override
-            public void onClick(View v) {
-                attempGetData();
+            public void run() {
+                if (mBundle.getInt(STATUS_KEY) == STATUS_SHOW_DATA) {
+
+                } else if (mBundle.getInt(STATUS_KEY) == STATUS_NOT_NETWORK) {
+                    showNetworkErrorSnackbar(true);
+                } else if (mBundle.getInt(STATUS_KEY) == STATUS_SHOW_ERROR) {
+                    showErrorSnackbar(true, mErrorMessage);
+                } else if (mBundle.getInt(STATUS_KEY) == STATUS_LOADING) {
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    attempGetData();
+                }
             }
         });
 
-        if (mBundle.getInt(STATUS_KEY) == STATUS_SHOW_DATA) {
-            showProgress(false);
-            showError(false, mErrorMessage);
-            showData();
-        } else if (mBundle.getInt(STATUS_KEY) == STATUS_SHOW_ERROR) {
-            showError(true, mErrorMessage);
-        } else {
-            Log.d("DEBUG", "Get data");
-            attempGetData();
-        }
         return view;
     }
 
     @Override
     public void onPause() {
-        Log.d("DEBUG", "On pause MainFragment");
-        Log.d("DEBUG", mBundle.getInt(STATUS_KEY) + " - Fragment status");
+        showNetworkErrorSnackbar(false);
+        showErrorSnackbar(false, mErrorMessage);
         super.onPause();
     }
 
-    private void attempGetData() {
-        if (NetworkUtil.getConnectivityStatus(this.context) == NetworkUtil.TYPE_NOT_CONNECTED) {
+    @Override
+    public void onDestroy() {
+        Log.d("DEBUG", "ON DESTROY MAIN FRAGMENT");
+        mLoadNewsTask = null;
+        mThongBaoList.clear();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onRefresh() {
+        mThongBaoList.clear();
+        mAdapter.lastPosition = -1;
+        if (NetworkUtil.getConnectivityStatus(mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
             mBundle.putInt(STATUS_KEY, STATUS_NOT_NETWORK);
-            showError(true, getString(R.string.network_not_available));
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    showNetworkErrorSnackbar(true);
+                }
+            }, 1000);
         } else {
-            mLoadThongBaoTask = new LoadThongBaoTask();
-            mLoadThongBaoTask.execute((String) null);
+            attempGetData();
         }
     }
 
-    public class LoadThongBaoTask extends AsyncTask<String, Void, Boolean> {
+    // Set up swipe refresh layout
+    private void initSwipeRefreshLayout(View view) {
+        mSwipeRefreshLayout = view.findViewById(R.id.layout_swipeRefresh);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeResources(
+                R.color.colorPrimary,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_orange_dark,
+                android.R.color.holo_blue_dark);
+    }
+
+    // set up recyler view
+    private void setUpRecyclerView() {
+        final LinearLayoutManager manager = new LinearLayoutManager(mContext);
+        rvItems.setLayoutManager(manager);
+        rvItems.setAdapter(mAdapter);
+        rvItems.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    mIsScrolling = true;
+                }
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                currentItems = manager.getChildCount();
+                totalItems = manager.getItemCount();
+                scrollOutItems = manager.findFirstVisibleItemPosition();
+
+                if (mIsScrolling && (currentItems + scrollOutItems == totalItems)) {
+                    mIsScrolling = false;
+                    mLoadMoreLayout.setVisibility(View.VISIBLE);
+                    attempGetData();
+                }
+            }
+        });
+    }
+
+    // Kiem tra truoc khi lay du lieu
+    private void attempGetData() {
+        if (NetworkUtil.getConnectivityStatus(this.mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
+            mBundle.putInt(STATUS_KEY, STATUS_NOT_NETWORK);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    showNetworkErrorSnackbar(true);
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    mLoadMoreLayout.setVisibility(View.GONE);
+                }
+            }, 1500);
+        } else {
+            mLoadNewsTask = new LoadNewsTask();
+            mLoadNewsTask.execute((String) null);
+        }
+    }
+
+    private class LoadNewsTask extends AsyncTask<String, Void, Boolean> {
         private Response mResponse;
 
         @Override
-        protected void onPreExecute() {
-            showProgress(true);
-        }
-
-        @Override
         protected Boolean doInBackground(String... strings) {
-            if (mLoadThongBaoTask == null) return false;
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            try {
-                mResponse = getData();
-                if (mResponse == null) {
+            if (mLoadNewsTask == null) return false;
 
-                    Log.d("DEBUG", "Response null");
+            try {
+                mResponse = fetchData();
+                if (mResponse == null) {
+                    Log.d("DEBUG", "Get thong bao Response null");
                     mErrorMessage = getString(R.string.error_time_out);
                     return false;
 
                 } else {
-
-                    Log.d("DEBUG", "Response code: " + mResponse.code());
+                    Log.d("DEBUG", "Get thong bao Response code: " + mResponse.code());
                     if (mResponse.code() == NetworkUtil.OK) {
-
                         String json = mResponse.body().string();
                         setData(json);
                         return true;
 
                     } else if (mResponse.code() == NetworkUtil.NOT_FOUND) {
-                        mErrorMessage = getString(R.string.error_time_out);
+                        mErrorMessage = getString(R.string.error_server_not_response);
                     } else {
-                        mErrorMessage = getString(R.string.error_time_out);
+                        mErrorMessage = getString(R.string.error_server_not_response);
                     }
                     return false;
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 return false;
             }
         }
@@ -181,39 +249,64 @@ public class MainFragment extends Fragment {
         @Override
         protected void onPostExecute(Boolean success) {
             Log.d("DEBUG", "Get thong bao : " + success);
-            if (mLoadThongBaoTask != null) {
+            mSwipeRefreshLayout.setRefreshing(false);
+            if (mLoadNewsTask != null) {
                 if (success) {
-                    showData();
-                    showProgress(false);
+                    mBundle.putInt(STATUS_KEY, STATUS_SHOW_DATA);
+                    mAdapter.notifyDataSetChanged();
+                    mLoadMoreLayout.setVisibility(View.GONE);
+                    mIsScrolling = false;
                 } else {
-                    showError(true, mErrorMessage);
+                    showErrorSnackbar(true, mErrorMessage);
                 }
             }
         }
 
         @Override
         protected void onCancelled() {
-            mLoadThongBaoTask = null;
+            mLoadNewsTask = null;
             super.onCancelled();
         }
     }
 
-    @Override
-    public void onDestroy() {
-        Log.d("DEBUG", "DESTROY MAIN FRAGMENT");
-        mLoadThongBaoTask = null;
-        super.onDestroy();
+    private void showNetworkErrorSnackbar(boolean show) {
+        if (show) {
+            mBundle.putInt(STATUS_KEY, STATUS_NOT_NETWORK);
+            mNotNetworkSnackbar = Snackbar.make(mSwipeRefreshLayout, getString(R.string.network_not_available),
+                    Snackbar.LENGTH_INDEFINITE);
+            mNotNetworkSnackbar.setAction("Thử lại", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    attempGetData();
+                }
+            });
+            mNotNetworkSnackbar.show();
+        } else if (mNotNetworkSnackbar != null) {
+            mNotNetworkSnackbar.dismiss();
+        }
     }
 
-    // Save status
-    private void saveStatus(int statusCode) {
-        if (mBundle != null) {
-            mBundle.putInt(STATUS_KEY, statusCode);
+    private void showErrorSnackbar(boolean show, String message) {
+        if (show) {
+            mBundle.putInt(STATUS_KEY, STATUS_SHOW_ERROR);
+            mErrorSnackbar = Snackbar.make(mSwipeRefreshLayout, message,
+                    Snackbar.LENGTH_INDEFINITE);
+            mErrorSnackbar.setAction("Thử lại", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    attempGetData();
+                }
+            });
+            mErrorSnackbar.show();
+        } else if (mErrorSnackbar != null) {
+            mErrorSnackbar.dismiss();
         }
     }
 
     // Lay danh sach thong bao tu may chu
-    private Response getData(){
+    private Response fetchData() {
         String url = Reference.HOST + Reference.LOAD_THONG_BAO_API;
 
         return NetworkUtil.makeRequest(url, false, null);
@@ -226,37 +319,10 @@ public class MainFragment extends Fragment {
         jsonAdapter = moshi.adapter(usersType);
 
         try {
-            thongBaoList = jsonAdapter.fromJson(json);
+            List<THONGBAO> temp = jsonAdapter.fromJson(json);
+            mThongBaoList.addAll(temp);
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    // Hien thi danh sach thong bao len view
-    private void showData() {
-        mBundle.putInt(STATUS_KEY, STATUS_SHOW_DATA);
-        rvItems.setAdapter(new NewsRecyclerDataAdapter(thongBaoList, MainFragment.this.context));
-    }
-
-    // Hien thi hinh anh dang tai du lieu
-    private void showProgress(final boolean show) {
-        mThongBaoLayout.setVisibility(show ? View.GONE : View.VISIBLE);
-        mProgressViewLayout.setVisibility(show ? View.VISIBLE : View.GONE);
-        mNetworkError.setVisibility(View.GONE);
-        if (show) {
-            mBundle.putInt(STATUS_KEY, STATUS_LOADING);
-        }
-    }
-
-    // Hien thi thong bao loi len man hinh
-    private void showError(final boolean show, String errorMessage) {
-        mThongBaoLayout.setVisibility(show ? View.GONE : View.VISIBLE);
-        mProgressViewLayout.setVisibility(View.GONE);
-        mNetworkError.setVisibility(show ? View.VISIBLE : View.GONE);
-        if (show) {
-            mErrorMessage = errorMessage;
-            mThongBaoLoi.setText(errorMessage);
-            mBundle.putInt(STATUS_KEY, STATUS_SHOW_ERROR);
         }
     }
 }

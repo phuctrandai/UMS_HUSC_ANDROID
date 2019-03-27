@@ -3,6 +3,21 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
+    <dimen name="small_margin">4dp</dimen>
+    <dimen name="normal_margin">8dp</dimen>
+    <dimen name="big_margin">14dp</dimen>
+    <dimen name="extra_margin">16dp</dimen>
+
+    <dimen name="small_padding">4dp</dimen>
+    <dimen name="normal_padding">8dp</dimen>
+    <dimen name="big_padding">14dp</dimen>
+    <dimen name="extra_padding">32dp</dimen>
+
+    <dimen name="small_text">12sp</dimen>
+    <dimen name="normal_text">14sp</dimen>
+    <dimen name="big_text">18sp</dimen>
+    <dimen name="extra_text">20sp</dimen>
+
     <!-- Man hinh dang nhap -->
     <dimen name="logo_horizontal_padding">8dp</dimen>
     <dimen name="logo_scale">0.5</dimen>

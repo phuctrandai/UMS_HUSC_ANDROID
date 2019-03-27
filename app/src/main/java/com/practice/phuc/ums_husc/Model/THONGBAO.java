@@ -1,7 +1,5 @@
 package com.practice.phuc.ums_husc.Model;
 
-import java.util.List;
-
 public class THONGBAO {
     private int MaThongBao;
     private String TieuDe;
@@ -41,7 +39,7 @@ public class THONGBAO {
     }
 
 
-    public THONGBAO(int maThongBao, String tieuDe, String noiDung, String thoiGianDang, List<LIENKET> LIENKETs) {
+    public THONGBAO(int maThongBao, String tieuDe, String noiDung, String thoiGianDang) {
         MaThongBao = maThongBao;
         TieuDe = tieuDe;
         NoiDung = noiDung;

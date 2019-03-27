@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".DetailMessageActivity"
+    tools:showIn="@layout/activity_detail_message">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_tieuDe"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/big_margin"
+            android:layout_marginTop="@dimen/normal_margin"
+            android:layout_marginEnd="@dimen/big_margin"
+            android:layout_marginBottom="@dimen/normal_margin"
+            android:text="Tiêu đề tin nhắn"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/big_text" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/normal_margin"
+            android:layout_marginEnd="@dimen/normal_margin">
+
+            <TextView
+                android:id="@+id/tv_nguoiGui"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="@dimen/small_margin"
+                android:drawableStart="@drawable/ic_person_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="Tên người gửi" />
+
+            <TextView
+                android:id="@+id/tv_thoiDiemGui"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="@dimen/normal_margin"
+                android:drawableStart="@drawable/ic_access_time_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="12/03/2019 08:05" />
+        </RelativeLayout>
+
+        <WebView
+            android:id="@+id/tv_noiDung"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_margin"
+            android:layout_marginTop="@dimen/normal_margin"
+            android:layout_marginEnd="@dimen/small_margin"
+            android:layout_marginBottom="@dimen/extra_margin"
+            android:background="@android:color/white"
+            android:isScrollContainer="true"
+            android:keepScreenOn="true"
+            android:scrollbarStyle="insideOverlay" />
+    </LinearLayout>
+
+</LinearLayout>
