@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_tinNhan"
-        android:icon="@drawable/ic_chat_bubble_white_24dp"
+        android:icon="@drawable/ic_chat_white_24"
         android:orderInCategory="100"
         android:title="@string/action_tinNhan"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_thongBao"
-        android:icon="@drawable/ic_notifications_white_24dp"
+        android:icon="@drawable/ic_notifications_white_24"
         android:orderInCategory="101"
         android:title="@string/action_thongBao"
         app:showAsAction="ifRoom" />

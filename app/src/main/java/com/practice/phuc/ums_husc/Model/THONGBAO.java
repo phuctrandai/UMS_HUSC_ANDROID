@@ -1,13 +1,10 @@
 package com.practice.phuc.ums_husc.Model;
 
-import java.util.List;
-
 public class THONGBAO {
     private int MaThongBao;
     private String TieuDe;
     private String NoiDung;
     private String ThoiGianDang;
-    private List<LIENKET> LIENKETs;
 
     public int getMaThongBao() {
         return MaThongBao;
@@ -41,20 +38,12 @@ public class THONGBAO {
         ThoiGianDang = thoiGianDang;
     }
 
-    public List<LIENKET> getLIENKETs() {
-        return LIENKETs;
-    }
 
-    public void setLIENKETs(List<LIENKET> LIENKETs) {
-        this.LIENKETs = LIENKETs;
-    }
-
-    public THONGBAO(int maThongBao, String tieuDe, String noiDung, String thoiGianDang, List<LIENKET> LIENKETs) {
+    public THONGBAO(int maThongBao, String tieuDe, String noiDung, String thoiGianDang) {
         MaThongBao = maThongBao;
         TieuDe = tieuDe;
         NoiDung = noiDung;
         ThoiGianDang = thoiGianDang;
-        this.LIENKETs = LIENKETs;
     }
 
     public THONGBAO() {

@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_dacDiemBanThan"
+    android:id="@+id/fragment_lichSuBanThan"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    tools:context=".LyLichCaNhanModule.ResumeActivity">
+    android:layout_height="match_parent"
+    tools:context=".LyLichCaNhanModule.LichSuBanThanFragment">
 
     <TableLayout
-        android:id="@+id/layout_dacDiemBanThan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
@@ -23,84 +22,20 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Đặc điểm bản thân"
+                android:text="Thông tin về Trung học phổ thông"
                 android:textSize="@dimen/big_text" />
 
             <Button
-                android:id="@+id/btn_suaDacDiemBanThan"
+                android:id="@+id/btn_suaLichSuTHPT"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_alignParentEnd="true"
                 android:background="@android:color/transparent"
-                android:drawableStart="@drawable/ic_edit_grey_12" />
+                android:drawableEnd="@drawable/ic_edit_grey_12" />
         </RelativeLayout>
 
         <TableRow
-            android:id="@+id/layout_thanhPhanXuatThan"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/normal_margin"
-            android:layout_marginBottom="@dimen/normal_margin">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="@dimen/big_padding"
-                android:paddingEnd="0dp"
-                android:text="Thành phần xuất thân:" />
-
-            <TextView
-                android:id="@+id/tv_thanhPhanXuatThan"
-                android:text="..."
-                android:textColor="@android:color/black" />
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/layout_dienUuTienGiaDinh"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/normal_margin"
-            android:layout_marginBottom="@dimen/normal_margin">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="@dimen/big_padding"
-                android:paddingEnd="0dp"
-                android:text="Diện ưu tiên gia đình:" />
-
-            <TextView
-                android:id="@+id/tv_dienUuTienGiaDinh"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="..."
-                android:textColor="@android:color/black" />
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/layout_dienUuTienBanThan"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/normal_margin"
-            android:layout_marginBottom="@dimen/normal_margin">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="@dimen/big_padding"
-                android:paddingEnd="0dp"
-                android:text="Diện ưu tiên bản thân:" />
-
-            <TextView
-                android:id="@+id/tv_dienUuTienBanThan"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="..."
-                android:textColor="@android:color/black" />
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/layout_tinhTrangHonNhan"
+            android:id="@+id/layout_namTotNghiepTHPT"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/normal_margin"
@@ -111,10 +46,10 @@
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/big_padding"
                 android:paddingEnd="@dimen/extra_padding"
-                android:text="Tình trạng hôn nhân:" />
+                android:text="Năm tốt nghiệp THPT:" />
 
             <TextView
-                android:id="@+id/tv_tinhTrangHonNhan"
+                android:id="@+id/tv_namTotNghiepTHPT"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="..."
@@ -122,54 +57,179 @@
         </TableRow>
 
         <TableRow
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:id="@+id/layout_loaiTotNghiepTHPT"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/normal_margin"
+            android:layout_marginBottom="@dimen/normal_margin">
 
-            <LinearLayout
-                android:id="@+id/layout_chieuCao"
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/normal_margin"
-                android:layout_marginBottom="@dimen/normal_margin"
-                android:orientation="horizontal">
+                android:paddingStart="@dimen/big_padding"
+                android:paddingEnd="@dimen/extra_padding"
+                android:text="Loại tốt nghiệp THPT:" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="@dimen/big_padding"
-                    android:paddingRight="@dimen/big_padding"
-                    android:text="Chiều cao:" />
-
-                <TextView
-                    android:id="@+id/tv_chieuCao"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="..."
-                    android:textColor="@android:color/black" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layout_nhomMau"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tv_loaiTotNghiepTHPT"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/normal_margin"
-                android:layout_marginBottom="@dimen/normal_margin"
-                android:orientation="horizontal">
+                android:text="..."
+                android:textColor="@android:color/black" />
+        </TableRow>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="0dp"
-                    android:paddingEnd="@dimen/big_padding"
-                    android:text="Nhóm máu:" />
+        <TableRow
+            android:id="@+id/layout_noiTotNghiepTHPT"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/normal_margin"
+            android:layout_marginBottom="@dimen/normal_margin">
 
-                <TextView
-                    android:id="@+id/tv_nhomMau"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="..."
-                    android:textColor="@android:color/black" />
-            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/big_padding"
+                android:paddingEnd="@dimen/extra_padding"
+                android:text="Nơi tốt nghiệp THPT:" />
+
+            <TextView
+                android:id="@+id/tv_noiTotNghiepTHPT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="..."
+                android:textColor="@android:color/black" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/layout_xepLoaiHocTapLop10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/normal_margin"
+            android:layout_marginBottom="@dimen/normal_margin">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/big_padding"
+                android:paddingEnd="@dimen/extra_padding"
+                android:text="Xếp loại học tập lớp 10:" />
+
+            <TextView
+                android:id="@+id/tv_xepLoaiHocTapLop10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="..."
+                android:textColor="@android:color/black" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/layout_xepLoaiHocTapLop11"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/normal_margin"
+            android:layout_marginBottom="@dimen/normal_margin">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/big_padding"
+                android:paddingEnd="@dimen/extra_padding"
+                android:text="Xếp loại học tập lớp 11:" />
+
+            <TextView
+                android:id="@+id/tv_xepLoaiHocTapLop11"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="..."
+                android:textColor="@android:color/black" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/layout_xepLoaiHocTapLop12"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/normal_margin"
+            android:layout_marginBottom="@dimen/normal_margin">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/big_padding"
+                android:paddingEnd="@dimen/extra_padding"
+                android:text="Xếp loại học tập lớp 12:" />
+
+            <TextView
+                android:id="@+id/tv_xepLoaiHocTapLop12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="..."
+                android:textColor="@android:color/black" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/layout_xepLoaiHanhKiemLop10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/normal_margin"
+            android:layout_marginBottom="@dimen/normal_margin">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/big_padding"
+                android:paddingEnd="@dimen/extra_padding"
+                android:text="Xếp loại hạnh kiểm lớp 10:" />
+
+            <TextView
+                android:id="@+id/tv_xepLoaiHanhKiemLop10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="..."
+                android:textColor="@android:color/black" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/layout_xepLoaiHanhKiemLop11"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/normal_margin"
+            android:layout_marginBottom="@dimen/normal_margin">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/big_padding"
+                android:paddingEnd="@dimen/extra_padding"
+                android:text="Xếp loại hạnh kiểm lớp 11:" />
+
+            <TextView
+                android:id="@+id/tv_xepLoaiHanhKiemLop11"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="..."
+                android:textColor="@android:color/black" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/layout_xepLoaiHạnhKiemLop12"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/normal_margin"
+            android:layout_marginBottom="@dimen/normal_margin">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/big_padding"
+                android:paddingEnd="@dimen/extra_padding"
+                android:text="Xếp loại hạnh kiểm lớp 12:" />
+
+            <TextView
+                android:id="@+id/tv_xepLoaiHanhKiemLop12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="..."
+                android:textColor="@android:color/black" />
         </TableRow>
 
         <RelativeLayout
@@ -181,20 +241,20 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tham gia tổ chức chính trị, đoàn thể xã hội"
+                android:text="Thông tin về việc tham gia Lực lượng vũ trang"
                 android:textSize="@dimen/big_text" />
 
             <Button
-                android:id="@+id/btn_suaThamGiaTocChucDoanThe"
+                android:id="@+id/btn_suaThongTinLLVT"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_alignParentEnd="true"
                 android:background="@android:color/transparent"
-                android:drawableStart="@drawable/ic_edit_grey_12" />
+                android:drawableEnd="@drawable/ic_edit_grey_12" />
         </RelativeLayout>
 
         <TableRow
-            android:id="@+id/layout_ngayVaoDoan"
+            android:id="@+id/layout_lucLuongVuTrang"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/normal_margin"
@@ -205,10 +265,10 @@
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/big_padding"
                 android:paddingEnd="@dimen/extra_padding"
-                android:text="Ngày vào đoàn TNCSHCM:" />
+                android:text="Đã từng tham gia LLVT:" />
 
             <TextView
-                android:id="@+id/tv_ngayVaoDoan"
+                android:id="@+id/tv_lucLuongVuTrang"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="..."
@@ -216,7 +276,7 @@
         </TableRow>
 
         <TableRow
-            android:id="@+id/layout_noiVaoDoan"
+            android:id="@+id/layout_ngayNhapNgu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/normal_margin"
@@ -227,10 +287,10 @@
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/big_padding"
                 android:paddingEnd="@dimen/extra_padding"
-                android:text="Nơi kết nạp đoàn:" />
+                android:text="Ngày nhập ngũ:" />
 
             <TextView
-                android:id="@+id/tv_noiVaoDoan"
+                android:id="@+id/tv_ngayNhapNgu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="..."
@@ -238,7 +298,7 @@
         </TableRow>
 
         <TableRow
-            android:id="@+id/layout_ngayVaoDang"
+            android:id="@+id/layout_ngayXuatNgu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/normal_margin"
@@ -249,10 +309,10 @@
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/big_padding"
                 android:paddingEnd="@dimen/extra_padding"
-                android:text="Ngày vào Đảng CSVN:" />
+                android:text="Ngày xuất ngũ:" />
 
             <TextView
-                android:id="@+id/tv_ngayVaoDang"
+                android:id="@+id/tv_ngayXuatNgu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="..."
@@ -260,7 +320,7 @@
         </TableRow>
 
         <TableRow
-            android:id="@+id/layout_ngayChinhThuc"
+            android:id="@+id/layout_quanHam"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/normal_margin"
@@ -271,10 +331,10 @@
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/big_padding"
                 android:paddingEnd="@dimen/extra_padding"
-                android:text="Ngày chính thức:" />
+                android:text="Quân hàm cao nhất:" />
 
             <TextView
-                android:id="@+id/tv_ngayChinhThuc"
+                android:id="@+id/tv_quanHam"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="..."
@@ -282,7 +342,7 @@
         </TableRow>
 
         <TableRow
-            android:id="@+id/layout_noiKetNapDang"
+            android:id="@+id/layout_noiCongTac"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/normal_margin"
@@ -293,10 +353,10 @@
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/big_padding"
                 android:paddingEnd="@dimen/extra_padding"
-                android:text="Nơi kết nạp Đảng:" />
+                android:text="Nơi đóng quân/công tác:" />
 
             <TextView
-                android:id="@+id/tv_noiKetNapDang"
+                android:id="@+id/tv_noiCongTac"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="..."

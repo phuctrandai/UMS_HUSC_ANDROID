@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "977975761389",
+    "firebase_url": "https://ums-husc.firebaseio.com",
+    "project_id": "ums-husc",
+    "storage_bucket": "ums-husc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:977975761389:android:2b117d3d055d472b",
+        "android_client_info": {
+          "package_name": "com.practice.phuc.ums_husc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "977975761389-0l4ldtl7571phi270hjpt27rp4l14v06.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMRJ-FTDdC9D2DqvycIzC2T5qSFhYVy3s"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

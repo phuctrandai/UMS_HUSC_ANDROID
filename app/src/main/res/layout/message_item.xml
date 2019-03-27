@@ -2,48 +2,56 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/news_item_layout"
+    android:id="@+id/message_item_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/small_margin"
-    android:layout_marginTop="@dimen/small_margin"
-    android:layout_marginEnd="@dimen/small_margin"
     android:layout_marginBottom="@dimen/small_margin"
+    android:layout_marginStart="@dimen/small_margin"
+    android:layout_marginEnd="@dimen/small_margin"
+    android:layout_marginTop="@dimen/small_margin"
     app:cardCornerRadius="@dimen/normal_margin">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@android:color/white"
-        android:paddingStart="@dimen/big_padding"
-        android:paddingTop="@dimen/normal_padding"
-        android:paddingEnd="0dp"
-        android:paddingBottom="@dimen/normal_padding">
+        android:padding="@dimen/normal_padding">
 
         <TextView
             android:id="@+id/tv_tieuDe"
-            android:layout_width="match_parent"
+            android:layout_width="360dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/extra_margin"
-            android:text="Tiêu đề thông báo"
-            android:textColor="@color/colorPrimary"
-            android:textSize="@dimen/normal_text"
-            android:textStyle="bold"
+            android:text="Tiêu đề tin nhắn"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/big_text"
+            android:textStyle="normal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tv_thoiGianDang"
+            android:id="@+id/tv_nguoiGui"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
-            android:layout_marginTop="@dimen/small_margin"
+            android:layout_marginStart="@dimen/normal_margin"
+            android:layout_marginTop="@dimen/normal_margin"
+            android:drawableStart="@drawable/ic_person_grey_12"
+            android:drawablePadding="@dimen/small_padding"
+            android:text="Người gửi"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_tieuDe" />
+
+        <TextView
+            android:id="@+id/tv_thoiDiemGui"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/normal_margin"
+            android:layout_marginTop="@dimen/normal_margin"
             android:drawableStart="@drawable/ic_access_time_grey_12"
-            android:drawablePadding="4dp"
+            android:drawablePadding="@dimen/small_padding"
             android:text="12/03/2019 08:05"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_tieuDe" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_nguoiGui" />
 
         <ImageView
             android:id="@+id/imageView"
@@ -56,7 +64,5 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
     </android.support.constraint.ConstraintLayout>
-
 </android.support.v7.widget.CardView>

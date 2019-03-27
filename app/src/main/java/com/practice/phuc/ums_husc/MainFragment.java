@@ -3,19 +3,23 @@ package com.practice.phuc.ums_husc;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.practice.phuc.ums_husc.Adapter.NewsRecyclerDataAdapter;
+import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.Model.THONGBAO;
 import com.squareup.moshi.JsonAdapter;
@@ -24,24 +28,39 @@ import com.squareup.moshi.Types;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.Response;
 
-public class MainFragment extends Fragment {
-    private Context context;
-    private List<THONGBAO> thongBaoList;
+public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+    private LoadNewsTask mLoadNewsTask;
+    private Context mContext;
+    private List<THONGBAO> mThongBaoList;
+    private Bundle mBundle;
+    private String mErrorMessage;
+    private NewsRecyclerDataAdapter mAdapter;
+    private int currentItems, totalItems, scrollOutItems;
+    private boolean mIsScrolling;
+
+    private Snackbar mNotNetworkSnackbar;
+    private Snackbar mErrorSnackbar;
+
+    private final String STATUS_KEY = "statusKey";
+    private final int STATUS_LOADING = 0;
+    private final int STATUS_SHOW_ERROR = 1;
+    private final int STATUS_SHOW_DATA = 2;
+    private final int STATUS_NOT_NETWORK = 3;
 
     // Cast json to model
     Moshi moshi;
     Type usersType;
     JsonAdapter<List<THONGBAO>> jsonAdapter;
 
+    // UI
+    SwipeRefreshLayout mSwipeRefreshLayout;
     RecyclerView rvItems;
-    LinearLayout layoutThongBao;
-    RelativeLayout layoutLoading;
+    LinearLayout mLoadMoreLayout;
 
     public MainFragment() {
         // Required empty public constructor
@@ -49,13 +68,18 @@ public class MainFragment extends Fragment {
 
     public static MainFragment newInstance(Context context) {
         MainFragment mainFragment = new MainFragment();
-        mainFragment.context = context;
+        mainFragment.mContext = context;
         return mainFragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.d("UMS_HUSC", "On create MainFragment");
+        Log.d("DEBUG", "On create MainFragment");
+        mBundle = new Bundle();
+        mBundle.putInt(STATUS_KEY, STATUS_LOADING);
+        mThongBaoList = new ArrayList<>();
+        mAdapter = new NewsRecyclerDataAdapter(mThongBaoList, mContext);
+        mIsScrolling = false;
         super.onCreate(savedInstanceState);
     }
 
@@ -63,106 +87,242 @@ public class MainFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d("UMS_HUSC", "On create VIEW MainFragment");
+        Log.d("DEBUG", "On create VIEW MainFragment");
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
+        // Bind UI
         rvItems = (RecyclerView) view.findViewById(R.id.rv_thongBao);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false);
-        rvItems.setLayoutManager(layoutManager);
-        rvItems.setHasFixedSize(true);
+        mLoadMoreLayout = view.findViewById(R.id.load_more_layout);
 
-        layoutThongBao = view.findViewById(R.id.layout_thongBao);
-        layoutLoading = view.findViewById(R.id.loading_progress_layout);
+        setUpRecyclerView();
 
-        if (this.getArguments() == null) {
-            new LoadThongBaoTask().execute((String) null);
-        } else {
-            hienThiThongBao();
-        }
+        initSwipeRefreshLayout(view);
+
+        if (NetworkUtil.getConnectivityStatus(mContext) != NetworkUtil.TYPE_NOT_CONNECTED)
+            mBundle.putInt(STATUS_KEY, STATUS_LOADING);
+
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mBundle.getInt(STATUS_KEY) == STATUS_SHOW_DATA) {
+
+                } else if (mBundle.getInt(STATUS_KEY) == STATUS_NOT_NETWORK) {
+                    showNetworkErrorSnackbar(true);
+                } else if (mBundle.getInt(STATUS_KEY) == STATUS_SHOW_ERROR) {
+                    showErrorSnackbar(true, mErrorMessage);
+                } else if (mBundle.getInt(STATUS_KEY) == STATUS_LOADING) {
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    attempGetData();
+                }
+            }
+        });
 
         return view;
     }
 
     @Override
     public void onPause() {
-        Log.d("UMS_HUSC", "On pause MainFragment");
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("isCreated", true);
-        this.setArguments(bundle);
+        showNetworkErrorSnackbar(false);
+        showErrorSnackbar(false, mErrorMessage);
         super.onPause();
     }
 
-    public class LoadThongBaoTask extends AsyncTask<String, Void, Boolean> {
-        @Override
-        protected void onPreExecute() {
-            showProgress(true);
+    @Override
+    public void onDestroy() {
+        Log.d("DEBUG", "ON DESTROY MAIN FRAGMENT");
+        mLoadNewsTask = null;
+        mThongBaoList.clear();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onRefresh() {
+        mThongBaoList.clear();
+        mAdapter.lastPosition = -1;
+        if (NetworkUtil.getConnectivityStatus(mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
+            mBundle.putInt(STATUS_KEY, STATUS_NOT_NETWORK);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    showNetworkErrorSnackbar(true);
+                }
+            }, 1000);
+        } else {
+            attempGetData();
         }
+    }
+
+    // Set up swipe refresh layout
+    private void initSwipeRefreshLayout(View view) {
+        mSwipeRefreshLayout = view.findViewById(R.id.layout_swipeRefresh);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeResources(
+                R.color.colorPrimary,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_orange_dark,
+                android.R.color.holo_blue_dark);
+    }
+
+    // set up recyler view
+    private void setUpRecyclerView() {
+        final LinearLayoutManager manager = new LinearLayoutManager(mContext);
+        rvItems.setLayoutManager(manager);
+        rvItems.setAdapter(mAdapter);
+        rvItems.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    mIsScrolling = true;
+                }
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                currentItems = manager.getChildCount();
+                totalItems = manager.getItemCount();
+                scrollOutItems = manager.findFirstVisibleItemPosition();
+
+                if (mIsScrolling && (currentItems + scrollOutItems == totalItems)) {
+                    mIsScrolling = false;
+                    mLoadMoreLayout.setVisibility(View.VISIBLE);
+                    attempGetData();
+                }
+            }
+        });
+    }
+
+    // Kiem tra truoc khi lay du lieu
+    private void attempGetData() {
+        if (NetworkUtil.getConnectivityStatus(this.mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
+            mBundle.putInt(STATUS_KEY, STATUS_NOT_NETWORK);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    showNetworkErrorSnackbar(true);
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    mLoadMoreLayout.setVisibility(View.GONE);
+                }
+            }, 1500);
+        } else {
+            mLoadNewsTask = new LoadNewsTask();
+            mLoadNewsTask.execute((String) null);
+        }
+    }
+
+    private class LoadNewsTask extends AsyncTask<String, Void, Boolean> {
+        private Response mResponse;
 
         @Override
         protected Boolean doInBackground(String... strings) {
-            setThongBaos(loadThongBao());
-            return true;
+            if (mLoadNewsTask == null) return false;
+
+            try {
+                mResponse = fetchData();
+                if (mResponse == null) {
+                    Log.d("DEBUG", "Get thong bao Response null");
+                    mErrorMessage = getString(R.string.error_time_out);
+                    return false;
+
+                } else {
+                    Log.d("DEBUG", "Get thong bao Response code: " + mResponse.code());
+                    if (mResponse.code() == NetworkUtil.OK) {
+                        String json = mResponse.body().string();
+                        setData(json);
+                        return true;
+
+                    } else if (mResponse.code() == NetworkUtil.NOT_FOUND) {
+                        mErrorMessage = getString(R.string.error_server_not_response);
+                    } else {
+                        mErrorMessage = getString(R.string.error_server_not_response);
+                    }
+                    return false;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
         }
 
         @Override
         protected void onPostExecute(Boolean success) {
-            if (success) {
-                hienThiThongBao();
-                showProgress(false);
+            Log.d("DEBUG", "Get thong bao : " + success);
+            mSwipeRefreshLayout.setRefreshing(false);
+            if (mLoadNewsTask != null) {
+                if (success) {
+                    mBundle.putInt(STATUS_KEY, STATUS_SHOW_DATA);
+                    mAdapter.notifyDataSetChanged();
+                    mLoadMoreLayout.setVisibility(View.GONE);
+                    mIsScrolling = false;
+                } else {
+                    showErrorSnackbar(true, mErrorMessage);
+                }
             }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mLoadNewsTask = null;
+            super.onCancelled();
         }
     }
 
-    // Lay danh sach thong bao tu may chu duoi dang chuoi JSON
-    private String loadThongBao(){
-        String result = json;
-//        final OkHttpClient okHttpClient = new OkHttpClient();
-//        // Tao request
-//        Request request = new Request.Builder()
-//                .url(Reference.HOST + Reference.LOAD_LY_LICH_API)
-//                .get().build();
-//
-//        Response response = null;
-//        try {
-//            response = okHttpClient.newCall(request).execute();
-//            if (response != null) {
-//                if (response.code() == Reference.OK)
-//                    result = response.body().string();
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-        return result;
+    private void showNetworkErrorSnackbar(boolean show) {
+        if (show) {
+            mBundle.putInt(STATUS_KEY, STATUS_NOT_NETWORK);
+            mNotNetworkSnackbar = Snackbar.make(mSwipeRefreshLayout, getString(R.string.network_not_available),
+                    Snackbar.LENGTH_INDEFINITE);
+            mNotNetworkSnackbar.setAction("Thử lại", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    attempGetData();
+                }
+            });
+            mNotNetworkSnackbar.show();
+        } else if (mNotNetworkSnackbar != null) {
+            mNotNetworkSnackbar.dismiss();
+        }
+    }
+
+    private void showErrorSnackbar(boolean show, String message) {
+        if (show) {
+            mBundle.putInt(STATUS_KEY, STATUS_SHOW_ERROR);
+            mErrorSnackbar = Snackbar.make(mSwipeRefreshLayout, message,
+                    Snackbar.LENGTH_INDEFINITE);
+            mErrorSnackbar.setAction("Thử lại", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    attempGetData();
+                }
+            });
+            mErrorSnackbar.show();
+        } else if (mErrorSnackbar != null) {
+            mErrorSnackbar.dismiss();
+        }
+    }
+
+    // Lay danh sach thong bao tu may chu
+    private Response fetchData() {
+        String url = Reference.HOST + Reference.LOAD_THONG_BAO_API;
+
+        return NetworkUtil.makeRequest(url, false, null);
     }
 
     // Doi chuoi JSON sang model
-    private void setThongBaos(String json) {
+    private void setData(String json) {
         moshi = new Moshi.Builder().build();
         usersType = Types.newParameterizedType(List.class, THONGBAO.class);
         jsonAdapter = moshi.adapter(usersType);
 
         try {
-            thongBaoList = jsonAdapter.fromJson(json);
+            List<THONGBAO> temp = jsonAdapter.fromJson(json);
+            mThongBaoList.addAll(temp);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-    // Hien thi danh sach thong bao len view
-    private void hienThiThongBao() {
-        rvItems.setAdapter(new NewsRecyclerDataAdapter(thongBaoList, MainFragment.this.context));
-    }
-
-    // Hien thi loading
-    private void showProgress(boolean show) {
-        layoutLoading.setVisibility(show ? View.VISIBLE : View.GONE);
-        layoutThongBao.setVisibility(show ? View.GONE : View.VISIBLE);
-    }
-
-    private String json = "[{\"LIENKETs\":[{\"MaLienKet\":1,\"MaThongBao\":1,\"DuongDan\":\"www.google.com\"},{\"MaLienKet\":2,\"MaThongBao\":1,\"DuongDan\":\"www.youtube.com\"}],\"MaThongBao\":1,\"TieuDe\":\"Thông báo v/v mở bổ sung các lớp học phần lần 9 học kỳ 2/2018-2019\",\"ThoiGianDang\":\"2019-03-15T08:05:00\",\"NoiDung\":\"Nhằm tạo điều kiện cho sinh viên khóa 39 trở về trước được học lại các học phần theo đúng kế hoạch đào tạo, căn cứ đề nghị của Khoa quản lý chuyên môn, Nhà trường thông báo cho các đơn vị và sinh viên biết việc mở lớp học phần bổ sung lần 9 trong học kỳ II, năm học 2018 – 2019. Chi tiết thông báo xem tại nội dung đính kèm sau:\"}," +
-            "{\"LIENKETs\":[],\"MaThongBao\":2,\"TieuDe\":\"Thông báo v/v cho sinh viên nghỉ học \",\"ThoiGianDang\":\"2019-03-18T08:51:00\",\"NoiDung\":\"Thực hiện công văn số 60/ĐHKH-TCHC ngày 15/03/2019 của Hiệu trưởng về việc tổ chức các hoạt động trong hội trại 26/03; Phòng Đào tạo Đại học thông báo cho toàn thể sinh viên được nghỉ học ngày 23/03/2019 để tham gia chương trình \\\"Hội trại 26-03\\\". Giảng viên các lớp học phần chủ động liên hệ Phòng Đào tạo Đại học để đăng ký lịch dạy bù, đảm bảo theo kế hoạch năm học 2018-2019.\"}," +
-            "{\"LIENKETs\":[],\"MaThongBao\":3,\"TieuDe\":\"Thông báo v/v nhận bằng tốt nghiệp đợt 1 năm 2019 \",\"ThoiGianDang\":\"2019-03-12T07:56:00\",\"NoiDung\":\"Phòng Đào tạo Đại học thông báo cho sinh viên được công nhận tốt nghiệp theo Quyết định số 49/QĐ-ĐHKH ngày 26 tháng 02 năm 2019 đến nhận bằng tại Phòng Đào tạo Đại học. Khi đến nhận bằng đề nghị mang theo giấy tờ tùy thân.\"}," +
-            "{\"LIENKETs\":[{\"MaLienKet\":1,\"MaThongBao\":1,\"DuongDan\":\"www.google.com\"},{\"MaLienKet\":2,\"MaThongBao\":1,\"DuongDan\":\"www.youtube.com\"}],\"MaThongBao\":1,\"TieuDe\":\"Thông báo v/v mở bổ sung các lớp học phần lần 9 học kỳ 2/2018-2019\",\"ThoiGianDang\":\"2019-03-15T08:05:00\",\"NoiDung\":\"Nhằm tạo điều kiện cho sinh viên khóa 39 trở về trước được học lại các học phần theo đúng kế hoạch đào tạo, căn cứ đề nghị của Khoa quản lý chuyên môn, Nhà trường thông báo cho các đơn vị và sinh viên biết việc mở lớp học phần bổ sung lần 9 trong học kỳ II, năm học 2018 – 2019. Chi tiết thông báo xem tại nội dung đính kèm sau:\"}," +
-            "{\"LIENKETs\":[{\"MaLienKet\":1,\"MaThongBao\":1,\"DuongDan\":\"www.google.com\"},{\"MaLienKet\":2,\"MaThongBao\":1,\"DuongDan\":\"www.youtube.com\"}],\"MaThongBao\":1,\"TieuDe\":\"Thông báo v/v mở bổ sung các lớp học phần lần 9 học kỳ 2/2018-2019\",\"ThoiGianDang\":\"2019-03-15T08:05:00\",\"NoiDung\":\"Nhằm tạo điều kiện cho sinh viên khóa 39 trở về trước được học lại các học phần theo đúng kế hoạch đào tạo, căn cứ đề nghị của Khoa quản lý chuyên môn, Nhà trường thông báo cho các đơn vị và sinh viên biết việc mở lớp học phần bổ sung lần 9 trong học kỳ II, năm học 2018 – 2019. Chi tiết thông báo xem tại nội dung đính kèm sau:\"}," +
-            "{\"LIENKETs\":[{\"MaLienKet\":1,\"MaThongBao\":1,\"DuongDan\":\"www.google.com\"},{\"MaLienKet\":2,\"MaThongBao\":1,\"DuongDan\":\"www.youtube.com\"}],\"MaThongBao\":1,\"TieuDe\":\"Thông báo v/v mở bổ sung các lớp học phần lần 9 học kỳ 2/2018-2019\",\"ThoiGianDang\":\"2019-03-15T08:05:00\",\"NoiDung\":\"Nhằm tạo điều kiện cho sinh viên khóa 39 trở về trước được học lại các học phần theo đúng kế hoạch đào tạo, căn cứ đề nghị của Khoa quản lý chuyên môn, Nhà trường thông báo cho các đơn vị và sinh viên biết việc mở lớp học phần bổ sung lần 9 trong học kỳ II, năm học 2018 – 2019. Chi tiết thông báo xem tại nội dung đính kèm sau:\"}]";
 }

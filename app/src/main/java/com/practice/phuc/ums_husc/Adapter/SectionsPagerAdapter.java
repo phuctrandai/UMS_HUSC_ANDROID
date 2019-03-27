@@ -1,14 +1,14 @@
 package com.practice.phuc.ums_husc.Adapter;
 
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.practice.phuc.ums_husc.LyLichCaNhan.DacDiemBanThanFragment;
-import com.practice.phuc.ums_husc.LyLichCaNhan.LienHeCuTruFragment;
+import com.practice.phuc.ums_husc.LyLichCaNhanModule.DacDiemBanThanFragment;
+import com.practice.phuc.ums_husc.LyLichCaNhanModule.LichSuBanThanFragment;
+import com.practice.phuc.ums_husc.LyLichCaNhanModule.LienHeCuTruFragment;
 import com.practice.phuc.ums_husc.Model.LICHSUBANTHAN;
-import com.practice.phuc.ums_husc.LyLichCaNhan.ThongTinChungFragment;
+import com.practice.phuc.ums_husc.LyLichCaNhanModule.ThongTinChungFragment;
 import com.practice.phuc.ums_husc.ViewModel.VDacDiemBanThan;
 import com.practice.phuc.ums_husc.ViewModel.VQueQuan;
 import com.practice.phuc.ums_husc.ViewModel.VThongTinChung;
@@ -40,12 +40,6 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         this.lichSuBanThan = lichSuBanThan;
     }
 
-    public void displayThongTin() {
-        for (int i = 0; i < getCount(); i++){
-
-        }
-    }
-
     @Override
     public Fragment getItem(int position) {
         switch (position) {
@@ -62,26 +56,28 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
                 c2.setThongTin(dacDiemBanThan);
                 return c2;
             default:
-                ThongTinChungFragment d = new ThongTinChungFragment();
-                d.setThongTin(this.thongTinChung);
+                LichSuBanThanFragment d = new LichSuBanThanFragment();
+                d.setThongTin(this.lichSuBanThan);
                 return d;
         }
     }
 
     @Override
     public int getCount() {
-        return 3;
+        return 4;
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return "Thông tin chung";
+                return "Chung";
             case 1:
-                return "Liên hệ - cư trú";
+                return "Liên hệ";
             case 2:
-                return "Lịch sử bản thân";
+                return "Đặc điểm";
+            case 3:
+                return "Lịch sử";
         }
         return null;
     }

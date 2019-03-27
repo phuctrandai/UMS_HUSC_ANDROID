@@ -6,35 +6,29 @@
     android:background="@drawable/side_nav_bar"
     android:gravity="bottom"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin">
+    android:padding="@dimen/big_padding">
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/iv_avatar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:background="@android:color/black"
-        android:contentDescription="@string/avatar"
-        app:srcCompat="@drawable/ic_person" />
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@mipmap/avt" />
 
     <TextView
         android:id="@+id/tv_hoTen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="8dp"
+        android:layout_marginTop="@dimen/normal_margin"
         android:text="Trần Đại Phúc"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="@android:color/white"
-        android:textSize="20sp" />
+        android:textSize="@dimen/extra_text" />
 
     <TextView
         android:id="@+id/tv_maSinhVien"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="4dp"
+        android:layout_marginTop="@dimen/small_margin"
         android:text="Mã sinh viên"
         android:textColor="@android:color/white" />
 
@@ -42,13 +36,14 @@
         android:id="@+id/tv_khoaHoc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Khóa 39"
-        android:textColor="@android:color/white"/>
+        android:text="Khóa học"
+        android:textColor="@android:color/white" />
+
     <TextView
         android:id="@+id/tv_nganhHoc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Công nghệ thông tin"
-        android:textColor="@android:color/white"/>
+        android:text="Ngành học"
+        android:textColor="@android:color/white" />
 
 </LinearLayout>
