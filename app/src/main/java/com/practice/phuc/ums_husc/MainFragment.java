@@ -37,21 +37,29 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private LoadNewsTask mLoadNewsTask;
     private Context mContext;
     private List<THONGBAO> mThongBaoList;
-    private Bundle mBundle;
+    private boolean mIsThongBaoListChange;
+    private int mStatus;
     private String mErrorMessage;
     private NewsRecyclerDataAdapter mAdapter;
     private int currentItems, totalItems, scrollOutItems;
     private boolean mIsScrolling;
-    private boolean mIsRvItemsAtTop;
-
+    private boolean mIsRefreshOnBackPressed;
+    private int mLastAction;
     private Snackbar mNotNetworkSnackbar;
     private Snackbar mErrorSnackbar;
 
-    private final String STATUS_KEY = "statusKey";
-    private final int STATUS_LOADING = 0;
+    private final int STATUS_INIT = 0;
     private final int STATUS_SHOW_ERROR = 1;
     private final int STATUS_SHOW_DATA = 2;
     private final int STATUS_NOT_NETWORK = 3;
+    private final int STATUS_LOAD_MORE = 4;
+    private final int ACTION_INIT = 0;
+    private final int ACTION_REFRESH = 1;
+    private final int ACTION_LOAD_MORE = 2;
+
+    // So trang thong bao hien tai
+    private int mCurrentPage;
+    private final int ITEM_PER_PAGE = 10;
 
     // Cast json to model
     Moshi moshi;
@@ -76,12 +84,14 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         Log.d("DEBUG", "On create MainFragment");
-        mBundle = new Bundle();
-        mBundle.putInt(STATUS_KEY, STATUS_LOADING);
+        mStatus = STATUS_INIT;
+        mCurrentPage = 1;
         mThongBaoList = new ArrayList<>();
+        mIsThongBaoListChange = false;
         mAdapter = new NewsRecyclerDataAdapter(mThongBaoList, mContext);
         mIsScrolling = false;
-        mIsRvItemsAtTop = false;
+        mIsRefreshOnBackPressed = false;
+        mLastAction = ACTION_INIT;
         super.onCreate(savedInstanceState);
     }
 
@@ -100,21 +110,33 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
         initSwipeRefreshLayout(view);
 
-        if (NetworkUtil.getConnectivityStatus(mContext) != NetworkUtil.TYPE_NOT_CONNECTED)
-            mBundle.putInt(STATUS_KEY, STATUS_LOADING);
+        if (mStatus == STATUS_NOT_NETWORK
+            && NetworkUtil.getConnectivityStatus(mContext) != NetworkUtil.TYPE_NOT_CONNECTED) {
+            if (mLastAction == ACTION_REFRESH) {
+                mStatus = STATUS_INIT;
+            } else if (mLastAction == ACTION_LOAD_MORE) {
+                mStatus = STATUS_LOAD_MORE;
+            }
+        }
 
         mSwipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
-                if (mBundle.getInt(STATUS_KEY) == STATUS_SHOW_DATA) {
-
-                } else if (mBundle.getInt(STATUS_KEY) == STATUS_NOT_NETWORK) {
+                if (mStatus == STATUS_SHOW_DATA) {
+                    Log.d("DEBUG", "Status: SHOW_DATA");
+                } else if (mStatus == STATUS_NOT_NETWORK) {
+                    Log.d("DEBUG", "Status: SHOW_NOT_NETWORK");
                     showNetworkErrorSnackbar(true);
-                } else if (mBundle.getInt(STATUS_KEY) == STATUS_SHOW_ERROR) {
+                } else if (mStatus == STATUS_SHOW_ERROR) {
+                    Log.d("DEBUG", "Status: SHOW_ERROR");
                     showErrorSnackbar(true, mErrorMessage);
-                } else if (mBundle.getInt(STATUS_KEY) == STATUS_LOADING) {
+                } else if (mStatus == STATUS_INIT) {
+                    Log.d("DEBUG", "Status: LOADING");
                     mSwipeRefreshLayout.setRefreshing(true);
                     attempGetData();
+                } else if (mStatus == STATUS_LOAD_MORE) {
+                    Log.d("DEBUG", "Status: LOAD_MORE");
+                    onLoadMore();
                 }
             }
         });
@@ -126,6 +148,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onPause() {
         showNetworkErrorSnackbar(false);
         showErrorSnackbar(false, mErrorMessage);
+        Log.d("DEBUG", "on PAUSE Main fragment - STATUS: " + mStatus);
         super.onPause();
     }
 
@@ -139,10 +162,11 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onRefresh() {
-        mThongBaoList.clear();
-        mAdapter.lastPosition = -1;
+        Log.d("DEBUG", "on REFRESH Main fragment");
+        mLastAction = ACTION_REFRESH;
+
         if (NetworkUtil.getConnectivityStatus(mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
-            mBundle.putInt(STATUS_KEY, STATUS_NOT_NETWORK);
+            mStatus = STATUS_NOT_NETWORK;
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -151,8 +175,18 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 }
             }, 1000);
         } else {
+            mThongBaoList.clear();
+            mAdapter.lastPosition = -1;
+            mCurrentPage = 1;
             attempGetData();
         }
+    }
+
+    private void onLoadMore() {
+        mIsScrolling = false;
+        mLoadMoreLayout.setVisibility(View.VISIBLE);
+        mLastAction = ACTION_LOAD_MORE;
+        attempGetData();
     }
 
     // Set up swipe refresh layout
@@ -187,9 +221,9 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 totalItems = manager.getItemCount();
                 scrollOutItems = manager.findFirstVisibleItemPosition();
 
-                if (mIsRvItemsAtTop && findFirstVisibleItemPosition() == 0) {
+                if (mIsRefreshOnBackPressed && findFirstVisibleItemPosition() == 0) {
                     Log.d("DEBUG", "Refresh on press back");
-                    mIsRvItemsAtTop = false;
+                    mIsRefreshOnBackPressed = false;
                     mSwipeRefreshLayout.setRefreshing(true);
                     new Handler().postDelayed(new Runnable() {
                         @Override
@@ -201,9 +235,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 }
 
                 if (mIsScrolling && (currentItems + scrollOutItems == totalItems - 2)) {
-                    mIsScrolling = false;
-                    mLoadMoreLayout.setVisibility(View.VISIBLE);
-                    attempGetData();
+                    onLoadMore();
                 }
             }
         });
@@ -212,7 +244,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     // Kiem tra truoc khi lay du lieu
     private void attempGetData() {
         if (NetworkUtil.getConnectivityStatus(this.mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
-            mBundle.putInt(STATUS_KEY, STATUS_NOT_NETWORK);
+            mStatus = STATUS_NOT_NETWORK;
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -267,10 +299,14 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             mSwipeRefreshLayout.setRefreshing(false);
             if (mLoadNewsTask != null) {
                 if (success) {
-                    mBundle.putInt(STATUS_KEY, STATUS_SHOW_DATA);
-                    mAdapter.notifyDataSetChanged();
+                    mStatus = STATUS_SHOW_DATA;
+                    mCurrentPage++;
                     mLoadMoreLayout.setVisibility(View.GONE);
                     mIsScrolling = false;
+                    if (mIsThongBaoListChange) {
+                        mAdapter.notifyDataSetChanged();
+                        mIsThongBaoListChange = false;
+                    }
                 } else {
                     showErrorSnackbar(true, mErrorMessage);
                 }
@@ -286,14 +322,21 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     private void showNetworkErrorSnackbar(boolean show) {
         if (show) {
-            mBundle.putInt(STATUS_KEY, STATUS_NOT_NETWORK);
+            mStatus = STATUS_NOT_NETWORK;
             mNotNetworkSnackbar = Snackbar.make(mSwipeRefreshLayout, getString(R.string.network_not_available),
                     Snackbar.LENGTH_INDEFINITE);
             mNotNetworkSnackbar.setAction("Thử lại", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mSwipeRefreshLayout.setRefreshing(true);
-                    attempGetData();
+                    if (mLastAction == ACTION_REFRESH) {
+                        mSwipeRefreshLayout.setRefreshing(true);
+                        onRefresh();
+                    } else if (mLastAction == ACTION_LOAD_MORE) {
+                        onLoadMore();
+                    } else if (mLastAction == ACTION_INIT) {
+                        mSwipeRefreshLayout.setRefreshing(true);
+                        attempGetData();
+                    }
                 }
             });
             mNotNetworkSnackbar.show();
@@ -304,14 +347,21 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     private void showErrorSnackbar(boolean show, String message) {
         if (show) {
-            mBundle.putInt(STATUS_KEY, STATUS_SHOW_ERROR);
+            mStatus = STATUS_SHOW_ERROR;
             mErrorSnackbar = Snackbar.make(mSwipeRefreshLayout, message,
                     Snackbar.LENGTH_INDEFINITE);
             mErrorSnackbar.setAction("Thử lại", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mSwipeRefreshLayout.setRefreshing(true);
-                    attempGetData();
+                    if (mLastAction == ACTION_REFRESH) {
+                        mSwipeRefreshLayout.setRefreshing(true);
+                        onRefresh();
+                    } else if (mLastAction == ACTION_LOAD_MORE) {
+                        onLoadMore();
+                    } else if (mLastAction == ACTION_INIT) {
+                        mSwipeRefreshLayout.setRefreshing(true);
+                        attempGetData();
+                    }
                 }
             });
             mErrorSnackbar.show();
@@ -322,7 +372,11 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     // Lay danh sach thong bao tu may chu
     private Response fetchData() {
-        String url = Reference.HOST + Reference.LOAD_THONG_BAO_API;
+        String maSinhVien = mContext.getSharedPreferences("sinhVien", mContext.MODE_PRIVATE)
+                .getString("maSinhVien", null);
+        String matKhau = mContext.getSharedPreferences("sinhVien", mContext.MODE_PRIVATE)
+                .getString("matKhau", null);
+        String url = Reference.getLoadThongBaoApiUrl(maSinhVien, matKhau, mCurrentPage, ITEM_PER_PAGE);
 
         return NetworkUtil.makeRequest(url, false, null);
     }
@@ -335,7 +389,10 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
         try {
             List<THONGBAO> temp = jsonAdapter.fromJson(json);
-            mThongBaoList.addAll(temp);
+            if (temp.size() > 0) {
+                mThongBaoList.addAll(temp);
+                mIsThongBaoListChange = true;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -348,6 +405,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     public void smoothScrollToTop() {
         rvItems.smoothScrollToPosition(0);
-        mIsRvItemsAtTop = true;
+        mIsRefreshOnBackPressed = true;
     }
 }

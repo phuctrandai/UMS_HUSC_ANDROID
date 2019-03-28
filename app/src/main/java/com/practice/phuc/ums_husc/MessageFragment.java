@@ -36,20 +36,23 @@ public class MessageFragment extends Fragment implements SwipeRefreshLayout.OnRe
     private LoadMessageTask mLoadMessageTask;
     private Context mContext;
     private List<TINNHAN> mTinNhanList;
-    private Bundle mBundle;
+    private int mStatus;
     private String mErrorMessage;
     private MessageRecyclerDataAdapter mAdapter;
     private int currentItems, totalItems, scrollOutItems;
     private boolean mIsScrolling;
-
+    private int mLastAction;
     private Snackbar mNotNetworkSnackbar;
     private Snackbar mErrorSnackbar;
 
-    private final String STATUS_KEY = "statusKey";
-    private final int STATUS_LOADING = 0;
+    private final int STATUS_INIT = 0;
     private final int STATUS_SHOW_ERROR = 1;
     private final int STATUS_SHOW_DATA = 2;
     private final int STATUS_NOT_NETWORK = 3;
+    private final int STATUS_LOAD_MORE = 4;
+    private final int ACTION_INIT = 0;
+    private final int ACTION_REFRESH = 1;
+    private final int ACTION_LOAD_MORE = 2;
 
     // Cast json to model
     Moshi moshi;
@@ -74,10 +77,11 @@ public class MessageFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d("DEBUG", "On create MessageFragment");
-        mBundle = new Bundle();
-        mBundle.putInt(STATUS_KEY, STATUS_LOADING);
+        mStatus = STATUS_INIT;
         mTinNhanList = new ArrayList<>();
         mAdapter = new MessageRecyclerDataAdapter(mContext, mTinNhanList);
+        mIsScrolling = true;
+        mLastAction = ACTION_INIT;
         super.onCreate(savedInstanceState);
     }
 
@@ -96,21 +100,33 @@ public class MessageFragment extends Fragment implements SwipeRefreshLayout.OnRe
         // set up swipe refresh layout
         initSwipeRefreshLayout(view);
 
-        if (NetworkUtil.getConnectivityStatus(mContext) != NetworkUtil.TYPE_NOT_CONNECTED)
-            mBundle.putInt(STATUS_KEY, STATUS_LOADING);
+        if (mStatus == STATUS_NOT_NETWORK
+                && NetworkUtil.getConnectivityStatus(mContext) != NetworkUtil.TYPE_NOT_CONNECTED) {
+            if (mLastAction == ACTION_REFRESH) {
+                mStatus = STATUS_INIT;
+            } else if (mLastAction == ACTION_LOAD_MORE) {
+                mStatus = STATUS_LOAD_MORE;
+            }
+        }
 
         mSwipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
-                if (mBundle.getInt(STATUS_KEY) == STATUS_SHOW_DATA) {
-
-                } else if (mBundle.getInt(STATUS_KEY) == STATUS_NOT_NETWORK) {
+                if (mStatus == STATUS_SHOW_DATA) {
+                    Log.d("DEBUG", "Status: SHOW_DATA");
+                } else if (mStatus == STATUS_NOT_NETWORK) {
+                    Log.d("DEBUG", "Status: SHOW_NOT_NETWORK");
                     showNetworkErrorSnackbar(true);
-                } else if (mBundle.getInt(STATUS_KEY) == STATUS_SHOW_ERROR) {
+                } else if (mStatus == STATUS_SHOW_ERROR) {
+                    Log.d("DEBUG", "Status: SHOW_ERROR");
                     showErrorSnackbar(true, mErrorMessage);
-                } else if (mBundle.getInt(STATUS_KEY) == STATUS_LOADING) {
+                } else if (mStatus == STATUS_INIT) {
+                    Log.d("DEBUG", "Status: LOADING");
                     mSwipeRefreshLayout.setRefreshing(true);
                     attempGetData();
+                } else if (mStatus == STATUS_LOAD_MORE) {
+                    Log.d("DEBUG", "Status: LOAD_MORE");
+                    onLoadMore();
                 }
             }
         });
@@ -135,10 +151,10 @@ public class MessageFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
     @Override
     public void onRefresh() {
-        mTinNhanList.clear();
-        mAdapter.lastPosition = -1;
+        mLastAction = ACTION_REFRESH;
+
         if (NetworkUtil.getConnectivityStatus(mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
-            mBundle.putInt(STATUS_KEY, STATUS_NOT_NETWORK);
+            mStatus = STATUS_NOT_NETWORK;
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -147,8 +163,17 @@ public class MessageFragment extends Fragment implements SwipeRefreshLayout.OnRe
                 }
             }, 1000);
         } else {
+            mTinNhanList.clear();
+            mAdapter.lastPosition = -1;
             attempGetData();
         }
+    }
+
+    private void onLoadMore() {
+        mIsScrolling = false;
+        mLoadMoreLayout.setVisibility(View.VISIBLE);
+        mLastAction = ACTION_LOAD_MORE;
+        attempGetData();
     }
 
     private void initSwipeRefreshLayout(View view) {
@@ -193,7 +218,7 @@ public class MessageFragment extends Fragment implements SwipeRefreshLayout.OnRe
     // Kiem tra truoc khi lay du lieu
     private void attempGetData() {
         if (NetworkUtil.getConnectivityStatus(this.mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
-            mBundle.putInt(STATUS_KEY, STATUS_NOT_NETWORK);
+            mStatus = STATUS_NOT_NETWORK;
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -247,7 +272,7 @@ public class MessageFragment extends Fragment implements SwipeRefreshLayout.OnRe
             mSwipeRefreshLayout.setRefreshing(false);
             if (mLoadMessageTask != null) {
                 if (success) {
-                    mBundle.putInt(STATUS_KEY, STATUS_SHOW_DATA);
+                    mStatus = STATUS_SHOW_DATA;
                     mAdapter.notifyDataSetChanged();
                     mLoadMoreLayout.setVisibility(View.GONE);
                     mIsScrolling = false;
@@ -266,14 +291,21 @@ public class MessageFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
     private void showNetworkErrorSnackbar(boolean show) {
         if (show) {
-            mBundle.putInt(STATUS_KEY, STATUS_NOT_NETWORK);
+            mStatus = STATUS_NOT_NETWORK;
             mNotNetworkSnackbar = Snackbar.make(mSwipeRefreshLayout, getString(R.string.network_not_available),
                     Snackbar.LENGTH_INDEFINITE);
             mNotNetworkSnackbar.setAction("Thử lại", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mSwipeRefreshLayout.setRefreshing(true);
-                    attempGetData();
+                    if (mLastAction == ACTION_REFRESH) {
+                        mSwipeRefreshLayout.setRefreshing(true);
+                        onRefresh();
+                    } else if (mLastAction == ACTION_LOAD_MORE) {
+                        onLoadMore();
+                    } else if (mLastAction == ACTION_INIT) {
+                        mSwipeRefreshLayout.setRefreshing(true);
+                        attempGetData();
+                    }
                 }
             });
             mNotNetworkSnackbar.show();
@@ -284,14 +316,21 @@ public class MessageFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
     private void showErrorSnackbar(boolean show, String message) {
         if (show) {
-            mBundle.putInt(STATUS_KEY, STATUS_SHOW_ERROR);
+            mStatus = STATUS_SHOW_ERROR;
             mErrorSnackbar = Snackbar.make(mSwipeRefreshLayout, message,
                     Snackbar.LENGTH_INDEFINITE);
             mErrorSnackbar.setAction("Thử lại", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mSwipeRefreshLayout.setRefreshing(true);
-                    attempGetData();
+                    if (mLastAction == ACTION_REFRESH) {
+                        mSwipeRefreshLayout.setRefreshing(true);
+                        onRefresh();
+                    } else if (mLastAction == ACTION_LOAD_MORE) {
+                        onLoadMore();
+                    } else if (mLastAction == ACTION_INIT) {
+                        mSwipeRefreshLayout.setRefreshing(true);
+                        attempGetData();
+                    }
                 }
             });
             mErrorSnackbar.show();

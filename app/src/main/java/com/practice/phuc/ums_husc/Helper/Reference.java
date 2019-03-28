@@ -8,7 +8,7 @@ public final class Reference {
 
     public static final String LOAD_LY_LICH_API = "api/SinhVien/LyLichCaNhan/";
 
-    public static final String LOAD_THONG_BAO_API = "api/SinhVien/ThongBao/";
+    public static final String LOAD_THONG_BAO_API = "api/ThongBao/TatCa/";
 
     public static final String LOAD_TIN_NHAN_DEN_API = "api/SinhVien/TinNhanDen/";
 
@@ -20,6 +20,14 @@ public final class Reference {
         return Reference.HOST + Reference.LOGIN_API
                 + "?masinhvien=" + maSinhVien
                 + "&matkhau=" + matKhau;
+    }
+
+    public static String getLoadThongBaoApiUrl(String maSinhVien, String matKhau, int currentPage, int itemPerPage) {
+        return Reference.HOST + Reference.LOAD_THONG_BAO_API
+                + "?masinhvien=" + maSinhVien
+                + "&matkhau=" + matKhau
+                + "&sotrang=" + currentPage
+                + "&sodongmoitrang=" + itemPerPage;
     }
 
     public static String getLoadLyLichApiUrl(String maSinhVien, String matKhau) {

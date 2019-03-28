@@ -68,7 +68,10 @@ public class DetailNewsActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getBundleExtra("news");
         tvTieuDe.setText(bundle.getString("title"));
         tvThoiGianDang.setText(bundle.getString("postTime"));
-        tvNoiDung.loadData(bundle.getString("body"), "text/html; charset=UTF-8", null);
+        tvNoiDung.loadData(
+                "<div style='text-align: justify'>" +
+                bundle.getString("body") +
+                "</div>","text/html; charset=UTF-8", null);
 
         JustifyTextInTextView.justify(tvTieuDe);
     }

@@ -81,7 +81,7 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
 
     private void setFadeAnimation(View view, int position) {
         if (mContext != null && position > lastPosition) {
-            Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.fade_scale_animation);
+            Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.fade_translate_animation);
             view.startAnimation(animation);
             lastPosition = position;
         }

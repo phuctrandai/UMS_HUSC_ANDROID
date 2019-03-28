@@ -72,7 +72,6 @@ public class MainActivity extends AppCompatActivity
             MainFragment mainFragment = (MainFragment) fragmentManager.findFragmentByTag(currentFragment);
             if (mainFragment != null && mainFragment.findFirstVisibleItemPosition() > 0) {
                 mainFragment.smoothScrollToTop();
-
             } else {
                 confirmExit();
             }
