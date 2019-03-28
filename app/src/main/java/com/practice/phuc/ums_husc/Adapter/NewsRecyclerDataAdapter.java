@@ -70,7 +70,7 @@ public class NewsRecyclerDataAdapter extends RecyclerView.Adapter<NewsRecyclerDa
 
     private void setFadeAnimation(View view, int position) {
         if (context != null && position > lastPosition) {
-            Animation animation = AnimationUtils.loadAnimation(context, R.anim.fade_scale_animation);
+            Animation animation = AnimationUtils.loadAnimation(context, R.anim.fade_translate_animation);
             view.startAnimation(animation);
             lastPosition = position;
         }

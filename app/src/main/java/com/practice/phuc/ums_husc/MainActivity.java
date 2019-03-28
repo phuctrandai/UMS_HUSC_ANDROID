@@ -69,23 +69,13 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
 
         } else if (currentFragment.equals(MainFragment.class.getName())) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Thông báo");
-            builder.setMessage("Thoát ứng dụng ?");
-            builder.setCancelable(false);
-            builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    MainActivity.this.finishAfterTransition();
-                }
-            });
-            builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-            builder.create().show();
+            MainFragment mainFragment = (MainFragment) fragmentManager.findFragmentByTag(currentFragment);
+            if (mainFragment != null && mainFragment.findFirstVisibleItemPosition() > 0) {
+                mainFragment.smoothScrollToTop();
+
+            } else {
+                confirmExit();
+            }
         } else {
             replaceFragment(MainFragment.newInstance(this));
         }
@@ -208,28 +198,6 @@ public class MainActivity extends AppCompatActivity
 //        showDrawerButton(false);
     }
 
-    // Switch drawer nav button / back button
-    private void showDrawerButton(boolean show) {
-        if (show) {
-            toggle.setDrawerIndicatorEnabled(true);
-            toggle.setToolbarNavigationClickListener(null);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-            getSupportActionBar().setDisplayShowHomeEnabled(false);
-            toggle.syncState();
-        } else {
-            toggle.setDrawerIndicatorEnabled(false);
-            toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    replaceFragment(MainFragment.newInstance(MainActivity.this));
-
-                }
-            });
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
-    }
-
     // Khoi tao
     private void initAll() {
         // animation
@@ -348,5 +316,25 @@ public class MainActivity extends AppCompatActivity
         });
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+    }
+
+    private void confirmExit() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Thông báo");
+        builder.setMessage("Thoát ứng dụng ?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                MainActivity.this.finishAfterTransition();
+            }
+        });
+        builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
     }
 }

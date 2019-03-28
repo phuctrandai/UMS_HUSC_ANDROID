@@ -42,6 +42,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private NewsRecyclerDataAdapter mAdapter;
     private int currentItems, totalItems, scrollOutItems;
     private boolean mIsScrolling;
+    private boolean mIsRvItemsAtTop;
 
     private Snackbar mNotNetworkSnackbar;
     private Snackbar mErrorSnackbar;
@@ -80,6 +81,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         mThongBaoList = new ArrayList<>();
         mAdapter = new NewsRecyclerDataAdapter(mThongBaoList, mContext);
         mIsScrolling = false;
+        mIsRvItemsAtTop = false;
         super.onCreate(savedInstanceState);
     }
 
@@ -88,7 +90,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d("DEBUG", "On create VIEW MainFragment");
-        View view = inflater.inflate(R.layout.fragment_main, container, false);
+        final View view = inflater.inflate(R.layout.fragment_main, container, false);
 
         // Bind UI
         rvItems = (RecyclerView) view.findViewById(R.id.rv_thongBao);
@@ -185,7 +187,20 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 totalItems = manager.getItemCount();
                 scrollOutItems = manager.findFirstVisibleItemPosition();
 
-                if (mIsScrolling && (currentItems + scrollOutItems == totalItems)) {
+                if (mIsRvItemsAtTop && findFirstVisibleItemPosition() == 0) {
+                    Log.d("DEBUG", "Refresh on press back");
+                    mIsRvItemsAtTop = false;
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            onRefresh();
+                        }
+                    }, 1000);
+                    return;
+                }
+
+                if (mIsScrolling && (currentItems + scrollOutItems == totalItems - 2)) {
                     mIsScrolling = false;
                     mLoadMoreLayout.setVisibility(View.VISIBLE);
                     attempGetData();
@@ -324,5 +339,15 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public int findFirstVisibleItemPosition() {
+        LinearLayoutManager manager = (LinearLayoutManager) rvItems.getLayoutManager();
+        return manager == null ? -1 : manager.findFirstVisibleItemPosition();
+    }
+
+    public void smoothScrollToTop() {
+        rvItems.smoothScrollToPosition(0);
+        mIsRvItemsAtTop = true;
     }
 }
