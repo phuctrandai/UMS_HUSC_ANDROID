@@ -14,6 +14,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.DetailNewsActivity;
+import com.practice.phuc.ums_husc.Helper.DateHelper;
 import com.practice.phuc.ums_husc.Model.THONGBAO;
 import com.practice.phuc.ums_husc.R;
 
@@ -43,7 +44,9 @@ public class NewsRecyclerDataAdapter extends RecyclerView.Adapter<NewsRecyclerDa
 
         viewHolder.tvTieuDe.setText(tieuDe);
 
-        final String thoiGianDangStr = thoiGianDang.substring(0, 10) + " " + thoiGianDang.substring(11, 16);
+        final String ngayDang = DateHelper.formatYMDToDMY(thoiGianDang.substring(0, 10));
+        final String gioDang = thoiGianDang.substring(11, 16);
+        final String thoiGianDangStr = ngayDang + " " + gioDang;
         viewHolder.tvThoiGianDang.setText(thoiGianDangStr);
 
         viewHolder.setItemClickListener(new ItemClickListener() {

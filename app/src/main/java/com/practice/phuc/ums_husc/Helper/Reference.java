@@ -1,20 +1,24 @@
 package com.practice.phuc.ums_husc.Helper;
 
+import com.practice.phuc.ums_husc.Model.THONGBAO;
+
 public final class Reference {
 
     public static final String HOST = "http://192.168.1.106:8082/";
 
-    public static final String LOGIN_API = "api/sinhvien/dangnhap/";
+    private static final String LOGIN_API = "api/sinhvien/dangnhap/";
 
-    public static final String LOAD_LY_LICH_API = "api/SinhVien/LyLichCaNhan/";
+    private static final String LOAD_LY_LICH_API = "api/SinhVien/LyLichCaNhan/";
 
     public static final String LOAD_THONG_BAO_API = "api/ThongBao/TatCa/";
 
+    private static final String LOAD_NOI_DUNG_THONG_BAO_API = "api/ThongBao/NoiDung/";
+
     public static final String LOAD_TIN_NHAN_DEN_API = "api/SinhVien/TinNhanDen/";
 
-    public static final String SAVE_TOKEN_API = "api/fcm/save/";
+    private static final String SAVE_TOKEN_API = "api/fcm/save/";
 
-    public static final String DELETE_TOKEN_API = "api/fcm/delete/";
+    private static final String DELETE_TOKEN_API = "api/fcm/delete/";
 
     public static String getLoginApiUrl(String maSinhVien, String matKhau) {
         return Reference.HOST + Reference.LOGIN_API
@@ -28,6 +32,13 @@ public final class Reference {
                 + "&matkhau=" + matKhau
                 + "&sotrang=" + currentPage
                 + "&sodongmoitrang=" + itemPerPage;
+    }
+
+    public static String getLoadNoiDungThongBaoApiUrl(String maSinhVien, String matKhau, String id) {
+        return Reference.HOST + Reference.LOAD_NOI_DUNG_THONG_BAO_API
+                + "?masinhvien=" + maSinhVien
+                + "&matkhau=" + matKhau
+                + "&id=" + id;
     }
 
     public static String getLoadLyLichApiUrl(String maSinhVien, String matKhau) {
@@ -50,4 +61,7 @@ public final class Reference {
 
     public static String MESSAGE_NOTIFICATION = "message_notification";
     public static String NEWS_NOTIFICATION = "news_notification";
+
+    public static boolean mHasNewNews = false;
+    public static THONGBAO mNewThongBao = null;
 }

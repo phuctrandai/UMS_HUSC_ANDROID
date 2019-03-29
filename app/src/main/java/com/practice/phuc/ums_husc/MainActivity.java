@@ -55,14 +55,14 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onResume() {
-        Log.d("DEBUG", "ON RESUME Main activity");
+//        Log.d("DEBUG", "ON RESUME Main activity");
         MyFireBaseMessagingService.context = this;
         super.onResume();
     }
 
     @Override
     public void onBackPressed() {
-        Log.d("UMS_HUSC", "Back pressed !!!");
+//        Log.d("UMS_HUSC", "Back pressed !!!");
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 
-        Log.d("DEBUG", "Current fragment: " + currentFragment);
+//        Log.d("DEBUG", "Current fragment: " + currentFragment);
         updateByFragmentTag(fragmentTag);
 
         Fragment temp = fragmentManager.findFragmentByTag(fragmentTag);
@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity
 //            ft.addToBackStack(fragmentTag);
 //        }
         ft.commit();
-        Log.d("DEBUG", "Back stack entry count: " + fragmentManager.getBackStackEntryCount());
+//        Log.d("DEBUG", "Back stack entry count: " + fragmentManager.getBackStackEntryCount());
     }
 
     // Update UI when press back

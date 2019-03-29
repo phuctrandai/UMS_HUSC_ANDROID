@@ -148,8 +148,22 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onPause() {
         showNetworkErrorSnackbar(false);
         showErrorSnackbar(false, mErrorMessage);
-        Log.d("DEBUG", "on PAUSE Main fragment - STATUS: " + mStatus);
+//        Log.d("DEBUG", "on PAUSE Main fragment - STATUS: " + mStatus);
         super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        Log.d("DEBUG", "On RESUME Main fragment");
+        super.onResume();
+
+        if (Reference.mHasNewNews) {
+            Reference.mHasNewNews = false;
+            if (Reference.mNewThongBao != null) {
+                mThongBaoList.add(0, Reference.mNewThongBao);
+                mAdapter.notifyItemInserted(0);
+            }
+        }
     }
 
     @Override
@@ -234,7 +248,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                     return;
                 }
 
-                if (mIsScrolling && (currentItems + scrollOutItems == totalItems - 2)) {
+                if (mIsScrolling && (currentItems + scrollOutItems == totalItems)) {
                     onLoadMore();
                 }
             }
@@ -276,7 +290,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 } else {
                     Log.d("DEBUG", "Get thong bao Response code: " + mResponse.code());
                     if (mResponse.code() == NetworkUtil.OK) {
-                        String json = mResponse.body().string();
+                        String json = mResponse.body() != null ? mResponse.body().string() : "";
                         setData(json);
                         return true;
 
@@ -317,6 +331,34 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         protected void onCancelled() {
             mLoadNewsTask = null;
             super.onCancelled();
+        }
+    }
+
+    // Lay danh sach thong bao tu may chu
+    private Response fetchData() {
+        String maSinhVien = mContext.getSharedPreferences("sinhVien", mContext.MODE_PRIVATE)
+                .getString("maSinhVien", null);
+        String matKhau = mContext.getSharedPreferences("sinhVien", mContext.MODE_PRIVATE)
+                .getString("matKhau", null);
+        String url = Reference.getLoadThongBaoApiUrl(maSinhVien, matKhau, mCurrentPage, ITEM_PER_PAGE);
+
+        return NetworkUtil.makeRequest(url, false, null);
+    }
+
+    // Doi chuoi JSON sang model
+    private void setData(String json) {
+        moshi = new Moshi.Builder().build();
+        usersType = Types.newParameterizedType(List.class, THONGBAO.class);
+        jsonAdapter = moshi.adapter(usersType);
+
+        try {
+            List<THONGBAO> temp = jsonAdapter.fromJson(json);
+            if (temp.size() > 0) {
+                mThongBaoList.addAll(temp);
+                mIsThongBaoListChange = true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -367,34 +409,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             mErrorSnackbar.show();
         } else if (mErrorSnackbar != null) {
             mErrorSnackbar.dismiss();
-        }
-    }
-
-    // Lay danh sach thong bao tu may chu
-    private Response fetchData() {
-        String maSinhVien = mContext.getSharedPreferences("sinhVien", mContext.MODE_PRIVATE)
-                .getString("maSinhVien", null);
-        String matKhau = mContext.getSharedPreferences("sinhVien", mContext.MODE_PRIVATE)
-                .getString("matKhau", null);
-        String url = Reference.getLoadThongBaoApiUrl(maSinhVien, matKhau, mCurrentPage, ITEM_PER_PAGE);
-
-        return NetworkUtil.makeRequest(url, false, null);
-    }
-
-    // Doi chuoi JSON sang model
-    private void setData(String json) {
-        moshi = new Moshi.Builder().build();
-        usersType = Types.newParameterizedType(List.class, THONGBAO.class);
-        jsonAdapter = moshi.adapter(usersType);
-
-        try {
-            List<THONGBAO> temp = jsonAdapter.fromJson(json);
-            if (temp.size() > 0) {
-                mThongBaoList.addAll(temp);
-                mIsThongBaoListChange = true;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

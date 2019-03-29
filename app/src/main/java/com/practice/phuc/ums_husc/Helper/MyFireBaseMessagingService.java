@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -25,7 +26,6 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
         Log.d("DEBUG", "Nhận thông báo - xử lý ở đây !!!");
-        //Log.d("DEBUG", remoteMessage.getData().toString() + remoteMessage.getData().size());
 
         // Xu ly payload data
         if (remoteMessage.getData().size() > 0) {
@@ -43,14 +43,19 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
     }
 
     private Notification createNewsNotification(RemoteMessage remoteMessage) {
-        String newsTitle = remoteMessage.getData().get("title");
-        String newsContent = remoteMessage.getData().get("body");
-        String newsPostTime = remoteMessage.getData().get("postTime");
+        String newsId = remoteMessage.getData().get("id");
+        String newsPostTime = DateHelper.formatDateTimeString(remoteMessage.getData().get("postTime"));
+        // tieu de thong bao
+        String contentTitle = remoteMessage.getNotification() != null ?
+                remoteMessage.getNotification().getTitle() : "Tiêu đề";
+        // noi dung thong bao
+        String contentText = remoteMessage.getNotification() != null ?
+                remoteMessage.getNotification().getBody() : "Nội dung";
 
         Bundle bundle = new Bundle();
-        bundle.putString("title", newsTitle);
-        bundle.putString("body", newsContent);
-        bundle.putString("postTime", newsPostTime);
+        bundle.putString("title", contentText); // tieu de cua ban tin
+        bundle.putString("id", newsId + ""); // ma ban tin
+        bundle.putString("postTime", newsPostTime); // thoi diem dang
 
         Intent detailNewsIntent;
         PendingIntent pendingIntent;
@@ -65,16 +70,19 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
             pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         } else {
             detailNewsIntent = new Intent(context, DetailNewsActivity.class);
-            bundle.putBoolean("fromNotification", false);
+            bundle.putBoolean("fromNotification", true);
             detailNewsIntent.putExtra("news", bundle);
             pendingIntent = PendingIntent.getActivity(context,
                     0, detailNewsIntent, PendingIntent.FLAG_UPDATE_CURRENT, bundle);
         }
-
+        // Khoi tao thong bao day
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, getString(R.string.chanel_id));
-        mBuilder.setContentTitle(remoteMessage.getNotification().getTitle());
-        mBuilder.setContentText(remoteMessage.getNotification().getBody());
+        mBuilder.setContentTitle(contentTitle);
+        mBuilder.setContentText("Lúc " + newsPostTime);
         mBuilder.setSmallIcon(R.mipmap.logo);
+        mBuilder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.logo));
+        mBuilder.setColor(getResources().getColor(R.color.colorAccent));
+        mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(contentText));
         mBuilder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
         mBuilder.setAutoCancel(true);
         mBuilder.setContentIntent(pendingIntent);

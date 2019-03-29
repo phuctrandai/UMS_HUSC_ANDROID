@@ -19,6 +19,10 @@ public class FireBaseIDTask extends AsyncTask<String, Void, Boolean> {
                 if (response.code() == NetworkUtil.OK) {
                     Log.d("DEBUG", "FireBase token id do in background Success !!!");
                     return true;
+                } else if (response.code() == NetworkUtil.BAD_REQUEST) {
+                    Log.d("DEBUG", "FireBase token id do in background Badrequest: " +
+                            response.body().string());
+                    return false;
                 }
             }
         } catch (Exception ex) {
