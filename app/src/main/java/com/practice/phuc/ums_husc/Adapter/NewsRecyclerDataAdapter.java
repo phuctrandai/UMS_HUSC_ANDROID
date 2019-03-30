@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.DetailNewsActivity;
 import com.practice.phuc.ums_husc.Helper.DateHelper;
+import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.Model.THONGBAO;
 import com.practice.phuc.ums_husc.R;
 
@@ -53,11 +54,11 @@ public class NewsRecyclerDataAdapter extends RecyclerView.Adapter<NewsRecyclerDa
             @Override
             public void onClick(View view, int position, boolean isLongClick) {
                 Bundle bundle = new Bundle();
-                bundle.putString("title", tieuDe);
-                bundle.putString("postTime", thoiGianDangStr);
-                bundle.putString("body", noiDung);
+                bundle.putString(Reference.BUNDLE_KEY_NEWS_TITLE, tieuDe);
+                bundle.putString(Reference.BUNDLE_KEY_NEWS_POST_TIME, thoiGianDangStr);
+                bundle.putString(Reference.BUNDLE_KEY_NEWS_BODY, noiDung);
                 Intent intent = new Intent(context, DetailNewsActivity.class);
-                intent.putExtra("news", bundle);
+                intent.putExtra(Reference.BUNDLE_EXTRA_NEWS, bundle);
                 context.startActivity(intent);
             }
         });

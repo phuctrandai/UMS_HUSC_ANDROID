@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.Helper.FireBaseIDTask;
 import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
+import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.LyLichCaNhanModule.ResumeActivity;
 
 public class MainActivity extends AppCompatActivity
@@ -36,6 +38,7 @@ public class MainActivity extends AppCompatActivity
     private static String currentFragment;
     private int currentNavItem;
     private static FragmentManager fragmentManager;
+    private boolean mIsLogined;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,14 +46,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Log.d("DEBUG", "ON create Main activity");
 
-        Bundle bundle = getIntent().getBundleExtra("news");
+        mIsLogined = localLogin();
 
-        if (bundle != null) {
-            Intent intent = new Intent(this, DetailNewsActivity.class);
-            intent.putExtra("news", bundle);
-            startActivity(intent);
-        } else {
-
+        if (mIsLogined) {
             initAll();
 
             initFragmentManager();
@@ -64,10 +62,43 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        if (!mIsLogined) {
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
+            this.finish();
+        } else {
+            // xem tin tu thong bao o thanh trang thai
+            Bundle bundle = getIntent().getExtras();
+            if (bundle != null) {
+                String title = bundle.getString(Reference.BUNDLE_KEY_NEWS_TITLE);
+                String postTime = bundle.getString(Reference.BUNDLE_KEY_NEWS_POST_TIME);
+                String id = bundle.getString(Reference.BUNDLE_KEY_NEWS_ID);
+
+                Bundle b = new Bundle();
+                b.putString(Reference.BUNDLE_KEY_NEWS_TITLE, title);
+                b.putString(Reference.BUNDLE_KEY_NEWS_POST_TIME, postTime);
+                b.putString(Reference.BUNDLE_KEY_NEWS_ID, id);
+                b.putBoolean(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, true);
+                Intent intent = new Intent(this, DetailNewsActivity.class);
+                intent.putExtra(Reference.BUNDLE_EXTRA_NEWS, b);
+                startActivity(intent);
+            }
+        }
+        super.onPostCreate(savedInstanceState);
+    }
+
+    @Override
     protected void onResume() {
 //        Log.d("DEBUG", "ON RESUME Main activity");
-        MyFireBaseMessagingService.mContex = this;
+        MyFireBaseMessagingService.mContext = this;
         super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        MyFireBaseMessagingService.mContext = null;
+        super.onDestroy();
     }
 
     @Override
@@ -292,6 +323,19 @@ public class MainActivity extends AppCompatActivity
         FireBaseIDTask.deleteTokenFromAccount(maSinhVien, token);
     }
 
+    // Dang nhap voi thong tin da luu tren may
+    private boolean localLogin() {
+        // Kiem tra da dang nhap truoc do chua
+        SharedPreferences sp = getSharedPreferences("sinhVien", MODE_PRIVATE);
+        String maSinhVien = sp.getString("maSinhVien", null);
+        String matKhau = sp.getString("matKhau", null);
+
+        if ((maSinhVien != null) && (matKhau != null))
+            return true;
+
+        return false;
+    }
+
     // Dang xuat tai khoan hien tai
     private void logOut() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -334,7 +378,7 @@ public class MainActivity extends AppCompatActivity
         builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                MainActivity.this.finishAndRemoveTask();
+                MainActivity.this.finish();
             }
         });
         builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {

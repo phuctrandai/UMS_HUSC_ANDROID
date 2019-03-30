@@ -13,6 +13,7 @@ import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.practice.phuc.ums_husc.DetailNewsActivity;
 import com.practice.phuc.ums_husc.MainActivity;
 import com.practice.phuc.ums_husc.R;
 
@@ -21,7 +22,7 @@ import java.util.Date;
 public class MyFireBaseMessagingService extends FirebaseMessagingService {
 
     @SuppressLint("StaticFieldLeak")
-    public static Context mContex = null;
+    public static Context mContext = null;
 //    private String mNotificationId;
 
     @Override
@@ -34,12 +35,12 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
             String messageType = remoteMessage.getData().get("type");
 
             if (messageType.equals(Reference.NEWS_NOTIFICATION)) {
-                Log.d("DEBUG", "Thong bao co tin tuc moi !!!");
+//                Log.d("DEBUG", "Thong bao co tin tuc moi !!!");
                 // Thong bao co tin tuc moi
                 riseNotification(createNewsNotification(remoteMessage));
 
             } else if (messageType.equals(Reference.MESSAGE_NOTIFICATION)) {
-                Log.d("DEBUG", "Thong bao co tin nhan moi !!!");
+//                Log.d("DEBUG", "Thong bao co tin nhan moi !!!");
                 // Thong bao co tin nhan moi
 
             }
@@ -49,41 +50,41 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
     private Notification createNewsNotification(RemoteMessage remoteMessage) {
         String newsId = remoteMessage.getData().get("id");
         String newsPostTime = DateHelper.formatDateTimeString(remoteMessage.getData().get("postTime"));
-        // tieu de thong bao
-        String contentTitle = remoteMessage.getNotification() != null ?
-                remoteMessage.getNotification().getTitle() : "Tiêu đề";
-        // noi dung thong bao
-        String contentText = remoteMessage.getNotification() != null ?
-                remoteMessage.getNotification().getBody() : "Nội dung";
+        String newsTitle = remoteMessage.getData().get("title");
+        String newsBody = remoteMessage.getData().get("body");
 
-        Bundle bundle = new Bundle();
-        bundle.putString("title", contentText); // tieu de cua ban tin
-        bundle.putString("id", newsId + ""); // ma ban tin
-        bundle.putString("postTime", newsPostTime); // thoi diem dang
-
+        Intent intent;
         PendingIntent pendingIntent;
+        Context context;
+        Bundle bundle = new Bundle();
+        if (mContext == null) {
+            context = this;
+            intent = new Intent(context, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            intent.putExtra(Reference.BUNDLE_KEY_NEWS_TITLE, newsBody);
+            intent.putExtra(Reference.BUNDLE_KEY_NEWS_ID, newsId);
+            intent.putExtra(Reference.BUNDLE_KEY_NEWS_POST_TIME, newsPostTime);
+            intent.putExtra(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI,true);
+        } else {
+            intent = new Intent(mContext, DetailNewsActivity.class);
+            bundle.putString(Reference.BUNDLE_KEY_NEWS_TITLE, newsBody);
+            bundle.putString(Reference.BUNDLE_KEY_NEWS_ID, newsId);
+            bundle.putString(Reference.BUNDLE_KEY_NEWS_POST_TIME, newsPostTime);
+            bundle.putBoolean(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI,true);
+            intent.putExtra(Reference.BUNDLE_EXTRA_NEWS, bundle);
+            context = mContext;
+        }
 
-//        if (mContex == null) {
-            Intent mainIntent = new Intent(this, MainActivity.class);
-            bundle.putBoolean("fromNotification", true);
-            mainIntent.putExtra("news", bundle);
-            pendingIntent = PendingIntent.getActivity(this,
-                    0, mainIntent, PendingIntent.FLAG_UPDATE_CURRENT, bundle);
-//        } else {
-//            Intent detailNewsIntent = new Intent(this, DetailNewsActivity.class);
-//            bundle.putBoolean("fromNotification", true);
-//            detailNewsIntent.putExtra("news", bundle);
-//            pendingIntent = PendingIntent.getActivity(this,
-//                    0, detailNewsIntent, PendingIntent.FLAG_UPDATE_CURRENT, bundle);
-//        }
-        // Khoi tao thong bao day
+        pendingIntent = PendingIntent.getActivity(context,0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // Khoi tao thong bao
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, getString(R.string.chanel_id));
-        mBuilder.setContentTitle(contentTitle);
+        mBuilder.setContentTitle(newsTitle);
         mBuilder.setContentText("Lúc " + newsPostTime);
         mBuilder.setSmallIcon(R.mipmap.logo);
         mBuilder.setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.mipmap.logo));
         mBuilder.setColor(getResources().getColor(R.color.colorAccent));
-        mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(contentText));
+        mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(newsBody));
         mBuilder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
         mBuilder.setAutoCancel(true);
         mBuilder.setContentIntent(pendingIntent);

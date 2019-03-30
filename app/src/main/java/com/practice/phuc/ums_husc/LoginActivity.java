@@ -72,11 +72,6 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        if (localLogin()) {
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
-            LoginActivity.this.finish();
-        }
         super.onPostCreate(savedInstanceState);
     }
 
@@ -258,19 +253,6 @@ public class LoginActivity extends AppCompatActivity {
             }
             showProgress(false);
         }
-    }
-
-    // Dang nhap voi thong tin da luu tren may
-    private boolean localLogin() {
-        // Kiem tra da dang nhap truoc do chua
-        SharedPreferences sp = LoginActivity.this.getSharedPreferences("sinhVien", MODE_PRIVATE);
-        String maSinhVien = sp.getString("maSinhVien", null);
-        String matKhau = sp.getString("matKhau", null);
-
-        if ((maSinhVien != null) && (matKhau != null))
-            return true;
-
-        return false;
     }
 
     // Dang nhap voi thong tin nhap vao

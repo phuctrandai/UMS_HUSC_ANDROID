@@ -62,4 +62,5 @@
     <string name="channel_description">UMS-HUSC-Description</string>
     <string name="chanel_id">15011997</string>
     <string name="title_activity_detail_message">DetailMessageActivity</string>
+    <string name="action_handle_notification">handle_notification</string>
 </resources>
