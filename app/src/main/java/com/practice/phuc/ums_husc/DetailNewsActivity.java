@@ -26,7 +26,6 @@ import okhttp3.Response;
 
 public class DetailNewsActivity extends AppCompatActivity {
 
-    private boolean launchFromNotification;
     private LoadNewsContentTask mLoadTask;
 
     // UI
@@ -59,9 +58,6 @@ public class DetailNewsActivity extends AppCompatActivity {
         // animation
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
-        // Neu mo tu thong bao, thi khi tro ve se tro ve main activity
-        launchFromNotification = getIntent().getBundleExtra("news").getBoolean("fromNotification");
-
         // hien thi chi tiet bai dang
         hienThiBaiDang();
     }
@@ -69,19 +65,12 @@ public class DetailNewsActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
 //        Log.d("DEBUG", "ON RESUME Detail news activity");
-        MyFireBaseMessagingService.mContex = this;
+        MyFireBaseMessagingService.mContext = this;
         super.onResume();
     }
 
     @Override
     public void onBackPressed() {
-//        if (launchFromNotification) {
-//            Intent intent = new Intent(this, MainActivity.class);
-//            startActivity(intent);
-//            finishAfterTransition();
-//        } else {
-//            super.onBackPressed();
-//        }
         super.onBackPressed();
     }
 
@@ -92,9 +81,10 @@ public class DetailNewsActivity extends AppCompatActivity {
     }
 
     private void hienThiBaiDang() {
-        Bundle bundle = getIntent().getBundleExtra("news");
-        tvTieuDe.setText(bundle.getString("title"));
-        tvThoiGianDang.setText(bundle.getString("postTime"));
+        Bundle bundle = getIntent().getBundleExtra(Reference.BUNDLE_EXTRA_NEWS);
+        boolean launchFromNotification = bundle.getBoolean(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI);
+        tvTieuDe.setText(bundle.getString(Reference.BUNDLE_KEY_NEWS_TITLE));
+        tvThoiGianDang.setText(bundle.getString(Reference.BUNDLE_KEY_NEWS_POST_TIME));
         JustifyTextInTextView.justify(tvTieuDe);
 
         if (launchFromNotification) {
@@ -103,7 +93,7 @@ public class DetailNewsActivity extends AppCompatActivity {
             mLoadTask.execute((String) null);
         } else {
             progressBar.setVisibility(View.GONE);
-            String content = bundle.getString("body");
+            String content = bundle.getString(Reference.BUNDLE_KEY_NEWS_BODY);
             String htmlContent = "<div style='text-align: justify'>" + content + "</div>";
             tvNoiDung.loadData(htmlContent, "text/html; charset=UTF-8",null);
         }
@@ -167,9 +157,8 @@ public class DetailNewsActivity extends AppCompatActivity {
                 .getString("maSinhVien", null);
         String matKhau = getSharedPreferences("sinhVien", MODE_PRIVATE)
                 .getString("matKhau", null);
-        String id = getIntent().getBundleExtra("news").getString("id");
+        String id = getIntent().getBundleExtra(Reference.BUNDLE_EXTRA_NEWS).getString(Reference.BUNDLE_KEY_NEWS_ID);
         String url = Reference.getLoadNoiDungThongBaoApiUrl(maSinhVien, matKhau, id);
-//        Log.d("DEBUG", "Get noi dung thong bao URL: " + url);
 
         return NetworkUtil.makeRequest(url, false, null);
     }

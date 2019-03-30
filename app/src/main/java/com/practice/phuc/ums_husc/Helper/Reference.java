@@ -74,4 +74,11 @@ public final class Reference {
         }
         return mListNewThongBao;
     }
+
+    public static String BUNDLE_EXTRA_NEWS = "news";
+    public static String BUNDLE_KEY_NEWS_TITLE = "news_title";
+    public static String BUNDLE_KEY_NEWS_BODY = "news_body";
+    public static String BUNDLE_KEY_NEWS_POST_TIME = "news_post_time";
+    public static String BUNDLE_KEY_NEWS_ID = "news_id";
+    public static String BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI = "launch_from_noti";
 }

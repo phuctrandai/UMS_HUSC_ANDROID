@@ -46,7 +46,7 @@ public class DetailMessageActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         Log.d("DEBUG", "ON RESUME Detail news activity");
-        MyFireBaseMessagingService.mContex = this;
+        MyFireBaseMessagingService.mContext = this;
         super.onResume();
     }
 
