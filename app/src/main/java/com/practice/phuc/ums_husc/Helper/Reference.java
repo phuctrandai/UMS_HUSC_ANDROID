@@ -2,6 +2,9 @@ package com.practice.phuc.ums_husc.Helper;
 
 import com.practice.phuc.ums_husc.Model.THONGBAO;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class Reference {
 
     public static final String HOST = "http://192.168.1.106:8082/";
@@ -63,5 +66,12 @@ public final class Reference {
     public static String NEWS_NOTIFICATION = "news_notification";
 
     public static boolean mHasNewNews = false;
-    public static THONGBAO mNewThongBao = null;
+    private static List<THONGBAO> mListNewThongBao = null;
+
+    public static List<THONGBAO> getmListNewThongBao() {
+        if (mListNewThongBao == null) {
+            mListNewThongBao = new ArrayList<>();
+        }
+        return mListNewThongBao;
+    }
 }

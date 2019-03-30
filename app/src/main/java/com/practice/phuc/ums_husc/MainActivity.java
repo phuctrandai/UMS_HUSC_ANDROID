@@ -33,30 +33,40 @@ public class MainActivity extends AppCompatActivity
     private NavigationView navigationView;
     private ActionBarDrawerToggle toggle;
     // param
-    private String currentFragment;
+    private static String currentFragment;
     private int currentNavItem;
-    private FragmentManager fragmentManager;
+    private static FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Log.d("DEBUG", "ON create Main activity");
 
-        initAll();
+        Bundle bundle = getIntent().getBundleExtra("news");
 
-        initFragmentManager();
-        // set first fragment
-        initFragment(MainFragment.newInstance(this));
-        // hien thi thong tin tai khoan
-        showAccountInfo();
-        //
-        saveTokenForAccount();
+        if (bundle != null) {
+            Intent intent = new Intent(this, DetailNewsActivity.class);
+            intent.putExtra("news", bundle);
+            startActivity(intent);
+        } else {
+
+            initAll();
+
+            initFragmentManager();
+            // set first fragment
+            initFragment(MainFragment.newInstance(this));
+            // hien thi thong tin tai khoan
+            showAccountInfo();
+            //
+            saveTokenForAccount();
+        }
     }
 
     @Override
     protected void onResume() {
 //        Log.d("DEBUG", "ON RESUME Main activity");
-        MyFireBaseMessagingService.context = this;
+        MyFireBaseMessagingService.mContex = this;
         super.onResume();
     }
 
@@ -89,7 +99,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_thongBao) {
             return true;
         }
@@ -325,7 +334,7 @@ public class MainActivity extends AppCompatActivity
         builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                MainActivity.this.finishAfterTransition();
+                MainActivity.this.finishAndRemoveTask();
             }
         });
         builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {

@@ -59,7 +59,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     // So trang thong bao hien tai
     private int mCurrentPage;
-    private final int ITEM_PER_PAGE = 10;
+    private final int ITEM_PER_PAGE = 15;
 
     // Cast json to model
     Moshi moshi;
@@ -156,12 +156,18 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onResume() {
         Log.d("DEBUG", "On RESUME Main fragment");
         super.onResume();
+        onHasNewNews();
+    }
 
+    public void onHasNewNews() {
         if (Reference.mHasNewNews) {
             Reference.mHasNewNews = false;
-            if (Reference.mNewThongBao != null) {
-                mThongBaoList.add(0, Reference.mNewThongBao);
-                mAdapter.notifyItemInserted(0);
+            if (Reference.getmListNewThongBao().size() > 0) {
+                for(THONGBAO t : Reference.getmListNewThongBao()) {
+                    mThongBaoList.add(0, t);
+                    mAdapter.notifyItemInserted(0);
+                }
+                Reference.getmListNewThongBao().clear();
             }
         }
     }
