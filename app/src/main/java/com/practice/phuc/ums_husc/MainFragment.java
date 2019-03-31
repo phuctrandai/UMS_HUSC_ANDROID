@@ -7,7 +7,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -75,7 +75,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         // Required empty public constructor
     }
 
-    public static MainFragment newInstance(Context context) {
+    public static Fragment newInstance(Context context) {
         MainFragment mainFragment = new MainFragment();
         mainFragment.mContext = context;
         return mainFragment;
@@ -83,7 +83,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.d("DEBUG", "On create MainFragment");
+//        Log.d("DEBUG", "On create MainFragment");
         mStatus = STATUS_INIT;
         mCurrentPage = 1;
         mThongBaoList = new ArrayList<>();
@@ -99,7 +99,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d("DEBUG", "On create VIEW MainFragment");
+//        Log.d("DEBUG", "On create VIEW MainFragment");
         final View view = inflater.inflate(R.layout.fragment_main, container, false);
 
         // Bind UI
@@ -123,19 +123,19 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             @Override
             public void run() {
                 if (mStatus == STATUS_SHOW_DATA) {
-                    Log.d("DEBUG", "Status: SHOW_DATA");
+//                    Log.d("DEBUG", "Status: SHOW_DATA");
                 } else if (mStatus == STATUS_NOT_NETWORK) {
-                    Log.d("DEBUG", "Status: SHOW_NOT_NETWORK");
+//                    Log.d("DEBUG", "Status: SHOW_NOT_NETWORK");
                     showNetworkErrorSnackbar(true);
                 } else if (mStatus == STATUS_SHOW_ERROR) {
-                    Log.d("DEBUG", "Status: SHOW_ERROR");
+//                    Log.d("DEBUG", "Status: SHOW_ERROR");
                     showErrorSnackbar(true, mErrorMessage);
                 } else if (mStatus == STATUS_INIT) {
-                    Log.d("DEBUG", "Status: LOADING");
+//                    Log.d("DEBUG", "Status: LOADING");
                     mSwipeRefreshLayout.setRefreshing(true);
                     attempGetData();
                 } else if (mStatus == STATUS_LOAD_MORE) {
-                    Log.d("DEBUG", "Status: LOAD_MORE");
+//                    Log.d("DEBUG", "Status: LOAD_MORE");
                     onLoadMore();
                 }
             }
@@ -148,7 +148,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onPause() {
         showNetworkErrorSnackbar(false);
         showErrorSnackbar(false, mErrorMessage);
-//        Log.d("DEBUG", "on PAUSE Main fragment - STATUS: " + mStatus);
+        Log.d("DEBUG", "on PAUSE Main fragment - STATUS: " + mStatus);
         super.onPause();
     }
 
@@ -174,7 +174,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onDestroy() {
-        Log.d("DEBUG", "ON DESTROY MAIN FRAGMENT");
+//        Log.d("DEBUG", "ON DESTROY MAIN FRAGMENT");
         mLoadNewsTask = null;
         mThongBaoList.clear();
         super.onDestroy();
@@ -182,7 +182,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onRefresh() {
-        Log.d("DEBUG", "on REFRESH Main fragment");
+//        Log.d("DEBUG", "on REFRESH Main fragment");
         mLastAction = ACTION_REFRESH;
 
         if (NetworkUtil.getConnectivityStatus(mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
@@ -242,7 +242,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 scrollOutItems = manager.findFirstVisibleItemPosition();
 
                 if (mIsRefreshOnBackPressed && findFirstVisibleItemPosition() == 0) {
-                    Log.d("DEBUG", "Refresh on press back");
+//                    Log.d("DEBUG", "Refresh on press back");
                     mIsRefreshOnBackPressed = false;
                     mSwipeRefreshLayout.setRefreshing(true);
                     new Handler().postDelayed(new Runnable() {

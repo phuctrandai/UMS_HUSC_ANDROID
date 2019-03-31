@@ -1,6 +1,9 @@
 package com.practice.phuc.ums_husc;
 
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,15 +13,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,7 +43,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.d("DEBUG", "ON create Main activity");
+//        Log.d("DEBUG", "ON create Main activity");
 
         mIsLogined = localLogin();
 
@@ -56,8 +55,6 @@ public class MainActivity extends AppCompatActivity
             initFragment(MainFragment.newInstance(this));
             // hien thi thong tin tai khoan
             showAccountInfo();
-            //
-            saveTokenForAccount();
         }
     }
 
@@ -70,7 +67,7 @@ public class MainActivity extends AppCompatActivity
         } else {
             // xem tin tu thong bao o thanh trang thai
             Bundle bundle = getIntent().getExtras();
-            if (bundle != null) {
+            if (bundle != null && bundle.getBoolean(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI)) {
                 String title = bundle.getString(Reference.BUNDLE_KEY_NEWS_TITLE);
                 String postTime = bundle.getString(Reference.BUNDLE_KEY_NEWS_POST_TIME);
                 String id = bundle.getString(Reference.BUNDLE_KEY_NEWS_ID);
@@ -139,7 +136,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         final int id = item.getItemId();
-        Log.d("DEBUG", id + " - current nav item id");
+//        Log.d("DEBUG", id + " - current nav item id");
         if (currentNavItem != id) {
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -160,7 +157,14 @@ public class MainActivity extends AppCompatActivity
                             setTitle(getString(R.string.title_nav_message));
                             replaceFragment(MessageFragment.newInstance(MainActivity.this));
                             break;
+                        case R.id.nav_setting:
+                            currentNavItem = R.id.nav_setting;
+                            setTitle(getString(R.string.title_nav_setting));
+                            replaceFragment(SettingFragment.newInstance(MainActivity.this));
+                            break;
                         case R.id.nav_resume:
+                            // animation
+//                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                             startActivity(new Intent(MainActivity.this, ResumeActivity.class));
                             break;
                         case R.id.nav_sign_out:
@@ -193,22 +197,6 @@ public class MainActivity extends AppCompatActivity
             ft.replace(R.id.frame_layout, fragment, fragmentTag);
             ft.addToBackStack(fragmentTag);
         }
-
-//        if (fragmentTag.equals(MainFragment.class.getName())) {
-//            Fragment temp = fragmentManager.findFragmentByTag(fragmentTag);
-//            if (temp == null) {
-//                ft.replace(R.id.frame_layout, fragment, fragmentTag);
-//                ft.addToBackStack(fragmentTag);
-//            } else {
-//                for (int i = 0; i < fragmentManager.getBackStackEntryCount() - 1; ++i) {
-//                    fragmentManager.popBackStack();
-//                }
-//                ft.replace(R.id.frame_layout, temp, fragment.getTag());
-//            }
-//        } else {
-//            ft.replace(R.id.frame_layout, fragment, fragmentTag);
-//            ft.addToBackStack(fragmentTag);
-//        }
         ft.commit();
 //        Log.d("DEBUG", "Back stack entry count: " + fragmentManager.getBackStackEntryCount());
     }
@@ -239,9 +227,6 @@ public class MainActivity extends AppCompatActivity
 
     // Khoi tao
     private void initAll() {
-        // animation
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-
         // set up toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -258,14 +243,14 @@ public class MainActivity extends AppCompatActivity
 
     // Khoi tao fragment manager
     private void initFragmentManager() {
-        fragmentManager = getSupportFragmentManager();
+        fragmentManager = getFragmentManager();
         fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
-                Log.d("UMS_HUSC", "Back stack changed !!");
+//                Log.d("UMS_HUSC", "Back stack changed !!");
                 Fragment fragment = fragmentManager.findFragmentById(R.id.frame_layout);
                 if (fragment != null) {
-                    Log.d("UMS_HUSC", "TAG: " + fragment.getTag());
+//                    Log.d("UMS_HUSC", "TAG: " + fragment.getTag());
                     updateByFragmentTag(fragment.getTag());
                 }
             }
@@ -303,15 +288,6 @@ public class MainActivity extends AppCompatActivity
         String message = "Xin chào " + hoTen;
         Snackbar snackbar = Snackbar.make(drawerLayout, message, Snackbar.LENGTH_LONG);
         snackbar.show();
-    }
-
-    // Luu token cua app vao database
-    private void saveTokenForAccount() {
-        String maSinhVien = getSharedPreferences("sinhVien", MODE_PRIVATE)
-                .getString("maSinhVien", null);
-        String token = getSharedPreferences("FIREBASE", MODE_PRIVATE)
-                .getString("TOKEN", null);
-        FireBaseIDTask.saveTokenForAccount(maSinhVien, token);
     }
 
     // Xoa token cua app khoi database

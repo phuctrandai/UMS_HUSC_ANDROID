@@ -23,6 +23,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.practice.phuc.ums_husc.Helper.FireBaseIDTask;
+import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.ViewModel.VThongTinCaNhan;
@@ -228,6 +230,8 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putString("maSinhVien", mMaSinhVien);
                         editor.putString("matKhau", mMatKhau);
                         editor.apply();
+                        //
+                        saveTokenForAccount();
 
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
@@ -253,6 +257,14 @@ public class LoginActivity extends AppCompatActivity {
             }
             showProgress(false);
         }
+    }
+
+    // Luu token cua app vao database
+    private void saveTokenForAccount() {
+        final String maSinhVien = getSharedPreferences("sinhVien", MODE_PRIVATE)
+                .getString("maSinhVien", null);
+        String token = MyFireBaseMessagingService.getToken(this);
+        FireBaseIDTask.saveTokenForAccount(maSinhVien, token);
     }
 
     // Dang nhap voi thong tin nhap vao

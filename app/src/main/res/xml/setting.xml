@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:key="@string/pre_category_notifications"
+        android:title="Thông báo">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pre_key_news"
+            android:summary="@string/pre_sum_news"
+            android:title="Tin tức" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pre_key_message"
+            android:summary="@string/pre_sum_message"
+            android:title="Tin nhắn" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="@string/pre_category_alarm"
+        android:title="Nhắc nhở">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pre_key_alarm_timetable"
+            android:summary="@string/pre_sum_alarm_timetable"
+            android:title="Lịch học" />
+        <ListPreference
+            android:defaultValue="30"
+            android:entries="@array/timetable_time_entries"
+            android:entryValues="@array/timetable_time_values"
+            android:key="@string/pre_key_alarm_timetable_time"
+            android:summary="@string/pre_sum_alarm_timetable_time"
+            android:dialogTitle="Nhắc tôi trước giờ học"
+            android:title="Nhắc tôi trước giờ học 30 phút" />
+    </PreferenceCategory>
+</PreferenceScreen>

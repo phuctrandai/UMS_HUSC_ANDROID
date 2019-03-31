@@ -15,9 +15,10 @@
         <activity
             android:name=".DetailMessageActivity"
             android:label="@string/title_activity_detail_message"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".DetailNewsActivity"
+            android:launchMode="singleTop"
             android:label="@string/title_activity_detail_news"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -40,6 +41,7 @@
 
         <service
             android:name=".Helper.MyFireBaseMessagingService"
+            android:stopWithTask="false"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
