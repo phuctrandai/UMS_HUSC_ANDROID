@@ -1,5 +1,6 @@
 package com.practice.phuc.ums_husc;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -55,11 +56,16 @@ public class DetailNewsActivity extends AppCompatActivity {
         tvNoiDung = findViewById(R.id.tv_noiDung);
         progressBar = findViewById(R.id.progressBar);
 
-        // animation
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-
         // hien thi chi tiet bai dang
         hienThiBaiDang();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        hienThiBaiDang();
+        Log.d("DEBUG", "On New Intent Detail news activity");
     }
 
     @Override

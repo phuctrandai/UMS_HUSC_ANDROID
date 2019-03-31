@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
@@ -22,29 +23,31 @@ import java.util.Date;
 public class MyFireBaseMessagingService extends FirebaseMessagingService {
 
     @SuppressLint("StaticFieldLeak")
-    public static Context mContext = null;
+    public static Context mContext;
+    private SharedPreferences mSharedPreferences;
 //    private String mNotificationId;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        super.onMessageReceived(remoteMessage);
         Log.d("DEBUG", "Nhận thông báo - xử lý ở đây !!!");
+        mSharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
 
-        // Xu ly payload data
         if (remoteMessage.getData().size() > 0) {
             String messageType = remoteMessage.getData().get("type");
 
             if (messageType.equals(Reference.NEWS_NOTIFICATION)) {
 //                Log.d("DEBUG", "Thong bao co tin tuc moi !!!");
-                // Thong bao co tin tuc moi
-                riseNotification(createNewsNotification(remoteMessage));
+                boolean isAllow = mSharedPreferences.getBoolean(getString(R.string.share_pre_key_news), true);
+                if (isAllow) {
+                    riseNotification(createNewsNotification(remoteMessage));
+                }
 
             } else if (messageType.equals(Reference.MESSAGE_NOTIFICATION)) {
 //                Log.d("DEBUG", "Thong bao co tin nhan moi !!!");
-                // Thong bao co tin nhan moi
 
             }
         }
+        super.onMessageReceived(remoteMessage);
     }
 
     private Notification createNewsNotification(RemoteMessage remoteMessage) {
@@ -57,25 +60,25 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
         PendingIntent pendingIntent;
         Context context;
         Bundle bundle = new Bundle();
-        if (mContext == null) {
+        if (mContext == null) { // Luc app ko chay
             context = this;
             intent = new Intent(context, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             intent.putExtra(Reference.BUNDLE_KEY_NEWS_TITLE, newsBody);
             intent.putExtra(Reference.BUNDLE_KEY_NEWS_ID, newsId);
             intent.putExtra(Reference.BUNDLE_KEY_NEWS_POST_TIME, newsPostTime);
-            intent.putExtra(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI,true);
+            intent.putExtra(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, true);
         } else {
             intent = new Intent(mContext, DetailNewsActivity.class);
             bundle.putString(Reference.BUNDLE_KEY_NEWS_TITLE, newsBody);
             bundle.putString(Reference.BUNDLE_KEY_NEWS_ID, newsId);
             bundle.putString(Reference.BUNDLE_KEY_NEWS_POST_TIME, newsPostTime);
-            bundle.putBoolean(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI,true);
+            bundle.putBoolean(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, true);
             intent.putExtra(Reference.BUNDLE_EXTRA_NEWS, bundle);
             context = mContext;
         }
 
-        pendingIntent = PendingIntent.getActivity(context,0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Khoi tao thong bao
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, getString(R.string.chanel_id));
@@ -111,5 +114,4 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
         return context.getSharedPreferences("FIREBASE", MODE_PRIVATE)
                 .getString("TOKEN", "empty");
     }
-
 }
