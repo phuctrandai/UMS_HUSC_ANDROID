@@ -18,9 +18,9 @@
             android:id="@+id/btn_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin"
             android:background="@android:color/transparent"
-            android:drawableStart="@drawable/ic_arrow_left_white_32"
-            android:layout_margin="@dimen/normal_margin" />
+            android:drawableStart="@drawable/ic_arrow_left_white_32" />
 
         <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/iv_avatar"
@@ -82,12 +82,14 @@
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"/>
+            android:layout_above="@+id/tv_loading_title"
+            android:layout_centerHorizontal="true" />
 
         <TextView
+            android:id="@+id/tv_loading_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/loading_progress"
+            android:layout_centerInParent="true"
             android:layout_marginTop="@dimen/big_margin"
             android:text="@string/prompt_dang_kiem_tra_thong_tin"
             android:textAlignment="center"
@@ -106,6 +108,7 @@
             android:id="@+id/tv_thongBaoLoi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_above="@+id/btn_thuLai"
             android:layout_centerInParent="true"
             android:drawableTop="@drawable/ic_error_outline_black_24"
             android:drawablePadding="@dimen/normal_padding"
@@ -116,12 +119,12 @@
             android:id="@+id/btn_thuLai"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tv_thongBaoLoi"
-            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:background="@color/colorPrimary"
             android:text="@string/try_again"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/small_text" />
     </RelativeLayout>
 
     <android.support.design.widget.CoordinatorLayout

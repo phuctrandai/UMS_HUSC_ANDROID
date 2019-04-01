@@ -20,6 +20,7 @@ import android.widget.AbsListView;
 import android.widget.LinearLayout;
 
 import com.practice.phuc.ums_husc.Adapter.NewsRecyclerDataAdapter;
+import com.practice.phuc.ums_husc.Helper.CustomSnackbar;
 import com.practice.phuc.ums_husc.Helper.DBHelper;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
@@ -36,6 +37,7 @@ import java.util.List;
 import okhttp3.Response;
 
 public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+    private boolean mIsDestroyed;
     private DBHelper mDBHelper;
     private LoadNewsTask mLoadNewsTask;
     private Context mContext;
@@ -95,6 +97,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         mIsRefreshOnBackPressed = false;
         mLastAction = ACTION_INIT;
         mDBHelper = new DBHelper(mContext);
+        mIsDestroyed = false;
         long countRow = mDBHelper.countRow(DBHelper.NEWS);
         if (countRow > 0) {
             mCurrentPage = countRow / ITEM_PER_PAGE + 1;
@@ -184,6 +187,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public void onDestroy() {
 //        Log.d("DEBUG", "ON DESTROY MAIN FRAGMENT");
+        mIsDestroyed = true;
         mLoadNewsTask = null;
         mThongBaoList.clear();
         super.onDestroy();
@@ -221,6 +225,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 @Override
                 public void run() {
                     mSwipeRefreshLayout.setRefreshing(false);
+                    mLoadMoreLayout.setVisibility(View.GONE);
                     showNetworkErrorSnackbar(true);
                 }
             }, 1000);
@@ -286,6 +291,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 }
 
                 if (mIsScrolling && (currentItems + scrollOutItems == totalItems)) {
+                    mLoadMoreLayout.setVisibility(View.VISIBLE);
                     onLoadMore();
                 }
             }
@@ -418,26 +424,35 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     private void showNetworkErrorSnackbar(boolean show) {
+        if (mIsDestroyed) return;
         if (show) {
             mStatus = STATUS_NOT_NETWORK;
             if (mNotNetworkSnackbar != null && mNotNetworkSnackbar.isShown()) return;
 
-            mNotNetworkSnackbar = Snackbar.make(mSwipeRefreshLayout, getString(R.string.network_not_available),
-                    Snackbar.LENGTH_INDEFINITE);
-            mNotNetworkSnackbar.setAction("Thử lại", new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mLastAction == ACTION_REFRESH) {
-                        mSwipeRefreshLayout.setRefreshing(true);
-                        onRefresh();
-                    } else if (mLastAction == ACTION_LOAD_MORE) {
-                        onLoadMore();
-                    } else if (mLastAction == ACTION_INIT) {
-                        mSwipeRefreshLayout.setRefreshing(true);
-                        attempGetData();
-                    }
-                }
-            });
+            mNotNetworkSnackbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mSwipeRefreshLayout,
+                    getString(R.string.network_not_available),
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mNotNetworkSnackbar.dismiss();
+                        }
+                    },
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (mLastAction == ACTION_REFRESH) {
+                                mSwipeRefreshLayout.setRefreshing(true);
+                                onRefresh();
+                            } else if (mLastAction == ACTION_LOAD_MORE) {
+                                mLoadMoreLayout.setVisibility(View.VISIBLE);
+                                onLoadMore();
+                            } else if (mLastAction == ACTION_INIT) {
+                                mSwipeRefreshLayout.setRefreshing(true);
+                                attempGetData();
+                            }
+                            mNotNetworkSnackbar.dismiss();
+                        }
+                    });
             mNotNetworkSnackbar.show();
         } else if (mNotNetworkSnackbar != null) {
             mNotNetworkSnackbar.dismiss();
@@ -445,24 +460,34 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     private void showErrorSnackbar(boolean show, String message) {
+        if (mIsDestroyed) return;
+
         if (show) {
             mStatus = STATUS_SHOW_ERROR;
-            mErrorSnackbar = Snackbar.make(mSwipeRefreshLayout, message,
-                    Snackbar.LENGTH_INDEFINITE);
-            mErrorSnackbar.setAction("Thử lại", new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mLastAction == ACTION_REFRESH) {
-                        mSwipeRefreshLayout.setRefreshing(true);
-                        onRefresh();
-                    } else if (mLastAction == ACTION_LOAD_MORE) {
-                        onLoadMore();
-                    } else if (mLastAction == ACTION_INIT) {
-                        mSwipeRefreshLayout.setRefreshing(true);
-                        attempGetData();
-                    }
-                }
-            });
+            mErrorSnackbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mSwipeRefreshLayout,
+                    message,
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mErrorSnackbar.dismiss();
+                        }
+                    },
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mErrorSnackbar.dismiss();
+                            if (mLastAction == ACTION_REFRESH) {
+                                mSwipeRefreshLayout.setRefreshing(true);
+                                onRefresh();
+                            } else if (mLastAction == ACTION_LOAD_MORE) {
+                                mLoadMoreLayout.setVisibility(View.VISIBLE);
+                                onLoadMore();
+                            } else if (mLastAction == ACTION_INIT) {
+                                mSwipeRefreshLayout.setRefreshing(true);
+                                attempGetData();
+                            }
+                        }
+                    });
             mErrorSnackbar.show();
         } else if (mErrorSnackbar != null) {
             mErrorSnackbar.dismiss();
