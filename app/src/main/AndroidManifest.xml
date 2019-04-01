@@ -13,11 +13,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".DetailMessageActivity"
+            android:name=".MessageModule.DetailMessageActivity"
             android:label="@string/title_activity_detail_message"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".DetailNewsActivity"
+            android:name=".NewsModule.DetailNewsActivity"
             android:launchMode="singleTop"
             android:label="@string/title_activity_detail_news"
             android:theme="@style/AppTheme.NoActionBar" />

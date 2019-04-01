@@ -1,4 +1,4 @@
-package com.practice.phuc.ums_husc;
+package com.practice.phuc.ums_husc.MessageModule;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.practice.phuc.ums_husc.Helper.JustifyTextInTextView;
 import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
+import com.practice.phuc.ums_husc.R;
 
 public class DetailMessageActivity extends AppCompatActivity {
 

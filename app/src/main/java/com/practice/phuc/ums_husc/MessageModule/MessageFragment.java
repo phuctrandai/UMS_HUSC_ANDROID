@@ -32,7 +32,6 @@ public class MessageFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        Log.d("DEBUG", "On create MessageFragment");
     }
 
     @Nullable

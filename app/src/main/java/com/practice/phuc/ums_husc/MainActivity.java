@@ -27,6 +27,9 @@ import com.practice.phuc.ums_husc.Helper.FireBaseIDTask;
 import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.LyLichCaNhanModule.ResumeActivity;
+import com.practice.phuc.ums_husc.MessageModule.MessageFragment;
+import com.practice.phuc.ums_husc.NewsModule.DetailNewsActivity;
+import com.practice.phuc.ums_husc.NewsModule.MainFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -156,7 +159,7 @@ public class MainActivity extends AppCompatActivity
                         case R.id.nav_message:
                             currentNavItem = R.id.nav_message;
                             setTitle(getString(R.string.title_nav_message));
-                            replaceFragment(com.practice.phuc.ums_husc.MessageModule.MessageFragment.newInstance(MainActivity.this));
+                            replaceFragment(MessageFragment.newInstance(MainActivity.this));
                             break;
                         case R.id.nav_setting:
                             currentNavItem = R.id.nav_setting;

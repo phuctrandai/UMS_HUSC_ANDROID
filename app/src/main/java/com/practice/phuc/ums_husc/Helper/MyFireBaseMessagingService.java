@@ -14,7 +14,7 @@ import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.practice.phuc.ums_husc.DetailNewsActivity;
+import com.practice.phuc.ums_husc.NewsModule.DetailNewsActivity;
 import com.practice.phuc.ums_husc.MainActivity;
 import com.practice.phuc.ums_husc.R;
 
