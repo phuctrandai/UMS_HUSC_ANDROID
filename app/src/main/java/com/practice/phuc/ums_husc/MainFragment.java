@@ -1,5 +1,6 @@
 package com.practice.phuc.ums_husc;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.widget.AbsListView;
 import android.widget.LinearLayout;
 
 import com.practice.phuc.ums_husc.Adapter.NewsRecyclerDataAdapter;
+import com.practice.phuc.ums_husc.Helper.DBHelper;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.Model.THONGBAO;
@@ -34,6 +36,7 @@ import java.util.List;
 import okhttp3.Response;
 
 public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+    private DBHelper mDBHelper;
     private LoadNewsTask mLoadNewsTask;
     private Context mContext;
     private List<THONGBAO> mThongBaoList;
@@ -58,7 +61,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private final int ACTION_LOAD_MORE = 2;
 
     // So trang thong bao hien tai
-    private int mCurrentPage;
+    private long mCurrentPage;
     private final int ITEM_PER_PAGE = 15;
 
     // Cast json to model
@@ -85,13 +88,19 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onCreate(@Nullable Bundle savedInstanceState) {
 //        Log.d("DEBUG", "On create MainFragment");
         mStatus = STATUS_INIT;
-        mCurrentPage = 1;
         mThongBaoList = new ArrayList<>();
         mIsThongBaoListChange = false;
         mAdapter = new NewsRecyclerDataAdapter(mThongBaoList, mContext);
         mIsScrolling = false;
         mIsRefreshOnBackPressed = false;
         mLastAction = ACTION_INIT;
+        mDBHelper = new DBHelper(mContext);
+        long countRow = mDBHelper.countRow(DBHelper.NEWS);
+        if (countRow > 0) {
+            mCurrentPage = countRow / ITEM_PER_PAGE + 1;
+        } else {
+            mCurrentPage = 1;
+        }
         super.onCreate(savedInstanceState);
     }
 
@@ -111,7 +120,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         initSwipeRefreshLayout(view);
 
         if (mStatus == STATUS_NOT_NETWORK
-            && NetworkUtil.getConnectivityStatus(mContext) != NetworkUtil.TYPE_NOT_CONNECTED) {
+                && NetworkUtil.getConnectivityStatus(mContext) != NetworkUtil.TYPE_NOT_CONNECTED) {
             if (mLastAction == ACTION_REFRESH) {
                 mStatus = STATUS_INIT;
             } else if (mLastAction == ACTION_LOAD_MORE) {
@@ -163,7 +172,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         if (Reference.mHasNewNews) {
             Reference.mHasNewNews = false;
             if (Reference.getmListNewThongBao().size() > 0) {
-                for(THONGBAO t : Reference.getmListNewThongBao()) {
+                for (THONGBAO t : Reference.getmListNewThongBao()) {
                     mThongBaoList.add(0, t);
                     mAdapter.notifyItemInserted(0);
                 }
@@ -195,6 +204,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 }
             }, 1000);
         } else {
+            mDBHelper.deleteAllRecord(DBHelper.NEWS);
             mThongBaoList.clear();
             mAdapter.lastPosition = -1;
             mCurrentPage = 1;
@@ -203,10 +213,24 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     private void onLoadMore() {
-        mIsScrolling = false;
-        mLoadMoreLayout.setVisibility(View.VISIBLE);
         mLastAction = ACTION_LOAD_MORE;
-        attempGetData();
+        boolean breakInternet = NetworkUtil.getConnectivityStatus(mContext) == NetworkUtil.TYPE_NOT_CONNECTED;
+        if (breakInternet) {
+            mStatus = STATUS_NOT_NETWORK;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    showNetworkErrorSnackbar(true);
+                }
+            }, 1000);
+        } else {
+            showNetworkErrorSnackbar(false);
+            showErrorSnackbar(false, "");
+            mIsScrolling = false;
+            mLoadMoreLayout.setVisibility(View.VISIBLE);
+            attempGetData();
+        }
     }
 
     // Set up swipe refresh layout
@@ -245,12 +269,19 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 //                    Log.d("DEBUG", "Refresh on press back");
                     mIsRefreshOnBackPressed = false;
                     mSwipeRefreshLayout.setRefreshing(true);
+                    showNetworkErrorSnackbar(false);
+
+                    long delayMillis = 1000;
+                    if (3 < mCurrentPage && mCurrentPage < 6) delayMillis = 2000;
+                    else if (mCurrentPage >= 6) delayMillis = 3000;
+
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             onRefresh();
                         }
-                    }, 1000);
+                    }, delayMillis);
+
                     return;
                 }
 
@@ -272,13 +303,20 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                     mSwipeRefreshLayout.setRefreshing(false);
                     mLoadMoreLayout.setVisibility(View.GONE);
                 }
-            }, 1500);
+            }, 1000);
+
+            if (mDBHelper.countRow(DBHelper.NEWS) > 0) {
+                List<THONGBAO> list = mDBHelper.getAllNews();
+                mThongBaoList.addAll(list);
+                mAdapter.notifyDataSetChanged();
+            }
         } else {
             mLoadNewsTask = new LoadNewsTask();
             mLoadNewsTask.execute((String) null);
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
     private class LoadNewsTask extends AsyncTask<String, Void, Boolean> {
         private Response mResponse;
 
@@ -297,7 +335,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                     Log.d("DEBUG", "Get thong bao Response code: " + mResponse.code());
                     if (mResponse.code() == NetworkUtil.OK) {
                         String json = mResponse.body() != null ? mResponse.body().string() : "";
-                        setData(json);
+                        setData(castData(json));
                         return true;
 
                     } else if (mResponse.code() == NetworkUtil.NOT_FOUND) {
@@ -342,9 +380,11 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     // Lay danh sach thong bao tu may chu
     private Response fetchData() {
-        String maSinhVien = mContext.getSharedPreferences("sinhVien", mContext.MODE_PRIVATE)
+        if (mLastAction == ACTION_INIT) mCurrentPage = 1;
+
+        String maSinhVien = mContext.getSharedPreferences("sinhVien", Context.MODE_PRIVATE)
                 .getString("maSinhVien", null);
-        String matKhau = mContext.getSharedPreferences("sinhVien", mContext.MODE_PRIVATE)
+        String matKhau = mContext.getSharedPreferences("sinhVien", Context.MODE_PRIVATE)
                 .getString("matKhau", null);
         String url = Reference.getLoadThongBaoApiUrl(maSinhVien, matKhau, mCurrentPage, ITEM_PER_PAGE);
 
@@ -352,25 +392,36 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     // Doi chuoi JSON sang model
-    private void setData(String json) {
+    private void setData(List<THONGBAO> list) {
+        if (list != null && list.size() > 0) {
+            if (mLastAction == ACTION_INIT)
+                mDBHelper.deleteAllRecord(DBHelper.NEWS);
+            for (THONGBAO thongbao : list) {
+                mThongBaoList.add(thongbao);
+                mDBHelper.insertNews(thongbao);
+            }
+            mIsThongBaoListChange = true;
+        }
+    }
+
+    private List<THONGBAO> castData(String json) {
         moshi = new Moshi.Builder().build();
         usersType = Types.newParameterizedType(List.class, THONGBAO.class);
         jsonAdapter = moshi.adapter(usersType);
-
         try {
-            List<THONGBAO> temp = jsonAdapter.fromJson(json);
-            if (temp.size() > 0) {
-                mThongBaoList.addAll(temp);
-                mIsThongBaoListChange = true;
-            }
+            return jsonAdapter.fromJson(json);
+
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
     }
 
     private void showNetworkErrorSnackbar(boolean show) {
         if (show) {
             mStatus = STATUS_NOT_NETWORK;
+            if (mNotNetworkSnackbar != null && mNotNetworkSnackbar.isShown()) return;
+
             mNotNetworkSnackbar = Snackbar.make(mSwipeRefreshLayout, getString(R.string.network_not_available),
                     Snackbar.LENGTH_INDEFINITE);
             mNotNetworkSnackbar.setAction("Thử lại", new View.OnClickListener() {

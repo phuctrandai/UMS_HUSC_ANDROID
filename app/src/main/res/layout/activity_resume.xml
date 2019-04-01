@@ -91,7 +91,7 @@
             android:layout_marginTop="@dimen/big_margin"
             android:text="@string/prompt_dang_kiem_tra_thong_tin"
             android:textAlignment="center"
-            android:textSize="@dimen/big_text" />
+            android:textSize="@dimen/normal_text" />
     </RelativeLayout>
 
     <!-- Display when internet not available or error occurred -->
@@ -110,7 +110,7 @@
             android:drawableTop="@drawable/ic_error_outline_black_24"
             android:drawablePadding="@dimen/normal_padding"
             android:text="@string/network_not_available"
-            android:textSize="@dimen/extra_text" />
+            android:textSize="@dimen/normal_text" />
 
         <Button
             android:id="@+id/btn_thuLai"

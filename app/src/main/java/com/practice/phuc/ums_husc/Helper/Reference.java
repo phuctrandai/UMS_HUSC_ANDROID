@@ -29,7 +29,7 @@ public final class Reference {
                 + "&matkhau=" + matKhau;
     }
 
-    public static String getLoadThongBaoApiUrl(String maSinhVien, String matKhau, int currentPage, int itemPerPage) {
+    public static String getLoadThongBaoApiUrl(String maSinhVien, String matKhau, long currentPage, int itemPerPage) {
         return Reference.HOST + Reference.LOAD_THONG_BAO_API
                 + "?masinhvien=" + maSinhVien
                 + "&matkhau=" + matKhau

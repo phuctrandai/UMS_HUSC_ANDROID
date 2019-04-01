@@ -130,6 +130,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.action_thongBao) {
             return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
