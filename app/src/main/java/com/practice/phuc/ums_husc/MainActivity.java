@@ -1,9 +1,9 @@
 package com.practice.phuc.ums_husc;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity
 
     // Khoi tao fragment manager
     private void initFragmentManager() {
-        fragmentManager = getFragmentManager();
+        fragmentManager = getSupportFragmentManager();
         fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {

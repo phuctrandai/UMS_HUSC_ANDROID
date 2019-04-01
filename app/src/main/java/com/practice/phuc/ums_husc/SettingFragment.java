@@ -3,18 +3,18 @@ package com.practice.phuc.ums_husc;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.SwitchPreference;
+import android.support.v7.preference.ListPreference;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.SwitchPreferenceCompat;
 
-public class SettingFragment extends PreferenceFragment {
+public class SettingFragment extends PreferenceFragmentCompat {
     private Context mContext;
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mEditor;
-    private SwitchPreference mSpNews;
-    private SwitchPreference mSpMessage;
-    private SwitchPreference mSpTimeTable;
+    private SwitchPreferenceCompat mSpNews;
+    private SwitchPreferenceCompat mSpMessage;
+    private SwitchPreferenceCompat mSpTimeTable;
     private ListPreference mSpTimeTableTime;
 
     public static SettingFragment newInstance(Context context) {
@@ -24,15 +24,15 @@ public class SettingFragment extends PreferenceFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreatePreferences(Bundle savedInstanceState, String s) {
+        setPreferencesFromResource(R.xml.setting, s);
         mSharedPreferences = mContext.getSharedPreferences(getString(R.string.share_pre_key_setting), Context.MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
-        addPreferencesFromResource(R.xml.setting);
+//        addPreferencesFromResource(R.xml.setting);
         // bind UI
-        mSpNews = (SwitchPreference) findPreference(getString(R.string.pre_key_news));
-        mSpMessage = (SwitchPreference) findPreference(getString(R.string.pre_key_message));
-        mSpTimeTable = (SwitchPreference) findPreference(getString(R.string.pre_key_alarm_timetable));
+        mSpNews = (SwitchPreferenceCompat) findPreference(getString(R.string.pre_key_news));
+        mSpMessage = (SwitchPreferenceCompat) findPreference(getString(R.string.pre_key_message));
+        mSpTimeTable = (SwitchPreferenceCompat) findPreference(getString(R.string.pre_key_alarm_timetable));
         mSpTimeTableTime = (ListPreference) findPreference(getString(R.string.pre_key_alarm_timetable_time));
         // Get save value
         boolean mSpNewsChecked = mSharedPreferences.getBoolean(getString(R.string.share_pre_key_news), true);
