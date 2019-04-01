@@ -52,6 +52,11 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private int mLastAction;
     private Snackbar mNotNetworkSnackbar;
     private Snackbar mErrorSnackbar;
+    private long mCurrentPage;
+    private final int ITEM_PER_PAGE = 15;
+    private Moshi moshi;
+    private Type usersType;
+    private JsonAdapter<List<THONGBAO>> jsonAdapter;
 
     private final int STATUS_INIT = 0;
     private final int STATUS_SHOW_ERROR = 1;
@@ -62,19 +67,9 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private final int ACTION_REFRESH = 1;
     private final int ACTION_LOAD_MORE = 2;
 
-    // So trang thong bao hien tai
-    private long mCurrentPage;
-    private final int ITEM_PER_PAGE = 15;
-
-    // Cast json to model
-    Moshi moshi;
-    Type usersType;
-    JsonAdapter<List<THONGBAO>> jsonAdapter;
-
-    // UI
-    SwipeRefreshLayout mSwipeRefreshLayout;
-    RecyclerView rvItems;
-    LinearLayout mLoadMoreLayout;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private RecyclerView rvItems;
+    private LinearLayout mLoadMoreLayout;
 
     public MainFragment() {
         // Required empty public constructor
@@ -113,14 +108,11 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                              Bundle savedInstanceState) {
 //        Log.d("DEBUG", "On create VIEW MainFragment");
         final View view = inflater.inflate(R.layout.fragment_main, container, false);
-
-        // Bind UI
         rvItems = (RecyclerView) view.findViewById(R.id.rv_thongBao);
         mLoadMoreLayout = view.findViewById(R.id.load_more_layout);
 
         setUpRecyclerView();
-
-        initSwipeRefreshLayout(view);
+        setUpSwipeRefreshLayout(view);
 
         if (mStatus == STATUS_NOT_NETWORK
                 && NetworkUtil.getConnectivityStatus(mContext) != NetworkUtil.TYPE_NOT_CONNECTED) {
@@ -238,8 +230,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         }
     }
 
-    // Set up swipe refresh layout
-    private void initSwipeRefreshLayout(View view) {
+    private void setUpSwipeRefreshLayout(View view) {
         mSwipeRefreshLayout = view.findViewById(R.id.layout_swipeRefresh);
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mSwipeRefreshLayout.setColorSchemeResources(
@@ -249,7 +240,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 android.R.color.holo_blue_dark);
     }
 
-    // set up recyler view
     private void setUpRecyclerView() {
         final LinearLayoutManager manager = new LinearLayoutManager(mContext);
         rvItems.setLayoutManager(manager);
@@ -298,7 +288,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         });
     }
 
-    // Kiem tra truoc khi lay du lieu
     private void attempGetData() {
         if (NetworkUtil.getConnectivityStatus(this.mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
             mStatus = STATUS_NOT_NETWORK;
@@ -364,13 +353,13 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             if (mLoadNewsTask != null) {
                 if (success) {
                     mStatus = STATUS_SHOW_DATA;
-                    mCurrentPage++;
-                    mLoadMoreLayout.setVisibility(View.GONE);
+                    mCurrentPage += 1;
                     mIsScrolling = false;
                     if (mIsThongBaoListChange) {
                         mAdapter.notifyDataSetChanged();
                         mIsThongBaoListChange = false;
                     }
+                    mLoadMoreLayout.setVisibility(View.GONE);
                 } else {
                     showErrorSnackbar(true, mErrorMessage);
                 }
@@ -384,7 +373,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         }
     }
 
-    // Lay danh sach thong bao tu may chu
     private Response fetchData() {
         if (mLastAction == ACTION_INIT) mCurrentPage = 1;
 
@@ -397,7 +385,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         return NetworkUtil.makeRequest(url, false, null);
     }
 
-    // Doi chuoi JSON sang model
     private void setData(List<THONGBAO> list) {
         if (list != null && list.size() > 0) {
             if (mLastAction == ACTION_INIT)

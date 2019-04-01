@@ -7,12 +7,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.practice.phuc.ums_husc.Model.THONGBAO;
+import com.practice.phuc.ums_husc.Model.TINNHAN;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
-    private static final int DB_VERSION = 1;
+    private static int DB_VERSION = 1;
     private static final String DB_NAME = "umshuscdb";
 
     public static final String NEWS = "news";
@@ -21,14 +22,41 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String NEWS_BODY = "news_body";
     private static final String NEWS_POST_TIME = "news_post_time";
 
+    public static final String MESSAGE = "message";
+    private static final String MESSAGE_ID = "message_id";
+    private static final String MESSAGE_TITLE = "message_title";
+    private static final String MESSAGE_SENDER = "message_sender";
+    private static final String MESSAGE_BODY = "message_body";
+    private static final String MESSAGE_SEND_TIME = "message_send_time";
+    private static final String MESSAGE_RECEIVER = "message_receiver";
+    private static final String MESSAGE_SEEN_TIME = "message_seen_time";
 
     public DBHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
+        SQLiteDatabase db = this.getWritableDatabase();
+        createNewsTable(db);
+        createMessageTable(db);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_NEWS_TABLE = "CREATE TABLE " + NEWS + "("
+        createNewsTable(db);
+        createMessageTable(db);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+//        DB_VERSION = oldVersion + 1;
+//        db.execSQL("DROP TABLE IF EXISTS " + NEWS);
+//        db.execSQL("DROP TABLE IF EXISTS " + MESSAGE_SEEN_TIME);
+//        onCreate(db);
+    }
+
+    /*
+     * Method for news table
+     */
+    private void createNewsTable(SQLiteDatabase db) {
+        String CREATE_NEWS_TABLE = "CREATE TABLE IF NOT EXISTS " + NEWS + "("
                 + NEWS_ID + " INTEGER,"
                 + NEWS_TITLE + " TEXT,"
                 + NEWS_BODY + " TEXT,"
@@ -36,15 +64,6 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_NEWS_TABLE);
     }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + NEWS);
-        onCreate(db);
-    }
-
-    /*
-     * Method for news table
-     */
     public List<THONGBAO> getAllNews() {
         SQLiteDatabase db = this.getWritableDatabase();
         List<THONGBAO> list = new ArrayList<>();
@@ -76,8 +95,74 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     /*
+     * Method for message table
+     */
+    private void createMessageTable(SQLiteDatabase db) {
+        String CREATE_MESSAGE_TABLE = "CREATE TABLE IF NOT EXISTS " + MESSAGE + "("
+                + MESSAGE_ID + " INTERGER,"
+                + MESSAGE_TITLE + " TEXT,"
+                + MESSAGE_BODY + " TEXT,"
+                + MESSAGE_SENDER + " TEXT,"
+                + MESSAGE_SEND_TIME + " TEXT,"
+                + MESSAGE_RECEIVER + " TEXT,"
+                + MESSAGE_SEEN_TIME + " TEXT" + ")";
+
+        db.execSQL(CREATE_MESSAGE_TABLE);
+    }
+
+    public List<TINNHAN> getAllMessage() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        List<TINNHAN> list = new ArrayList<>();
+        TINNHAN tinnhan;
+        Cursor cursor = db.rawQuery("SELECT * FROM " + MESSAGE
+                + " ORDER BY datetime(" + MESSAGE_SEND_TIME + ") DESC", null);
+        while (cursor.moveToNext()) {
+            tinnhan = new TINNHAN();
+            tinnhan.setMaTinNhan(cursor.getInt(cursor.getColumnIndex(MESSAGE_ID)));
+            tinnhan.setTieuDe(cursor.getString(cursor.getColumnIndex(MESSAGE_TITLE)));
+            tinnhan.setNoiDung(cursor.getString(cursor.getColumnIndex(MESSAGE_BODY)));
+            tinnhan.setNguoiGui(cursor.getString(cursor.getColumnIndex(MESSAGE_SENDER)));
+            tinnhan.setNguoiNhan(cursor.getString(cursor.getColumnIndex(MESSAGE_RECEIVER)));
+            tinnhan.setThoiDiemGui(cursor.getString(cursor.getColumnIndex(MESSAGE_SEND_TIME)));
+            tinnhan.setThoiDiemXem(cursor.getString(cursor.getColumnIndex(MESSAGE_SEEN_TIME)));
+            list.add(tinnhan);
+        }
+        cursor.close();
+        db.close();
+        return list;
+    }
+
+    public void insertMessage(TINNHAN tinnhan) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MESSAGE_ID, tinnhan.getMaTinNhan());
+        contentValues.put(MESSAGE_TITLE, tinnhan.getTieuDe());
+        contentValues.put(MESSAGE_BODY, tinnhan.getNoiDung());
+        contentValues.put(MESSAGE_SENDER, tinnhan.getNguoiGui());
+        contentValues.put(MESSAGE_RECEIVER, tinnhan.getNguoiNhan());
+        contentValues.put(MESSAGE_SEND_TIME, tinnhan.getThoiDiemGui());
+        contentValues.put(MESSAGE_SEEN_TIME, tinnhan.getThoiDiemXem());
+        db.insert(MESSAGE, null, contentValues);
+        db.close();
+    }
+
+    /*
      * Public method
      */
+    boolean tableExists(SQLiteDatabase db, String tableName) {
+        if (tableName == null || db == null || !db.isOpen()) {
+            return false;
+        }
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM sqlite_master WHERE type = ? AND name = ?", new String[]{"table", tableName});
+        if (!cursor.moveToFirst()) {
+            cursor.close();
+            return false;
+        }
+        int count = cursor.getInt(0);
+        cursor.close();
+        return count > 0;
+    }
+
     public long countRow(String tableName) {
         SQLiteDatabase db = this.getWritableDatabase();
         String count = "SELECT count(*) FROM " + tableName;

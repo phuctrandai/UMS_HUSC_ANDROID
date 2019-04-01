@@ -1,6 +1,7 @@
 package com.practice.phuc.ums_husc.Helper;
 
 import android.content.Context;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,11 +26,22 @@ public class CustomSnackbar {
 
         // Set snackbar layout params
         int navbarHeight = getNavBarHeight(context);
-        FrameLayout.LayoutParams parentParams = (FrameLayout.LayoutParams) layout.getLayoutParams();
-        parentParams.setMargins(0, 0, 0, 0 - navbarHeight + 120);
-        layout.setLayoutParams(parentParams);
-        layout.setPadding(0, 0, 0, 0);
-        layout.setLayoutParams(parentParams);
+        ViewGroup.LayoutParams parentParams = layout.getLayoutParams();
+
+        if (parentParams instanceof FrameLayout.LayoutParams) { //
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) parentParams;
+            params.setMargins(0, 0, 0, 0 - navbarHeight + 120);
+            layout.setLayoutParams(params);
+            layout.setPadding(0, 0, 0, 0);
+            layout.setLayoutParams(params);
+
+        } else if (parentParams instanceof CoordinatorLayout.LayoutParams) { // Message fragment
+            CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) parentParams;
+                params.setMargins(0, 0, 0, 0 - navbarHeight + 280);
+            layout.setLayoutParams(params);
+            layout.setPadding(0, 0, 0, 0);
+            layout.setLayoutParams(params);
+        }
 
         // Inflate our custom view
         View snackView = LayoutInflater.from(context).inflate(R.layout.snackbar_custom, null);

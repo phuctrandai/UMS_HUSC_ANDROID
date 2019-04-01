@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_received"
+        android:icon="@drawable/ic_inbox_white_24"
+        android:title="@string/title_received_message" />
+
+    <item
+        android:id="@+id/navigation_sent"
+        android:icon="@drawable/ic_send_white_24"
+        android:title="@string/title_sent_message" />
+
+    <item
+        android:id="@+id/navigation_delete"
+        android:icon="@drawable/ic_delete_temp_white_24"
+        android:title="@string/title_deleted" />
+
+</menu>
