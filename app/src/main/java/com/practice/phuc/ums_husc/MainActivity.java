@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity
                         case R.id.nav_message:
                             currentNavItem = R.id.nav_message;
                             setTitle(getString(R.string.title_nav_message));
-                            replaceFragment(MessageFragment.newInstance(MainActivity.this));
+                            replaceFragment(com.practice.phuc.ums_husc.MessageModule.MessageFragment.newInstance(MainActivity.this));
                             break;
                         case R.id.nav_setting:
                             currentNavItem = R.id.nav_setting;
@@ -164,8 +164,6 @@ public class MainActivity extends AppCompatActivity
                             replaceFragment(SettingFragment.newInstance(MainActivity.this));
                             break;
                         case R.id.nav_resume:
-                            // animation
-//                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                             startActivity(new Intent(MainActivity.this, ResumeActivity.class));
                             break;
                         case R.id.nav_sign_out:

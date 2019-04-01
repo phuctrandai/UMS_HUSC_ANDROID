@@ -61,8 +61,8 @@ public class ResumeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_resume);
 
-        // Animation
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+//        // Animation
+//        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         // Set up toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

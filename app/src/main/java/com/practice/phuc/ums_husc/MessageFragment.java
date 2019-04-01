@@ -92,7 +92,7 @@ public class MessageFragment extends Fragment implements SwipeRefreshLayout.OnRe
         View view = inflater.inflate(R.layout.fragment_message, container, false);
 
         // Bind UI
-        rvItems = (RecyclerView) view.findViewById(R.id.rv_tinNhan);
+//        rvItems = (RecyclerView) view.findViewById(R.id.rv_tinNhan);
         mLoadMoreLayout = view.findViewById(R.id.load_more_layout);
 
         setUpRecyclerView();
