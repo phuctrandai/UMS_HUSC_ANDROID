@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:id="@+id/layout_detail_news_root"
     tools:context=".MessageModule.DetailMessageActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -22,5 +23,12 @@
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_detail_message" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal"
+        style="@android:style/Widget.Holo.ProgressBar"/>
 
 </android.support.design.widget.CoordinatorLayout>

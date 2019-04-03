@@ -9,17 +9,19 @@ public final class Reference {
 
     private static final String HOST = "http://192.168.1.106:8082/";
 
-    private static final String LOGIN_API = "api/sinhvien/dangnhap/";
+    private static final String LOGIN_API = "api/SinhVien/DangNhap/";
 
     private static final String LOAD_LY_LICH_API = "api/SinhVien/LyLichCaNhan/";
 
-    private static final String LOAD_THONG_BAO_API = "api/ThongBao/TatCa/";
+    private static final String LOAD_THONG_BAO_API = "api/ThongBao/";
 
     private static final String LOAD_NOI_DUNG_THONG_BAO_API = "api/ThongBao/NoiDung/";
 
-    private static final String LOAD_TIN_NHAN_DEN_API = "api/SinhVien/tinnhandanhan/";
+    private static final String LOAD_TIN_NHAN_DEN_API = "api/SinhVien/TinNhanDaNhan/";
 
-    private static final String LOAD_TIN_NHAN_DA_GUI_API = "api/SinhVien/tinnhandagui/";
+    private static final String LOAD_TIN_NHAN_DA_GUI_API = "api/SinhVien/TinNhanDaGui/";
+
+    private static final String LOAD_NOI_DUNG_TIN_NHAN_API = "api/SinhVien/NoiDungTinNhan/";
 
     private static final String SAVE_TOKEN_API = "api/fcm/save/";
 
@@ -62,6 +64,13 @@ public final class Reference {
                 + "&sodongmoitrang=" + itemPerPage;
     }
 
+    public static String getLoadNoiDungTinNhanApiUrl(String maSinhVien, String matKhau, String id) {
+        return Reference.HOST + Reference.LOAD_NOI_DUNG_TIN_NHAN_API
+                + "?masinhvien=" + maSinhVien
+                + "&matkhau=" + matKhau
+                + "&id=" + id;
+    }
+
     public static String getLoadLyLichApiUrl(String maSinhVien, String matKhau) {
         return Reference.HOST + Reference.LOAD_LY_LICH_API
                 + "?masinhvien=" + maSinhVien
@@ -98,4 +107,15 @@ public final class Reference {
     public static String BUNDLE_KEY_NEWS_POST_TIME = "news_post_time";
     public static String BUNDLE_KEY_NEWS_ID = "news_id";
     public static String BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI = "launch_from_noti";
+
+    public static String BUNDLE_EXTRA_MESSAGE = "message";
+    public static String BUNDLE_KEY_MESSAGE_TITLE = "message_title";
+    public static String BUNDLE_KEY_MESSAGE_BODY = "message_body";
+    public static String BUNDLE_KEY_MESSAGE_SEND_TIME = "message_send_time";
+    public static String BUNDLE_KEY_MESSAGE_ID = "message_id";
+    public static String BUNDLE_KEY_MESSAGE_RECEIVERS = "message_receivers";
+    public static String BUNDLE_KEY_MESSAGE_RECEIVER_NAMES = "message_receiver_names";
+    public static String BUNDLE_KEY_MESSAGE_SENDER = "message_sender";
+    public static String BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI = "launch_from_noti";
+
 }

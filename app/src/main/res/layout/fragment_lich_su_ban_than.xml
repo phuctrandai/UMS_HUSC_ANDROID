@@ -4,7 +4,7 @@
     android:id="@+id/fragment_lichSuBanThan"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LyLichCaNhanModule.LichSuBanThanFragment">
+    tools:context=".ResumeModule.LichSuBanThanFragment">
 
     <TableLayout
         android:layout_width="match_parent"

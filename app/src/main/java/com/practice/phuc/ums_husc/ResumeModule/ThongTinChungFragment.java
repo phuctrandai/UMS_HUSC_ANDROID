@@ -1,4 +1,4 @@
-package com.practice.phuc.ums_husc.LyLichCaNhanModule;
+package com.practice.phuc.ums_husc.ResumeModule;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

@@ -14,6 +14,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.Helper.DateHelper;
+import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.MessageModule.DetailMessageActivity;
 import com.practice.phuc.ums_husc.Model.TINNHAN;
 import com.practice.phuc.ums_husc.R;
@@ -54,7 +55,7 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
         if (soNguoiNhan > 0)
             temp = tinnhan.getNGUOINHANs()[(0)].getHoTenNguoiNhan();
         if (soNguoiNhan > 1)
-            temp += " và " + (soNguoiNhan - 1) + " người khác";
+            temp += " và " + (soNguoiNhan - 1) + " người khác (xem thêm)";
         final String nguoiNhan = temp;
 
         final String[] dsTenNguoiNhan = new String[soNguoiNhan];
@@ -80,14 +81,14 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
             @Override
             public void onClick(View view, int position, boolean isLongClick) {
                 Bundle bundle = new Bundle();
-                bundle.putString("title", tieuDe);
-                bundle.putString("postTime", thoiGianDangStr);
-                bundle.putString("body", noiDung);
-                bundle.putString("sender", nguoiGui);
-                bundle.putString("receiver", nguoiNhan);
-                bundle.putStringArray("receiverNameList", dsTenNguoiNhan);
+                bundle.putString(Reference.BUNDLE_KEY_MESSAGE_TITLE, tieuDe);
+                bundle.putString(Reference.BUNDLE_KEY_MESSAGE_SEND_TIME, thoiGianDangStr);
+                bundle.putString(Reference.BUNDLE_KEY_MESSAGE_BODY, noiDung);
+                bundle.putString(Reference.BUNDLE_KEY_MESSAGE_SENDER, nguoiGui);
+                bundle.putString(Reference.BUNDLE_KEY_MESSAGE_RECEIVERS, nguoiNhan);
+                bundle.putStringArray(Reference.BUNDLE_KEY_MESSAGE_RECEIVER_NAMES, dsTenNguoiNhan);
                 Intent intent = new Intent(mContext, DetailMessageActivity.class);
-                intent.putExtra("news", bundle);
+                intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, bundle);
                 mContext.startActivity(intent);
             }
         });

@@ -19,9 +19,9 @@
             android:id="@+id/tv_tieuDe"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/normal_margin"
+            android:layout_marginStart="@dimen/big_margin"
             android:layout_marginTop="@dimen/normal_margin"
-            android:layout_marginEnd="@dimen/normal_margin"
+            android:layout_marginEnd="@dimen/big_margin"
             android:layout_marginBottom="@dimen/small_margin"
             android:text="Tiêu đề thông báo"
             android:textColor="@android:color/black"
@@ -43,6 +43,15 @@
             android:drawablePadding="@dimen/tiny_padding"
             android:text="Thời điểm đăng tin"
             android:textSize="@dimen/tiny_text" />
+
+        <TextView
+            android:layout_marginStart="@dimen/big_margin"
+            android:layout_marginEnd="@dimen/big_margin"
+            android:layout_marginTop="@dimen/normal_margin"
+            android:layout_marginBottom="@dimen/normal_margin"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
 
         <WebView
             android:id="@+id/tv_noiDung"

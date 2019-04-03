@@ -1,16 +1,18 @@
 package com.practice.phuc.ums_husc.NewsModule;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.practice.phuc.ums_husc.Helper.CustomSnackbar;
 import com.practice.phuc.ums_husc.Helper.JustifyTextInTextView;
 import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
@@ -23,62 +25,61 @@ import com.squareup.moshi.Types;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Objects;
 
 import okhttp3.Response;
 
 public class DetailNewsActivity extends AppCompatActivity {
 
-    private LoadNewsContentTask mLoadTask;
-
-    // UI
+    private View rootLayout;
     private TextView tvTieuDe;
     private TextView tvThoiGianDang;
     private WebView tvNoiDung;
     private ProgressBar progressBar;
 
-    // Cast json to model
-    Moshi moshi;
-    Type usersType;
-    JsonAdapter<THONGBAO> jsonAdapter;
+    private LoadNewsContentTask mLoadTask;
+    private boolean mIsDestroyed;
+    private Snackbar mNotNetworkSnackbar;
+    private Snackbar mErrorSnackbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_news);
-        Log.d("DEBUG", "ON CREATE Detail news activity");
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        rootLayout = findViewById(R.id.layout_detail_news_root);
         tvTieuDe = findViewById(R.id.tv_tieuDe);
         tvThoiGianDang = findViewById(R.id.tv_thoiGianDang);
         tvNoiDung = findViewById(R.id.tv_noiDung);
         progressBar = findViewById(R.id.progressBar);
 
         // hien thi chi tiet bai dang
-        hienThiBaiDang();
+        showData();
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        hienThiBaiDang();
-        Log.d("DEBUG", "On New Intent Detail news activity");
+        showData();
     }
 
     @Override
     protected void onResume() {
-//        Log.d("DEBUG", "ON RESUME Detail news activity");
         MyFireBaseMessagingService.mContext = this;
         super.onResume();
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
+    protected void onDestroy() {
+        mLoadTask = null;
+        mIsDestroyed = true;
+        super.onDestroy();
     }
 
     @Override
@@ -87,11 +88,11 @@ public class DetailNewsActivity extends AppCompatActivity {
         return true;
     }
 
-    private void hienThiBaiDang() {
+    private void showData() {
         Bundle bundle = getIntent().getBundleExtra(Reference.BUNDLE_EXTRA_NEWS);
-        boolean launchFromNotification = bundle.getBoolean(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI);
-        tvTieuDe.setText(bundle.getString(Reference.BUNDLE_KEY_NEWS_TITLE));
-        tvThoiGianDang.setText(bundle.getString(Reference.BUNDLE_KEY_NEWS_POST_TIME));
+        boolean launchFromNotification = bundle.getBoolean(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, false);
+        tvTieuDe.setText(bundle.getString(Reference.BUNDLE_KEY_NEWS_TITLE, ""));
+        tvThoiGianDang.setText(bundle.getString(Reference.BUNDLE_KEY_NEWS_POST_TIME, ""));
         JustifyTextInTextView.justify(tvTieuDe);
 
         if (launchFromNotification) {
@@ -106,6 +107,7 @@ public class DetailNewsActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
     private class LoadNewsContentTask extends AsyncTask<String, Void, Boolean> {
         private Response mResponse;
         private String mErrorMessage;
@@ -114,6 +116,11 @@ public class DetailNewsActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             tvNoiDung.setVisibility(View.GONE);
+
+            if (NetworkUtil.getConnectivityStatus(DetailNewsActivity.this) == NetworkUtil.TYPE_NOT_CONNECTED) {
+                showNetworkErrorSnackbar(true);
+                mLoadTask.cancel(true);
+            }
         }
 
         @Override
@@ -123,19 +130,16 @@ public class DetailNewsActivity extends AppCompatActivity {
             try {
                 mResponse = fetchData();
                 if (mResponse == null) {
-                    Log.d("DEBUG", "Get noi dung thong bao Response null");
                     mErrorMessage = getString(R.string.error_time_out);
                     return false;
 
                 } else {
-                    Log.d("DEBUG", "Get noi dung thong bao Response code: " + mResponse.code());
                     if (mResponse.code() == NetworkUtil.OK) {
                         json = mResponse.body() != null ? mResponse.body().string() : "";
                         return true;
 
-                    } else if (mResponse.code() == NetworkUtil.NOT_FOUND) {
-                        Log.d("DEBUG", "Get noi dung thong bao Response Mess: " + mResponse.body().string());
-                        mErrorMessage = getString(R.string.error_server_not_response);
+                    } else if (mResponse.code() == NetworkUtil.BAD_REQUEST) {
+                        mErrorMessage = mResponse.body() != null ? mResponse.body().string() : "";
                     } else {
                         mErrorMessage = getString(R.string.error_server_not_response);
                     }
@@ -154,8 +158,19 @@ public class DetailNewsActivity extends AppCompatActivity {
                     setData(json);
                     progressBar.setVisibility(View.GONE);
                     tvNoiDung.setVisibility(View.VISIBLE);
+                    showNetworkErrorSnackbar(false);
+                    showErrorSnackbar(false, "");
+                } else {
+                    showErrorSnackbar(true, mErrorMessage);
                 }
             }
+            super.onPostExecute(success);
+        }
+
+        @Override
+        protected void onCancelled() {
+            mLoadTask = null;
+            super.onCancelled();
         }
     }
 
@@ -171,9 +186,9 @@ public class DetailNewsActivity extends AppCompatActivity {
     }
 
     private void setData(String json) {
-        moshi = new Moshi.Builder().build();
-        usersType = Types.newParameterizedType(THONGBAO.class);
-        jsonAdapter = moshi.adapter(usersType);
+        Moshi moshi = new Moshi.Builder().build();
+        Type usersType = Types.newParameterizedType(THONGBAO.class);
+        JsonAdapter<THONGBAO> jsonAdapter = moshi.adapter(usersType);
 
         try {
             THONGBAO thongbao = jsonAdapter.fromJson(json);
@@ -181,9 +196,63 @@ public class DetailNewsActivity extends AppCompatActivity {
             tvNoiDung.loadData(htmlContent, "text/html; charset=UTF-8",null);
 
             // Luu lai cac thong bao moi, de them vao o Main fragment
-            if (Reference.getmListNewThongBao().add(thongbao));
+            Reference.getmListNewThongBao().add(thongbao);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void showNetworkErrorSnackbar(final boolean show) {
+        if (mIsDestroyed) return;
+
+        if (show) {
+            if (mNotNetworkSnackbar != null && mNotNetworkSnackbar.isShown()) return;
+
+            mNotNetworkSnackbar = CustomSnackbar.createTwoButtonSnackbar(this, rootLayout,
+                    getString(R.string.network_not_available),
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mNotNetworkSnackbar.dismiss();
+                        }
+                    },
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mLoadTask = new DetailNewsActivity.LoadNewsContentTask();
+                            mLoadTask.execute((String) null);
+                            mNotNetworkSnackbar.dismiss();
+                        }
+                    });
+            mNotNetworkSnackbar.show();
+        } else if (mNotNetworkSnackbar != null) {
+            mNotNetworkSnackbar.dismiss();
+        }
+    }
+
+    private void showErrorSnackbar(final boolean show, final String message) {
+        if (mIsDestroyed) return;
+
+        if (show) {
+            mErrorSnackbar = CustomSnackbar.createTwoButtonSnackbar(this, rootLayout,
+                    message,
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mErrorSnackbar.dismiss();
+                        }
+                    },
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mErrorSnackbar.dismiss();
+                            mLoadTask = new DetailNewsActivity.LoadNewsContentTask();
+                            mLoadTask.execute((String) null);
+                        }
+                    });
+            mErrorSnackbar.show();
+        } else if (mErrorSnackbar != null) {
+            mErrorSnackbar.dismiss();
         }
     }
 }

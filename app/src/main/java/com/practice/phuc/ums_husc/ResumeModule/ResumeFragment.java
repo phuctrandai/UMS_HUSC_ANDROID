@@ -1,7 +1,5 @@
-package com.practice.phuc.ums_husc.LyLichCaNhanModule;
+package com.practice.phuc.ums_husc.ResumeModule;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -56,8 +54,6 @@ public class ResumeFragment extends Fragment {
     private ViewGroup mLayoutLoading;
     private ViewGroup mLayoutData;
     private RelativeLayout mRootLayout;
-    private Moshi mMoshi;
-    private Type mUsersType;
     private JsonAdapter<VLyLichCaNhan> mJsonAdapter;
     private String mErrorMessage;
     private Snackbar mErrorSnackbar;
@@ -75,8 +71,8 @@ public class ResumeFragment extends Fragment {
         mResumePagerAdapter = new ResumePagerAdapter(getChildFragmentManager());
         mIsDestroyed = false;
         mStatus = STATUS_INIT;
-        mMoshi = new Moshi.Builder().build();
-        mUsersType = Types.newParameterizedType(VLyLichCaNhan.class);
+        Moshi mMoshi = new Moshi.Builder().build();
+        Type mUsersType = Types.newParameterizedType(VLyLichCaNhan.class);
         mJsonAdapter = mMoshi.adapter(mUsersType);
         super.onCreate(savedInstanceState);
     }
@@ -186,15 +182,8 @@ public class ResumeFragment extends Fragment {
 
                 mLayoutData.setVisibility(View.VISIBLE);
                 mLayoutData.setAlpha(0f);
-                mLayoutData.animate().alpha(1f).setDuration(1000).start();
-
-                mLayoutLoading.animate().alpha(0f).setDuration(500).setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        mLayoutLoading.setVisibility(View.GONE);
-                        super.onAnimationEnd(animation);
-                    }
-                }).start();
+                mLayoutData.animate().alpha(1f).setDuration(500).start();
+                mLayoutLoading.setVisibility(View.GONE);
             } else {
                 showErrorSnackbar(true, mErrorMessage);
             }
