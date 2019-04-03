@@ -23,13 +23,4 @@
 
     <include layout="@layout/content_detail_message" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/flb_traLoi"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right|bottom"
-        android:layout_margin="@dimen/normal_margin"
-        android:autofillHints="Trả lời"
-        android:src="@drawable/ic_send_white_24" />
-
 </android.support.design.widget.CoordinatorLayout>

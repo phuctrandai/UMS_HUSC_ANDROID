@@ -1,13 +1,11 @@
 package com.practice.phuc.ums_husc.MessageModule;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.webkit.WebView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,7 +20,7 @@ public class DetailMessageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_message);
-        Log.d("DEBUG", "ON CREATE Detail message activity");
+//        Log.d("DEBUG", "ON CREATE Detail message activity");
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -30,18 +28,7 @@ public class DetailMessageActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle("Chi tiết tin nhắn");
 
-        // animation
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-
-        FloatingActionButton flbTraLoi = findViewById(R.id.flb_traLoi);
-        flbTraLoi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(DetailMessageActivity.this, "Tra loi tin nhan", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-//        hienThiTinNhan();
+        hienThiTinNhan();
     }
 
     @Override
@@ -70,9 +57,6 @@ public class DetailMessageActivity extends AppCompatActivity {
             case R.id.item_traLoi:
                 Toast.makeText(this, "Tra loi tin nhan", Toast.LENGTH_SHORT).show();
                 break;
-            case R.id.item_chuyenTiep:
-                Toast.makeText(this, "Chuyen tiep tin nhan", Toast.LENGTH_SHORT).show();
-                break;
             case R.id.item_xoa:
                 Toast.makeText(this,"Xoa tin nhan", Toast.LENGTH_SHORT).show();
                 break;
@@ -84,14 +68,18 @@ public class DetailMessageActivity extends AppCompatActivity {
         TextView tvTieuDe = findViewById(R.id.tv_tieuDe);
         TextView tvThoiDiemGui = findViewById(R.id.tv_thoiDiemGui);
         TextView tvNguoiGui = findViewById(R.id.tv_nguoiGui);
+        TextView tvNguoiNhan = findViewById(R.id.tv_nguoiNhan);
         WebView tvNoiDung = findViewById(R.id.tv_noiDung);
 
         Bundle bundle = getIntent().getBundleExtra("news");
-        tvTieuDe.setText(bundle.getString("title"));
-        tvNguoiGui.setText(bundle.getString("sender"));
-        tvThoiDiemGui.setText(bundle.getString("postTime"));
-        tvNoiDung.loadData(bundle.getString("body"), "text/html; charset=UTF-8", null);
+        if (bundle != null) {
+            tvTieuDe.setText(bundle.getString("title"));
+            tvNguoiGui.setText(bundle.getString("sender"));
+            tvThoiDiemGui.setText(bundle.getString("postTime"));
+            tvNguoiNhan.setText(bundle.getString("receiver"));
+            tvNoiDung.loadData(bundle.getString("body"), "text/html; charset=UTF-8", null);
 
-        JustifyTextInTextView.justify(tvTieuDe);
+            JustifyTextInTextView.justify(tvTieuDe);
+        }
     }
 }

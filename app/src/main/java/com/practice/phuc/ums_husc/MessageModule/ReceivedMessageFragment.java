@@ -63,12 +63,9 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
     private boolean mIsDestroyed;
     private Snackbar mNotNetworkSnackbar;
     private Snackbar mErrorSnackbar;
-    private Moshi mMoshi;
-    private Type mUsersType;
-    private JsonAdapter<List<TINNHAN>> mJsonAdapter;
     private DBHelper mDBHelper;
 
-    private final int ITEM_PER_PAGE = 15;
+    private final int ITEM_PER_PAGE = 8;
     private final int STATUS_INIT = 0;
     private final int STATUS_SHOW_ERROR = 1;
     private final int STATUS_SHOW_DATA = 2;
@@ -89,7 +86,7 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
         mStatus = STATUS_INIT;
         mMessageList = new ArrayList<>();
         mIsMessageListChanged = false;
-        mAdapter = new MessageRecyclerDataAdapter(mContext, mMessageList);
+        mAdapter = new MessageRecyclerDataAdapter(mContext, mMessageList, true);
         mIsScrolling = true;
         mDBHelper = new DBHelper(mContext);
         mIsDestroyed = false;
@@ -174,9 +171,9 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
                 }
             }, 1000);
         } else {
-            mDBHelper.deleteAllRecord(DBHelper.MESSAGE);
+//            mDBHelper.deleteAllRecord(DBHelper.MESSAGE);
             mMessageList.clear();
-            mAdapter.lastPosition = -1;
+            mAdapter.mLastPosition = -1;
             mCurrentPage = 1;
             attempGetData();
         }
@@ -228,6 +225,8 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
     }
 
     private void showErrorSnackbar(boolean show, String message) {
+        if (mIsDestroyed) return;
+
         if (show) {
             mStatus = STATUS_SHOW_ERROR;
             mErrorSnackbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mSwipeRefreshLayout
@@ -242,6 +241,16 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
                         @Override
                         public void onClick(View v) {
                             mErrorSnackbar.dismiss();
+                            if (mLastAction == ACTION_REFRESH) {
+                                mSwipeRefreshLayout.setRefreshing(true);
+                                onRefresh();
+                            } else if (mLastAction == ACTION_LOAD_MORE) {
+                                mLoadMoreLayout.setVisibility(View.VISIBLE);
+                                onLoadMore();
+                            } else if (mLastAction == ACTION_INIT) {
+                                mSwipeRefreshLayout.setRefreshing(true);
+                                attempGetData();
+                            }
                         }
                     });
             mErrorSnackbar.show();
@@ -251,6 +260,8 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
     }
 
     private void showNetworkErrorSnackbar(boolean show) {
+        if (mIsDestroyed) return;
+
         if (show) {
             mStatus = STATUS_NOT_NETWORK;
             mNotNetworkSnackbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mSwipeRefreshLayout
@@ -265,6 +276,16 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
                         @Override
                         public void onClick(View v) {
                             mNotNetworkSnackbar.dismiss();
+                            if (mLastAction == ACTION_REFRESH) {
+                                mSwipeRefreshLayout.setRefreshing(true);
+                                onRefresh();
+                            } else if (mLastAction == ACTION_LOAD_MORE) {
+                                mLoadMoreLayout.setVisibility(View.VISIBLE);
+                                onLoadMore();
+                            } else if (mLastAction == ACTION_INIT) {
+                                mSwipeRefreshLayout.setRefreshing(true);
+                                attempGetData();
+                            }
                         }
                     });
             mNotNetworkSnackbar.show();
@@ -333,14 +354,15 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
                         setData(castData(json));
                         return true;
 
-                    } else if (mResponse.code() == NetworkUtil.NOT_FOUND) {
-                        mErrorMessage = getString(R.string.error_time_out);
+                    } else if (mResponse.code() == NetworkUtil.BAD_REQUEST) {
+                        mErrorMessage = mResponse.body() != null ? mResponse.body().string() : "";
                     } else {
                         mErrorMessage = getString(R.string.error_time_out);
                     }
                     return false;
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 return false;
             }
         }
@@ -373,9 +395,9 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
     }
 
     private List<TINNHAN> castData(String json) {
-        mMoshi = new Moshi.Builder().build();
-        mUsersType = Types.newParameterizedType(List.class, TINNHAN.class);
-        mJsonAdapter = mMoshi.adapter(mUsersType);
+        Moshi mMoshi = new Moshi.Builder().build();
+        Type mUsersType = Types.newParameterizedType(List.class, TINNHAN.class);
+        JsonAdapter<List<TINNHAN>> mJsonAdapter = mMoshi.adapter(mUsersType);
 
         try {
             return mJsonAdapter.fromJson(json);
@@ -387,8 +409,8 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
 
     private void setData(List<TINNHAN> list) {
         if (list != null && list.size() > 0) {
-            if (mLastAction == ACTION_INIT)
-                mDBHelper.deleteAllRecord(DBHelper.MESSAGE);
+//            if (mLastAction == ACTION_INIT)
+//                mDBHelper.deleteAllRecord(DBHelper.MESSAGE);
             for (TINNHAN tinnhan : list) {
                 mMessageList.add(tinnhan);
 //                mDBHelper.insertMessage(tinnhan);
@@ -404,7 +426,7 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
                 .getString("maSinhVien", null);
         String matKhau = mContext.getSharedPreferences("sinhVien", Context.MODE_PRIVATE)
                 .getString("matKhau", null);
-        String url = Reference.getLoadThongBaoApiUrl(maSinhVien, matKhau, mCurrentPage, ITEM_PER_PAGE);
+        String url = Reference.getLoadTinNhanDenApiUrl(maSinhVien, matKhau, mCurrentPage, ITEM_PER_PAGE);
 
         return NetworkUtil.makeRequest(url, false, null);
     }

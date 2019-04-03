@@ -55,9 +55,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private Snackbar mErrorSnackbar;
     private long mCurrentPage;
     private final int ITEM_PER_PAGE = 15;
-    private Moshi moshi;
-    private Type usersType;
-    private JsonAdapter<List<THONGBAO>> jsonAdapter;
 
     private final int STATUS_INIT = 0;
     private final int STATUS_SHOW_ERROR = 1;
@@ -109,7 +106,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                              Bundle savedInstanceState) {
 //        Log.d("DEBUG", "On create VIEW MainFragment");
         final View view = inflater.inflate(R.layout.fragment_main, container, false);
-        rvItems = (RecyclerView) view.findViewById(R.id.rv_thongBao);
+        rvItems = view.findViewById(R.id.rv_thongBao);
         mLoadMoreLayout = view.findViewById(R.id.load_more_layout);
 
         setUpRecyclerView();
@@ -128,7 +125,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             @Override
             public void run() {
                 if (mStatus == STATUS_SHOW_DATA) {
-//                    Log.d("DEBUG", "Status: SHOW_DATA");
+                    Log.d("DEBUG", "Status: SHOW_DATA");
                 } else if (mStatus == STATUS_NOT_NETWORK) {
 //                    Log.d("DEBUG", "Status: SHOW_NOT_NETWORK");
                     showNetworkErrorSnackbar(true);
@@ -334,8 +331,8 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                         setData(castData(json));
                         return true;
 
-                    } else if (mResponse.code() == NetworkUtil.NOT_FOUND) {
-                        mErrorMessage = getString(R.string.error_server_not_response);
+                    } else if (mResponse.code() == NetworkUtil.BAD_REQUEST) {
+                        mErrorMessage = mResponse.body() != null ? mResponse.body().string() : "";
                     } else {
                         mErrorMessage = getString(R.string.error_server_not_response);
                     }
@@ -399,9 +396,9 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     private List<THONGBAO> castData(String json) {
-        moshi = new Moshi.Builder().build();
-        usersType = Types.newParameterizedType(List.class, THONGBAO.class);
-        jsonAdapter = moshi.adapter(usersType);
+        Moshi moshi = new Moshi.Builder().build();
+        Type usersType = Types.newParameterizedType(List.class, THONGBAO.class);
+        JsonAdapter<List<THONGBAO>> jsonAdapter = moshi.adapter(usersType);
         try {
             return jsonAdapter.fromJson(json);
 

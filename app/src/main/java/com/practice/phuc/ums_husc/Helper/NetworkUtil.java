@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 
 import java.io.IOException;
 
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -54,6 +55,10 @@ public class NetworkUtil {
     public static Response makeRequest(String url, boolean isPostMethod, RequestBody requestBody) {
         final OkHttpClient okHttpClient = new OkHttpClient();
         Request request = null;
+        if (requestBody == null)
+            requestBody = RequestBody.create(
+                MediaType.parse("application/xml; charset=utf-8"), ""
+            );
         if (isPostMethod) {
             request = new Request.Builder().url(url).post(requestBody).build();
         } else {

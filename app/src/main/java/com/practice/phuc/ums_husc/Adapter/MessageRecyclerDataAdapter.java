@@ -13,6 +13,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
+import com.practice.phuc.ums_husc.Helper.DateHelper;
 import com.practice.phuc.ums_husc.MessageModule.DetailMessageActivity;
 import com.practice.phuc.ums_husc.Model.TINNHAN;
 import com.practice.phuc.ums_husc.R;
@@ -23,11 +24,13 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
 
     private Context mContext;
     private List<TINNHAN> mTinNhanList;
-    public int lastPosition;
+    public int mLastPosition;
+    private boolean mIsLoadReceivedMessage;
 
-    public MessageRecyclerDataAdapter(Context context, List<TINNHAN> tinNhanList) {
+    public MessageRecyclerDataAdapter(Context context, List<TINNHAN> tinNhanList, boolean isLoadReceivedMessage) {
         mContext = context;
         mTinNhanList = tinNhanList;
+        mIsLoadReceivedMessage = isLoadReceivedMessage;
     }
 
     @NonNull
@@ -39,19 +42,36 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
 
     @Override
     public void onBindViewHolder(@NonNull DataViewHolder viewHolder, int i) {
+        TINNHAN tinnhan = mTinNhanList.get(i);
+        long soNguoiNhan = tinnhan.getNGUOINHANs().length;
 
-        final String tieuDe = mTinNhanList.get(i).getTieuDe();
-        final String thoiDiemGui = mTinNhanList.get(i).getThoiDiemGui();
-        final String noiDung = mTinNhanList.get(i).getNoiDung();
-        final String nguoiGui = mTinNhanList.get(i).getNguoiGui();
+        final String tieuDe = tinnhan.getTieuDe();
+        final String thoiDiemGui = tinnhan.getThoiDiemGui();
+        final String noiDung = tinnhan.getNoiDung();
+        final String nguoiGui = tinnhan.getHoTenNguoiGui();
 
-//        viewHolder.tvTieuDe.setText(tieuDe);
-//        viewHolder.tvNguoiGui.setText(nguoiGui);
+        viewHolder.tvTieuDe.setText(tieuDe);
 
-        final String thoiGianDangStr =
-                thoiDiemGui != null ? thoiDiemGui.substring(0, 10) + " " + thoiDiemGui.substring(11, 16)
-                        : "";
-//        viewHolder.tvThoiDiemGui.setText(thoiGianDangStr);
+        String temp = "";
+        if (soNguoiNhan > 0)
+            temp = tinnhan.getNGUOINHANs()[(0)].getHoTenNguoiNhan();
+        if (soNguoiNhan > 1)
+            temp += " và " + (soNguoiNhan - 1) + " người khác";
+        final String nguoiNhan = temp;
+
+        if (mIsLoadReceivedMessage) {
+            viewHolder.tvNguoiGui.setText(nguoiGui);
+
+        } else {
+            viewHolder.tvNguoiGui.setText(nguoiNhan);
+            viewHolder.tvNguoiGuiLabel.setVisibility(View.GONE);
+            viewHolder.tvNguoiNhanLabel.setVisibility(View.VISIBLE);
+        }
+
+        String ngayDang = DateHelper.formatYMDToDMY(thoiDiemGui.substring(0, 10));
+        String gioDang = thoiDiemGui.substring(11, 16);
+        final String thoiGianDangStr = ngayDang + " " + gioDang;
+        viewHolder.tvThoiDiemGui.setText(thoiGianDangStr);
 
         viewHolder.setItemClickListener(new ItemClickListener() {
             @Override
@@ -61,6 +81,7 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
                 bundle.putString("postTime", thoiGianDangStr);
                 bundle.putString("body", noiDung);
                 bundle.putString("sender", nguoiGui);
+                bundle.putString("receiver", nguoiNhan);
                 Intent intent = new Intent(mContext, DetailMessageActivity.class);
                 intent.putExtra("news", bundle);
                 mContext.startActivity(intent);
@@ -76,40 +97,44 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
 
     @Override
     public void onViewDetachedFromWindow(@NonNull final DataViewHolder viewHolder) {
-        ((DataViewHolder) viewHolder).clearAnimation();
+        viewHolder.clearAnimation();
     }
 
     private void setFadeAnimation(View view, int position) {
-        if (mContext != null && position > lastPosition) {
+        if (mContext != null && position > mLastPosition) {
             Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.fade_translate_animation);
             view.startAnimation(animation);
-            lastPosition = position;
+            mLastPosition = position;
         }
     }
 
-    public static class DataViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    protected static class DataViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private CardView mRootLayout;
         private TextView tvTieuDe;
         private TextView tvThoiDiemGui;
         private TextView tvNguoiGui;
+        private TextView tvNguoiGuiLabel;
+        private TextView tvNguoiNhanLabel;
 
         private ItemClickListener itemClickListener;
 
-        public void setItemClickListener(ItemClickListener itemClickListener) {
+        private void setItemClickListener(ItemClickListener itemClickListener) {
             this.itemClickListener = itemClickListener;
         }
 
-        public DataViewHolder(@NonNull View itemView) {
+        DataViewHolder(@NonNull View itemView) {
             super(itemView);
             mRootLayout = itemView.findViewById(R.id.message_item_layout);
             tvTieuDe = itemView.findViewById(R.id.tv_tieuDe);
             tvNguoiGui = itemView.findViewById(R.id.tv_nguoiGui);
             tvThoiDiemGui = itemView.findViewById(R.id.tv_thoiDiemGui);
+            tvNguoiGuiLabel = itemView.findViewById(R.id.tv_nguoiGuiLabel);
+            tvNguoiNhanLabel = itemView.findViewById(R.id.tv_nguoiNhanLabel);
 
             itemView.setOnClickListener(this);
         }
 
-        public void clearAnimation() {
+        private void clearAnimation() {
             mRootLayout.clearAnimation();
         }
 

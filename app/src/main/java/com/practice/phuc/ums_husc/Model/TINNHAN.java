@@ -1,80 +1,80 @@
 package com.practice.phuc.ums_husc.Model;
 
 public class TINNHAN {
-    private int maTinNhan;
-    private String tieuDe;
-    private String nguoiGui;
-    private String thoiDiemGui;
-    private String noiDung;
-    private String nguoiNhan;
-    private String thoiDiemXem;
-
-    public String getTieuDe() {
-        return tieuDe;
-    }
-
-    public void setTieuDe(String tieuDe) {
-        this.tieuDe = tieuDe;
-    }
-
-    public String getNguoiGui() {
-        return nguoiGui;
-    }
-
-    public void setNguoiGui(String nguoiGui) {
-        this.nguoiGui = nguoiGui;
-    }
-
-    public String getThoiDiemGui() {
-        return thoiDiemGui;
-    }
-
-    public void setThoiDiemGui(String thoiDiemGui) {
-        this.thoiDiemGui = thoiDiemGui;
-    }
-
-    public String getNoiDung() {
-        return noiDung;
-    }
-
-    public void setNoiDung(String noiDung) {
-        this.noiDung = noiDung;
-    }
-
-    public String getNguoiNhan() {
-        return nguoiNhan;
-    }
-
-    public void setNguoiNhan(String nguoiNhan) {
-        this.nguoiNhan = nguoiNhan;
-    }
-
-    public String getThoiDiemXem() {
-        return thoiDiemXem;
-    }
-
-    public void setThoiDiemXem(String thoiDiemXem) {
-        this.thoiDiemXem = thoiDiemXem;
-    }
-
-    public TINNHAN(int maTinNhan, String tieuDe, String nguoiGui, String thoiDiemGui, String noiDung, String nguoiNhan, String thoiDiemXem) {
-        this.maTinNhan = maTinNhan;
-        this.tieuDe = tieuDe;
-        this.nguoiGui = nguoiGui;
-        this.thoiDiemGui = thoiDiemGui;
-        this.noiDung = noiDung;
-        this.nguoiNhan = nguoiNhan;
-        this.thoiDiemXem = thoiDiemXem;
-    }
-
-    public TINNHAN() {
-    }
+    private NGUOINHAN[] NGUOINHANs;
+    private int MaTinNhan;
+    private String TieuDe;
+    private String NoiDung;
+    private String HoTenNguoiGui;
+    private String MaNguoiGui;
+    private String ThoiDiemGui;
 
     public int getMaTinNhan() {
-        return maTinNhan;
+        return MaTinNhan;
     }
 
     public void setMaTinNhan(int maTinNhan) {
-        this.maTinNhan = maTinNhan;
+        MaTinNhan = maTinNhan;
+    }
+
+    public String getTieuDe() {
+        return TieuDe;
+    }
+
+    public void setTieuDe(String tieuDe) {
+        TieuDe = tieuDe;
+    }
+
+    public String getNoiDung() {
+        return NoiDung;
+    }
+
+    public void setNoiDung(String noiDung) {
+        NoiDung = noiDung;
+    }
+
+    public String getHoTenNguoiGui() {
+        return HoTenNguoiGui;
+    }
+
+    public void setHoTenNguoiGui(String hoTenNguoiGui) {
+        HoTenNguoiGui = hoTenNguoiGui;
+    }
+
+    public String getMaNguoiGui() {
+        return MaNguoiGui;
+    }
+
+    public void setMaNguoiGui(String maNguoiGui) {
+        MaNguoiGui = maNguoiGui;
+    }
+
+    public String getThoiDiemGui() {
+        return ThoiDiemGui;
+    }
+
+    public void setThoiDiemGui(String thoiDiemGui) {
+        ThoiDiemGui = thoiDiemGui;
+    }
+
+    public NGUOINHAN[] getNGUOINHANs() {
+        return NGUOINHANs;
+    }
+
+    public void setNGUOINHANs(NGUOINHAN[] NGUOINHANs) {
+        this.NGUOINHANs = NGUOINHANs;
+    }
+
+    public TINNHAN(int maTinNhan, String tieuDe, String noiDung, String hoTenNguoiGui, String maNguoiGui, String thoiDiemGui, NGUOINHAN[] NGUOINHANs) {
+        MaTinNhan = maTinNhan;
+        TieuDe = tieuDe;
+        NoiDung = noiDung;
+        HoTenNguoiGui = hoTenNguoiGui;
+        MaNguoiGui = maNguoiGui;
+        ThoiDiemGui = thoiDiemGui;
+        this.NGUOINHANs = NGUOINHANs;
+    }
+
+    public TINNHAN() {
     }
 }

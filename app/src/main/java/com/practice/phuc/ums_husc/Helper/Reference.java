@@ -7,17 +7,19 @@ import java.util.List;
 
 public final class Reference {
 
-    public static final String HOST = "http://192.168.1.106:8082/";
+    private static final String HOST = "http://192.168.1.106:8082/";
 
     private static final String LOGIN_API = "api/sinhvien/dangnhap/";
 
     private static final String LOAD_LY_LICH_API = "api/SinhVien/LyLichCaNhan/";
 
-    public static final String LOAD_THONG_BAO_API = "api/ThongBao/TatCa/";
+    private static final String LOAD_THONG_BAO_API = "api/ThongBao/TatCa/";
 
     private static final String LOAD_NOI_DUNG_THONG_BAO_API = "api/ThongBao/NoiDung/";
 
-    public static final String LOAD_TIN_NHAN_DEN_API = "api/SinhVien/TinNhanDen/";
+    private static final String LOAD_TIN_NHAN_DEN_API = "api/SinhVien/tinnhandanhan/";
+
+    private static final String LOAD_TIN_NHAN_DA_GUI_API = "api/SinhVien/tinnhandagui/";
 
     private static final String SAVE_TOKEN_API = "api/fcm/save/";
 
@@ -44,30 +46,45 @@ public final class Reference {
                 + "&id=" + id;
     }
 
+    public static String getLoadTinNhanDenApiUrl(String maSinhVien, String matKhau, long currentPage, int itemPerPage) {
+        return Reference.HOST + Reference.LOAD_TIN_NHAN_DEN_API
+                + "?masinhvien=" + maSinhVien
+                + "&matkhau=" + matKhau
+                + "&sotrang=" + currentPage
+                + "&sodongmoitrang=" + itemPerPage;
+    }
+
+    public static String getLoadTinNhanDaGuiApiUrl(String maSinhVien, String matKhau, long currentPage, int itemPerPage) {
+        return Reference.HOST + Reference.LOAD_TIN_NHAN_DA_GUI_API
+                + "?masinhvien=" + maSinhVien
+                + "&matkhau=" + matKhau
+                + "&sotrang=" + currentPage
+                + "&sodongmoitrang=" + itemPerPage;
+    }
+
     public static String getLoadLyLichApiUrl(String maSinhVien, String matKhau) {
         return Reference.HOST + Reference.LOAD_LY_LICH_API
                 + "?masinhvien=" + maSinhVien
                 + "&matkhau=" + matKhau;
     }
 
-    public static String getSaveTokenApiUrl(String maSinhVien, String token) {
+    static String getSaveTokenApiUrl(String maSinhVien, String token) {
         return Reference.HOST + Reference.SAVE_TOKEN_API
                 + "?masinhvien=" + maSinhVien
                 + "&token=" + token;
     }
 
-    public static String getDeleteTokenApiUrl(String maSinhVien, String token) {
+    static String getDeleteTokenApiUrl(String maSinhVien, String token) {
         return Reference.HOST + Reference.DELETE_TOKEN_API
                 + "?masinhvien=" + maSinhVien
                 + "&token=" + token;
     }
 
-    public static String MESSAGE_NOTIFICATION = "message_notification";
-    public static String NEWS_NOTIFICATION = "news_notification";
+    static String MESSAGE_NOTIFICATION = "message_notification";
+    static String NEWS_NOTIFICATION = "news_notification";
 
     public static boolean mHasNewNews = false;
     private static List<THONGBAO> mListNewThongBao = null;
-
     public static List<THONGBAO> getmListNewThongBao() {
         if (mListNewThongBao == null) {
             mListNewThongBao = new ArrayList<>();

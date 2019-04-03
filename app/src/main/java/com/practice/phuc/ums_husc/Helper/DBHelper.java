@@ -33,7 +33,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public DBHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = getWritableDatabase();
         createNewsTable(db);
         createMessageTable(db);
     }
@@ -121,10 +121,10 @@ public class DBHelper extends SQLiteOpenHelper {
             tinnhan.setMaTinNhan(cursor.getInt(cursor.getColumnIndex(MESSAGE_ID)));
             tinnhan.setTieuDe(cursor.getString(cursor.getColumnIndex(MESSAGE_TITLE)));
             tinnhan.setNoiDung(cursor.getString(cursor.getColumnIndex(MESSAGE_BODY)));
-            tinnhan.setNguoiGui(cursor.getString(cursor.getColumnIndex(MESSAGE_SENDER)));
-            tinnhan.setNguoiNhan(cursor.getString(cursor.getColumnIndex(MESSAGE_RECEIVER)));
+            tinnhan.setHoTenNguoiGui(cursor.getString(cursor.getColumnIndex(MESSAGE_SENDER)));
+//            tinnhan.setMaNguoiGui(cursor.getString(cursor.getColumnIndex(MESSAGE_RECEIVER)));
             tinnhan.setThoiDiemGui(cursor.getString(cursor.getColumnIndex(MESSAGE_SEND_TIME)));
-            tinnhan.setThoiDiemXem(cursor.getString(cursor.getColumnIndex(MESSAGE_SEEN_TIME)));
+//            tinnhan.setThoiDiemGui(cursor.getString(cursor.getColumnIndex(MESSAGE_SEEN_TIME)));
             list.add(tinnhan);
         }
         cursor.close();
@@ -138,10 +138,10 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(MESSAGE_ID, tinnhan.getMaTinNhan());
         contentValues.put(MESSAGE_TITLE, tinnhan.getTieuDe());
         contentValues.put(MESSAGE_BODY, tinnhan.getNoiDung());
-        contentValues.put(MESSAGE_SENDER, tinnhan.getNguoiGui());
-        contentValues.put(MESSAGE_RECEIVER, tinnhan.getNguoiNhan());
+//        contentValues.put(MESSAGE_SENDER, tinnhan.getNguoiGui());
+//        contentValues.put(MESSAGE_RECEIVER, tinnhan.getNguoiNhan());
         contentValues.put(MESSAGE_SEND_TIME, tinnhan.getThoiDiemGui());
-        contentValues.put(MESSAGE_SEEN_TIME, tinnhan.getThoiDiemXem());
+//        contentValues.put(MESSAGE_SEEN_TIME, tinnhan.getThoiDiemXem());
         db.insert(MESSAGE, null, contentValues);
         db.close();
     }

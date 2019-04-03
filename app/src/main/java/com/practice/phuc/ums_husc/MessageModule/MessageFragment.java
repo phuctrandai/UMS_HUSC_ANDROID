@@ -36,7 +36,8 @@ public class MessageFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 //        Log.d("DEBUG", "On create VIEW Message Fragment");
         View view = inflater.inflate(R.layout.fragment_message, container, false);
 

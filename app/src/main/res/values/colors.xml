@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#0D47A1</color>
-    <color name="colorPrimaryDark">#1A237E</color>
-    <color name="colorAccent">#1565C0</color>
+    <color name="colorPrimary">#304FFE</color>
+    <color name="colorPrimaryDark">#3949AB</color>
+    <color name="colorAccent">#1E88E5</color>
 
     <!-- Man hinh dang nhap -->
     <color name="colorButtonLogin">@color/colorPrimary</color>
