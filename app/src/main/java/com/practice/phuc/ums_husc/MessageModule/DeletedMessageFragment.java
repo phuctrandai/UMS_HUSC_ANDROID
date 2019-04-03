@@ -109,7 +109,7 @@ public class DeletedMessageFragment extends Fragment implements SwipeRefreshLayo
 
         if (mStatus == STATUS_NOT_NETWORK
                 && NetworkUtil.getConnectivityStatus(mContext) != NetworkUtil.TYPE_NOT_CONNECTED) {
-            if (mLastAction == ACTION_REFRESH) {
+            if (mLastAction == ACTION_REFRESH || mLastAction == ACTION_INIT) {
                 mStatus = STATUS_INIT;
             } else if (mLastAction == ACTION_LOAD_MORE) {
                 mStatus = STATUS_LOAD_MORE;
@@ -118,9 +118,7 @@ public class DeletedMessageFragment extends Fragment implements SwipeRefreshLayo
         mSwipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
-                if (mStatus == STATUS_SHOW_DATA) {
-                    Log.d("DEBUG", "Status: SHOW_DATA");
-                } else if (mStatus == STATUS_NOT_NETWORK) {
+                if (mStatus == STATUS_NOT_NETWORK) {
 //                    Log.d("DEBUG", "Status: SHOW_NOT_NETWORK");
                     showNetworkErrorSnackbar(true);
                 } else if (mStatus == STATUS_SHOW_ERROR) {

@@ -80,7 +80,6 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-//        Log.d("DEBUG", "On create SENT MESSAGE FRAGMENT");
         mLastAction = ACTION_INIT;
         mStatus = STATUS_INIT;
         mMessageList = new ArrayList<>();
@@ -102,7 +101,6 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-//        Log.d("DEBUG", "On create VIEW Sent message fragment");
         View view = inflater.inflate(R.layout.fragment_sent_message, container, false);
         mRvMessage = view.findViewById(R.id.rv_message);
         mLoadMoreLayout = view.findViewById(R.id.load_more_layout);
@@ -112,7 +110,7 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
 
         if (mStatus == STATUS_NOT_NETWORK
                 && NetworkUtil.getConnectivityStatus(mContext) != NetworkUtil.TYPE_NOT_CONNECTED) {
-            if (mLastAction == ACTION_REFRESH) {
+            if (mLastAction == ACTION_REFRESH || mLastAction == ACTION_INIT) {
                 mStatus = STATUS_INIT;
             } else if (mLastAction == ACTION_LOAD_MORE) {
                 mStatus = STATUS_LOAD_MORE;
@@ -121,20 +119,14 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
         mSwipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
-                if (mStatus == STATUS_SHOW_DATA) {
-                    Log.d("DEBUG", "Status: SHOW_DATA");
-                } else if (mStatus == STATUS_NOT_NETWORK) {
-                    Log.d("DEBUG", "Status: SHOW_NOT_NETWORK");
+                if (mStatus == STATUS_NOT_NETWORK) {
                     showNetworkErrorSnackbar(true);
                 } else if (mStatus == STATUS_SHOW_ERROR) {
-                    Log.d("DEBUG", "Status: SHOW_ERROR");
                     showErrorSnackbar(true, mErrorMessage);
                 } else if (mStatus == STATUS_INIT) {
-                    Log.d("DEBUG", "Status: LOADING");
                     mSwipeRefreshLayout.setRefreshing(true);
                     attempGetData();
                 } else if (mStatus == STATUS_LOAD_MORE) {
-                    Log.d("DEBUG", "Status: LOAD_MORE");
                     onLoadMore();
                 }
             }

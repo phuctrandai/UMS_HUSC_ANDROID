@@ -15,7 +15,7 @@ import com.practice.phuc.ums_husc.ViewModel.VThongTinChung;
 import com.practice.phuc.ums_husc.ViewModel.VThongTinLienHe;
 import com.practice.phuc.ums_husc.ViewModel.VThuongTru;
 
-public class SectionsPagerAdapter extends FragmentPagerAdapter {
+public class ResumePagerAdapter extends FragmentPagerAdapter {
 
     private VThongTinChung thongTinChung;
     private VThongTinLienHe thongTinLienHe;
@@ -24,7 +24,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     private VDacDiemBanThan dacDiemBanThan;
     private LICHSUBANTHAN lichSuBanThan;
 
-    public SectionsPagerAdapter(FragmentManager fm) {
+    public ResumePagerAdapter(FragmentManager fm) {
         super(fm);
     }
 
