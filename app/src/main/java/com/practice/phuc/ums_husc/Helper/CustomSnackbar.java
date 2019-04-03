@@ -1,5 +1,6 @@
 package com.practice.phuc.ums_husc.Helper;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -44,12 +45,12 @@ public class CustomSnackbar {
         }
 
         // Inflate our custom view
-        View snackView = LayoutInflater.from(context).inflate(R.layout.snackbar_custom, null);
+        @SuppressLint("InflateParams") View snackView = LayoutInflater.from(context).inflate(R.layout.snackbar_custom, null);
 
-        // Configure our custom view
+        // Message
         TextView messageTextView = (TextView) snackView.findViewById(R.id.tv_message);
         messageTextView.setText(message);
-
+        // Negative button
         Button btnNegative = snackView.findViewById(R.id.btn_negative);
         if (negativeClickListener == null) btnNegative.setVisibility(View.GONE);
         else {
@@ -57,7 +58,7 @@ public class CustomSnackbar {
             btnNegative.setOnClickListener(negativeClickListener);
             btnNegative.setVisibility(View.VISIBLE);
         }
-
+        // Positive button
         Button btnPositive = snackView.findViewById(R.id.btn_positive);
         if (positiveClickListener == null) btnPositive.setVisibility(View.GONE);
         else {

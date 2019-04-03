@@ -1,9 +1,6 @@
 package com.practice.phuc.ums_husc;
 
 import android.app.AlertDialog;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,6 +10,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -26,17 +26,17 @@ import android.widget.TextView;
 import com.practice.phuc.ums_husc.Helper.FireBaseIDTask;
 import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.Helper.Reference;
-import com.practice.phuc.ums_husc.LyLichCaNhanModule.ResumeActivity;
+import com.practice.phuc.ums_husc.LyLichCaNhanModule.ResumeFragment;
 import com.practice.phuc.ums_husc.MessageModule.MessageFragment;
 import com.practice.phuc.ums_husc.NewsModule.DetailNewsActivity;
 import com.practice.phuc.ums_husc.NewsModule.MainFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    // UI
     private NavigationView navigationView;
+    private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
-    // param
+
     private static String currentFragment;
     private int currentNavItem;
     private static FragmentManager fragmentManager;
@@ -46,17 +46,11 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        Log.d("DEBUG", "ON create Main activity");
-
         mIsLogined = localLogin();
-
         if (mIsLogined) {
             initAll();
-
             initFragmentManager();
-            // set first fragment
             initFragment(MainFragment.newInstance(this));
-            // hien thi thong tin tai khoan
             showAccountInfo();
         }
     }
@@ -123,24 +117,18 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+//        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_thongBao) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         final int id = item.getItemId();
-//        Log.d("DEBUG", id + " - current nav item id");
         if (currentNavItem != id) {
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -167,7 +155,8 @@ public class MainActivity extends AppCompatActivity
                             replaceFragment(SettingFragment.newInstance(MainActivity.this));
                             break;
                         case R.id.nav_resume:
-                            startActivity(new Intent(MainActivity.this, ResumeActivity.class));
+                            setTitle(getString(R.string.title_nav_resume));
+                            replaceFragment(ResumeFragment.newInstance(MainActivity.this));
                             break;
                         case R.id.nav_sign_out:
                             logOut();
@@ -183,13 +172,11 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    // Add fragment to back stack
     protected void replaceFragment(Fragment fragment) {
         String fragmentTag = fragment.getClass().getName();
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 
-//        Log.d("DEBUG", "Current fragment: " + currentFragment);
         updateByFragmentTag(fragmentTag);
 
         Fragment temp = fragmentManager.findFragmentByTag(fragmentTag);
@@ -200,66 +187,48 @@ public class MainActivity extends AppCompatActivity
             ft.addToBackStack(fragmentTag);
         }
         ft.commit();
-//        Log.d("DEBUG", "Back stack entry count: " + fragmentManager.getBackStackEntryCount());
     }
 
-    // Update UI when press back
     private void updateByFragmentTag(String fragmentTag) {
         currentFragment = fragmentTag;
         if (fragmentTag.equals(MainFragment.class.getName())) {
             setTitle(getString(R.string.title_nav_news));
             navigationView.setCheckedItem(R.id.nav_news);
             currentNavItem = R.id.nav_news;
+            showDrawerButton(true);
 
-//            showDrawerButton(true);
-            return;
-
-        } else if (fragmentTag.equals(MessageFragment.class.getName())) {
-            setTitle(getString(R.string.title_nav_message));
-            navigationView.setCheckedItem(R.id.nav_message);
-            currentNavItem = R.id.nav_message;
-
-        } else if (fragmentTag.equals(ScheduleFragment.class.getName())) {
-            setTitle(getString(R.string.title_nav_timetable));
-            navigationView.setCheckedItem(R.id.nav_timetable);
-            currentNavItem = R.id.nav_timetable;
+        } else if (fragmentTag.equals(ResumeFragment.class.getName())) {
+            showDrawerButton(false);
+            currentNavItem = R.id.nav_resume;
         }
-//        showDrawerButton(false);
     }
 
-    // Khoi tao
     private void initAll() {
-        // set up toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle(getString(R.string.title_nav_news));
 
-        // set up navigation drawer
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    // Khoi tao fragment manager
     private void initFragmentManager() {
         fragmentManager = getSupportFragmentManager();
         fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
-//                Log.d("UMS_HUSC", "Back stack changed !!");
                 Fragment fragment = fragmentManager.findFragmentById(R.id.frame_layout);
                 if (fragment != null) {
-//                    Log.d("UMS_HUSC", "TAG: " + fragment.getTag());
                     updateByFragmentTag(fragment.getTag());
                 }
             }
         });
     }
 
-    // Khoi tao fragment dau tien
     private void initFragment(Fragment fragment) {
         currentNavItem = R.id.nav_news;
         currentFragment = MainFragment.class.getName();
@@ -267,7 +236,6 @@ public class MainActivity extends AppCompatActivity
         replaceFragment(fragment);
     }
 
-    // Hien thi thong tin ca nhan
     private void showAccountInfo() {
         View headerView = navigationView.getHeaderView(0);
         TextView tvMaSinhVien = headerView.findViewById(R.id.tv_maSinhVien);
@@ -292,7 +260,6 @@ public class MainActivity extends AppCompatActivity
         snackbar.show();
     }
 
-    // Xoa token cua app khoi database
     private void deleteTokenForAccount() {
         String maSinhVien = getSharedPreferences("sinhVien", MODE_PRIVATE)
                 .getString("maSinhVien", null);
@@ -301,7 +268,6 @@ public class MainActivity extends AppCompatActivity
         FireBaseIDTask.deleteTokenFromAccount(maSinhVien, token);
     }
 
-    // Dang nhap voi thong tin da luu tren may
     private boolean localLogin() {
         // Kiem tra da dang nhap truoc do chua
         SharedPreferences sp = getSharedPreferences("sinhVien", MODE_PRIVATE);
@@ -314,7 +280,6 @@ public class MainActivity extends AppCompatActivity
         return false;
     }
 
-    // Dang xuat tai khoan hien tai
     private void logOut() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Thông báo");
@@ -366,5 +331,27 @@ public class MainActivity extends AppCompatActivity
             }
         });
         builder.create().show();
+    }
+
+    private void showDrawerButton(boolean show)  {
+        if (show) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            getSupportActionBar().setDisplayShowHomeEnabled(false);
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            toggle.setDrawerIndicatorEnabled(true);
+            toggle.setToolbarNavigationClickListener(null);
+            toggle.syncState();
+        } else {
+            toggle.setDrawerIndicatorEnabled(false);
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
     }
 }

@@ -49,7 +49,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private NewsRecyclerDataAdapter mAdapter;
     private int currentItems, totalItems, scrollOutItems;
     private boolean mIsScrolling;
-    private boolean mIsRefreshOnBackPressed;
     private int mLastAction;
     private Snackbar mNotNetworkSnackbar;
     private Snackbar mErrorSnackbar;
@@ -87,7 +86,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         mIsThongBaoListChange = false;
         mAdapter = new NewsRecyclerDataAdapter(mThongBaoList, mContext);
         mIsScrolling = false;
-        mIsRefreshOnBackPressed = false;
         mLastAction = ACTION_INIT;
         mDBHelper = new DBHelper(mContext);
         mIsDestroyed = false;
@@ -104,7 +102,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-//        Log.d("DEBUG", "On create VIEW MainFragment");
         final View view = inflater.inflate(R.layout.fragment_main, container, false);
         rvItems = view.findViewById(R.id.rv_thongBao);
         mLoadMoreLayout = view.findViewById(R.id.load_more_layout);
@@ -114,7 +111,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
         if (mStatus == STATUS_NOT_NETWORK
                 && NetworkUtil.getConnectivityStatus(mContext) != NetworkUtil.TYPE_NOT_CONNECTED) {
-            if (mLastAction == ACTION_REFRESH) {
+            if (mLastAction == ACTION_REFRESH || mLastAction == ACTION_INIT) {
                 mStatus = STATUS_INIT;
             } else if (mLastAction == ACTION_LOAD_MORE) {
                 mStatus = STATUS_LOAD_MORE;
@@ -124,20 +121,14 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         mSwipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
-                if (mStatus == STATUS_SHOW_DATA) {
-                    Log.d("DEBUG", "Status: SHOW_DATA");
-                } else if (mStatus == STATUS_NOT_NETWORK) {
-//                    Log.d("DEBUG", "Status: SHOW_NOT_NETWORK");
+                if (mStatus == STATUS_NOT_NETWORK) {
                     showNetworkErrorSnackbar(true);
                 } else if (mStatus == STATUS_SHOW_ERROR) {
-//                    Log.d("DEBUG", "Status: SHOW_ERROR");
                     showErrorSnackbar(true, mErrorMessage);
                 } else if (mStatus == STATUS_INIT) {
-//                    Log.d("DEBUG", "Status: LOADING");
                     mSwipeRefreshLayout.setRefreshing(true);
                     attempGetData();
                 } else if (mStatus == STATUS_LOAD_MORE) {
-//                    Log.d("DEBUG", "Status: LOAD_MORE");
                     onLoadMore();
                 }
             }
@@ -486,6 +477,5 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     public void smoothScrollToTop() {
         rvItems.smoothScrollToPosition(0);
-        mIsRefreshOnBackPressed = true;
     }
 }

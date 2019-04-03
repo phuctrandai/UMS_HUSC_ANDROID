@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_dacDiemBanThan"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    tools:context=".LyLichCaNhanModule.ResumeActivity">
+    android:layout_height="wrap_content">
 
     <TableLayout
         android:id="@+id/layout_dacDiemBanThan"

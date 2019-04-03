@@ -28,9 +28,11 @@ public class MessageFragment extends Fragment {
     }
 
     private Context mContext;
+    private boolean mIsCreatedView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        mIsCreatedView = false;
         super.onCreate(savedInstanceState);
     }
 
@@ -38,18 +40,20 @@ public class MessageFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-//        Log.d("DEBUG", "On create VIEW Message Fragment");
         View view = inflater.inflate(R.layout.fragment_message, container, false);
 
         bindUI(view);
 
-        loadFragment(ReceivedMessageFragment.newInstance(mContext));
+        if (!mIsCreatedView) {
+            loadFragment(ReceivedMessageFragment.newInstance(mContext));
+            mIsCreatedView = true;
+        }
 
         return view;
     }
 
     private void bindUI(View view) {
-        BottomNavigationView navigation = (BottomNavigationView) view.findViewById(R.id.navigation);
+        BottomNavigationView navigation = view.findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) navigation.getLayoutParams();
         layoutParams.setBehavior(new BottomNavigationBehavior());
@@ -60,7 +64,6 @@ public class MessageFragment extends Fragment {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            Fragment fragment;
             switch (item.getItemId()) {
                 case R.id.navigation_received:
                     loadFragment(ReceivedMessageFragment.newInstance(mContext));
