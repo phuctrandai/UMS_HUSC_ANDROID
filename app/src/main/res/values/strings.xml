@@ -19,9 +19,8 @@
     <string name="error_truong_bat_buoc">Trường này là bắt buộc</string>
 
     <!-- Main activity -->
-    <string name="title_activity_main">MainActivity</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_open">Mở menu</string>
+    <string name="navigation_drawer_close">Đóng menu</string>
     <string name="avatar">Hình đại diện</string>
     <string name="action_tinNhan">Tin nhắn</string>
     <string name="action_thongBao">Thông báo</string>
@@ -39,30 +38,14 @@
     <string name="title_nav_sign_out">Đăng xuất</string>
     <string name="title_nav_app_info">Thông tin về ứng dụng</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_detail_news">Chi tiết thông báo</string>
-    <string name="large_text">
-        "Material is the metaphor.\n\n"
-
-        "A material metaphor is the unifying theory of a rationalized space and a system of motion."
-        "The material is grounded in tactile reality, inspired by the study of paper and ink, yet "
-        "technologically advanced and open to imagination and magic.\n"
-        "Surfaces and edges of the material provide visual cues that are grounded in reality. The "
-        "use of familiar tactile attributes helps users quickly understand affordances. Yet the "
-        "flexibility of the material creates new affordances that supercede those in the physical "
-        "world, without breaking the rules of physics.\n"
-        "The fundamentals of light, surface, and movement are key to conveying how objects move, "
-        "interact, and exist in space and in relation to each other. Realistic lighting shows "
-        "seams, divides space, and indicates moving parts."
-    </string>
+    <string name="title_activity_detail_message">Chi tiết tin nhắn</string>
 
     <!-- THONG BAO -->
     <string name="channel_name">UMS-HUSC</string>
     <string name="channel_description">UMS-HUSC-Description</string>
     <string name="chanel_id">15011997</string>
-    <string name="title_activity_detail_message">DetailMessageActivity</string>
-    <string name="action_handle_notification">handle_notification</string>
 
     <!-- SETTING -->
     <string name="share_pre_key_setting">setting</string>
