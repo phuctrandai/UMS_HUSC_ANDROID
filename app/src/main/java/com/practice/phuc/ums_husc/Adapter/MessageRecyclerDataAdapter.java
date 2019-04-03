@@ -43,14 +43,12 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
     @Override
     public void onBindViewHolder(@NonNull DataViewHolder viewHolder, int i) {
         TINNHAN tinnhan = mTinNhanList.get(i);
-        long soNguoiNhan = tinnhan.getNGUOINHANs().length;
+        int soNguoiNhan = tinnhan.getNGUOINHANs().length;
 
         final String tieuDe = tinnhan.getTieuDe();
         final String thoiDiemGui = tinnhan.getThoiDiemGui();
         final String noiDung = tinnhan.getNoiDung();
         final String nguoiGui = tinnhan.getHoTenNguoiGui();
-
-        viewHolder.tvTieuDe.setText(tieuDe);
 
         String temp = "";
         if (soNguoiNhan > 0)
@@ -59,9 +57,13 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
             temp += " và " + (soNguoiNhan - 1) + " người khác";
         final String nguoiNhan = temp;
 
+        final String[] dsTenNguoiNhan = new String[soNguoiNhan];
+        for (int j = 0; j < soNguoiNhan; j++) {
+            dsTenNguoiNhan[j] = tinnhan.getNGUOINHANs()[j].getHoTenNguoiNhan();
+        }
+
         if (mIsLoadReceivedMessage) {
             viewHolder.tvNguoiGui.setText(nguoiGui);
-
         } else {
             viewHolder.tvNguoiGui.setText(nguoiNhan);
             viewHolder.tvNguoiGuiLabel.setVisibility(View.GONE);
@@ -72,6 +74,7 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
         String gioDang = thoiDiemGui.substring(11, 16);
         final String thoiGianDangStr = ngayDang + " " + gioDang;
         viewHolder.tvThoiDiemGui.setText(thoiGianDangStr);
+        viewHolder.tvTieuDe.setText(tieuDe);
 
         viewHolder.setItemClickListener(new ItemClickListener() {
             @Override
@@ -82,6 +85,7 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
                 bundle.putString("body", noiDung);
                 bundle.putString("sender", nguoiGui);
                 bundle.putString("receiver", nguoiNhan);
+                bundle.putStringArray("receiverNameList", dsTenNguoiNhan);
                 Intent intent = new Intent(mContext, DetailMessageActivity.class);
                 intent.putExtra("news", bundle);
                 mContext.startActivity(intent);
@@ -117,7 +121,6 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
         private TextView tvNguoiNhanLabel;
 
         private ItemClickListener itemClickListener;
-
         private void setItemClickListener(ItemClickListener itemClickListener) {
             this.itemClickListener = itemClickListener;
         }
@@ -133,7 +136,6 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
 
             itemView.setOnClickListener(this);
         }
-
         private void clearAnimation() {
             mRootLayout.clearAnimation();
         }

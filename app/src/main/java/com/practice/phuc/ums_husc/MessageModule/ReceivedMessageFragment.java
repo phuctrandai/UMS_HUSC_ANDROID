@@ -124,17 +124,17 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
                 if (mStatus == STATUS_SHOW_DATA) {
                     Log.d("DEBUG", "Status: SHOW_DATA");
                 } else if (mStatus == STATUS_NOT_NETWORK) {
-                    Log.d("DEBUG", "Status: SHOW_NOT_NETWORK");
+//                    Log.d("DEBUG", "Status: SHOW_NOT_NETWORK");
                     showNetworkErrorSnackbar(true);
                 } else if (mStatus == STATUS_SHOW_ERROR) {
-                    Log.d("DEBUG", "Status: SHOW_ERROR");
+//                    Log.d("DEBUG", "Status: SHOW_ERROR");
                     showErrorSnackbar(true, mErrorMessage);
                 } else if (mStatus == STATUS_INIT) {
-                    Log.d("DEBUG", "Status: LOADING");
+//                    Log.d("DEBUG", "Status: LOADING");
                     mSwipeRefreshLayout.setRefreshing(true);
                     attempGetData();
                 } else if (mStatus == STATUS_LOAD_MORE) {
-                    Log.d("DEBUG", "Status: LOAD_MORE");
+//                    Log.d("DEBUG", "Status: LOAD_MORE");
                     onLoadMore();
                 }
             }

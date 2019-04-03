@@ -258,25 +258,25 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 totalItems = manager.getItemCount();
                 scrollOutItems = manager.findFirstVisibleItemPosition();
 
-                if (mIsRefreshOnBackPressed && findFirstVisibleItemPosition() == 0) {
-//                    Log.d("DEBUG", "Refresh on press back");
-                    mIsRefreshOnBackPressed = false;
-                    mSwipeRefreshLayout.setRefreshing(true);
-                    showNetworkErrorSnackbar(false);
-
-                    long delayMillis = 1000;
-                    if (3 < mCurrentPage && mCurrentPage < 6) delayMillis = 2000;
-                    else if (mCurrentPage >= 6) delayMillis = 3000;
-
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            onRefresh();
-                        }
-                    }, delayMillis);
-
-                    return;
-                }
+//                if (mIsRefreshOnBackPressed && findFirstVisibleItemPosition() == 0) {
+////                    Log.d("DEBUG", "Refresh on press back");
+//                    mIsRefreshOnBackPressed = false;
+//                    mSwipeRefreshLayout.setRefreshing(true);
+//                    showNetworkErrorSnackbar(false);
+//
+//                    long delayMillis = 1000;
+//                    if (3 < mCurrentPage && mCurrentPage < 6) delayMillis = 2000;
+//                    else if (mCurrentPage >= 6) delayMillis = 3000;
+//
+//                    new Handler().postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            onRefresh();
+//                        }
+//                    }, delayMillis);
+//
+//                    return;
+//                }
 
                 if (mIsScrolling && (currentItems + scrollOutItems == totalItems)) {
                     mLoadMoreLayout.setVisibility(View.VISIBLE);

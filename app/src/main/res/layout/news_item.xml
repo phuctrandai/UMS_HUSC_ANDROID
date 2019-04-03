@@ -28,7 +28,6 @@
             android:text="Tiêu đề thông báo"
             android:textColor="@android:color/black"
             android:textSize="@dimen/normal_text"
-            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -39,19 +38,19 @@
             android:layout_marginStart="0dp"
             android:layout_marginTop="@dimen/small_margin"
             android:text="12/03/2019 08:05"
+            android:textSize="@dimen/small_text"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_tieuDe" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Thời điểm đăng tin"
-            android:textSize="@dimen/tiny_text"
             android:drawableStart="@drawable/ic_access_time_grey_12"
             android:drawablePadding="@dimen/tiny_padding"
+            android:text="Thời điểm đăng tin"
+            android:textSize="@dimen/tiny_text"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_thoiGianDang"
-            />
+            app:layout_constraintTop_toBottomOf="@id/tv_thoiGianDang" />
 
         <ImageView
             android:id="@+id/imageView"

@@ -1,11 +1,13 @@
 package com.practice.phuc.ums_husc.MessageModule;
 
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,12 +55,12 @@ public class DetailMessageActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch (id){
+        switch (id) {
             case R.id.item_traLoi:
                 Toast.makeText(this, "Tra loi tin nhan", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.item_xoa:
-                Toast.makeText(this,"Xoa tin nhan", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Xoa tin nhan", Toast.LENGTH_SHORT).show();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -78,6 +80,18 @@ public class DetailMessageActivity extends AppCompatActivity {
             tvThoiDiemGui.setText(bundle.getString("postTime"));
             tvNguoiNhan.setText(bundle.getString("receiver"));
             tvNoiDung.loadData(bundle.getString("body"), "text/html; charset=UTF-8", null);
+
+            final String[] dsTenNguoiNhan = bundle.getStringArray("receiverNameList");
+            tvNguoiNhan.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(DetailMessageActivity.this);
+                    builder.setTitle("Người nhận");
+                    builder.setItems(dsTenNguoiNhan, null);
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+            });
 
             JustifyTextInTextView.justify(tvTieuDe);
         }

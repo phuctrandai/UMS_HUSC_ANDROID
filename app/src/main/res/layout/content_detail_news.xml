@@ -19,35 +19,41 @@
             android:id="@+id/tv_tieuDe"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="4dp"
+            android:layout_marginStart="@dimen/normal_margin"
+            android:layout_marginTop="@dimen/normal_margin"
+            android:layout_marginEnd="@dimen/normal_margin"
+            android:layout_marginBottom="@dimen/small_margin"
             android:text="Tiêu đề thông báo"
-            android:textColor="@color/colorAccent"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/big_text" />
 
         <TextView
             android:id="@+id/tv_thoiGianDang"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginStart="@dimen/big_margin"
+            android:text="12/03/2019 08:05"
+            android:textSize="@dimen/small_text" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/big_margin"
             android:drawableStart="@drawable/ic_access_time_grey_12"
-            android:drawablePadding="4dp"
-            android:text="12/03/2019 08:05" />
+            android:drawablePadding="@dimen/tiny_padding"
+            android:text="Thời điểm đăng tin"
+            android:textSize="@dimen/tiny_text" />
 
         <WebView
-            android:keepScreenOn="true"
-            android:scrollbarStyle="insideOverlay"
             android:id="@+id/tv_noiDung"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_margin"
             android:layout_marginTop="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:isScrollContainer="true" />
+            android:layout_marginEnd="@dimen/small_margin"
+            android:isScrollContainer="true"
+            android:keepScreenOn="false"
+            android:scrollbarStyle="insideOverlay" />
     </LinearLayout>
 
 </LinearLayout>
