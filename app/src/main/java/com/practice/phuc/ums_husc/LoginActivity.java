@@ -1,5 +1,6 @@
 package com.practice.phuc.ums_husc;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
@@ -45,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
     // Keep login information
     SharedPreferences sharedPreferences = null;
     SharedPreferences.Editor editor = null;
-
+    UserLoginTask mAuthTask;
     // Cast json to model
     Moshi moshi;
     Type usersType;
@@ -81,6 +82,13 @@ public class LoginActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mAuthTask.cancel(true);
+        mAuthTask = null;
+        super.onDestroy();
     }
 
     private void initAll() {
@@ -130,8 +138,6 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    // Thuc hien validate thong tin dang nhap
-    // Neu hop le, tien hanh dang nhap
     private void attemptLogin() {
         // Reset errors.
         txtMaSinhVien.setError(null);
@@ -169,22 +175,20 @@ public class LoginActivity extends AppCompatActivity {
             focusView.requestFocus();
         } else {
 
-            UserLoginTask mAuthTask = new UserLoginTask(maSinhVien, matKhau);
+            mAuthTask = new UserLoginTask(maSinhVien, matKhau);
             mAuthTask.execute((String) null);
         }
     }
 
-    // Validate ma sinh vien
     private boolean isMaSinhVienValid(String maSinhVien) {
         return maSinhVien.contains("T");
     }
 
-    // Validate mat khau
     private boolean isPasswordValid(String password) {
         return password.length() >= 6;
     }
 
-    // Thuc hien kiem tra thong tin dang nhap
+    @SuppressLint("StaticFieldLeak")
     public class UserLoginTask extends AsyncTask<String, Void, Boolean> {
 
         private final String mMaSinhVien;
@@ -202,6 +206,7 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(String... params) {
+            if (mAuthTask == null) return false;
             try {
                 Thread.sleep(500);
                 responseLogin = onlineLogin(mMaSinhVien, mMatKhau);
@@ -213,8 +218,7 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            Log.d("DEBUG", success + " - do login");
-
+            if (mAuthTask == null) return;
             if (success && (responseLogin != null)) {
                 Log.d("DEBUG", "Login response code: " + responseLogin.code());
                 if (responseLogin.code() == NetworkUtil.OK) {
@@ -259,7 +263,6 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    // Luu token cua app vao database
     private void saveTokenForAccount() {
         final String maSinhVien = getSharedPreferences("sinhVien", MODE_PRIVATE)
                 .getString("maSinhVien", null);
@@ -267,7 +270,6 @@ public class LoginActivity extends AppCompatActivity {
         FireBaseIDTask.saveTokenForAccount(maSinhVien, token);
     }
 
-    // Dang nhap voi thong tin nhap vao
     private Response onlineLogin(String maSinhVien, String matKhau) {
         RequestBody requestBody = RequestBody.create(
                 MediaType.parse("application/xml; charset=utf-8"), ""
@@ -278,7 +280,6 @@ public class LoginActivity extends AppCompatActivity {
                 requestBody);
     }
 
-    // Hien thi hinh anh dang tai du lieu
     private void showProgress(final boolean show) {
         mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);

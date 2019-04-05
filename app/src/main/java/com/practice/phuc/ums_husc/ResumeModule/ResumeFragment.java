@@ -126,6 +126,7 @@ public class ResumeFragment extends Fragment {
     @Override
     public void onDestroy() {
         mIsDestroyed = true;
+        mLoadResumeTask.cancel(true);
         mLoadResumeTask = null;
         super.onDestroy();
     }
@@ -175,6 +176,7 @@ public class ResumeFragment extends Fragment {
 
         @Override
         protected void onPostExecute(final Boolean success) {
+            if (mLoadResumeTask == null) return;
             if (success) {
                 mStatus = STATUS_SHOW_DATA;
                 mViewPager.setAdapter(mResumePagerAdapter);

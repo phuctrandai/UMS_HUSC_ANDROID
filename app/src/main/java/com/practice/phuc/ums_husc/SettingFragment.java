@@ -28,7 +28,6 @@ public class SettingFragment extends PreferenceFragmentCompat {
         setPreferencesFromResource(R.xml.setting, s);
         mSharedPreferences = mContext.getSharedPreferences(getString(R.string.share_pre_key_setting), Context.MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
-//        addPreferencesFromResource(R.xml.setting);
         // bind UI
         mSpNews = (SwitchPreferenceCompat) findPreference(getString(R.string.pre_key_news));
         mSpMessage = (SwitchPreferenceCompat) findPreference(getString(R.string.pre_key_message));

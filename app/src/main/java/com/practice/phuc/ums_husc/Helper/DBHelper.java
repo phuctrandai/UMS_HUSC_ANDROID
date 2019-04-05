@@ -33,9 +33,10 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public DBHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
-        SQLiteDatabase db = getWritableDatabase();
-        createNewsTable(db);
-        createMessageTable(db);
+        try (SQLiteDatabase db = getWritableDatabase()) {
+            createNewsTable(db);
+            createMessageTable(db);
+        }
     }
 
     @Override

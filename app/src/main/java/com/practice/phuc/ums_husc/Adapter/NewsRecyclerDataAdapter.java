@@ -33,7 +33,7 @@ public class NewsRecyclerDataAdapter extends RecyclerView.Adapter<NewsRecyclerDa
     @NonNull
     @Override
     public DataViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.news_item, viewGroup, false);
+        View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_news, viewGroup, false);
         return new DataViewHolder(itemView);
     }
 
@@ -82,7 +82,7 @@ public class NewsRecyclerDataAdapter extends RecyclerView.Adapter<NewsRecyclerDa
 
     @Override
     public void onViewDetachedFromWindow(final DataViewHolder holder) {
-        ((DataViewHolder) holder).clearAnimation();
+        holder.clearAnimation();
     }
 
     /**

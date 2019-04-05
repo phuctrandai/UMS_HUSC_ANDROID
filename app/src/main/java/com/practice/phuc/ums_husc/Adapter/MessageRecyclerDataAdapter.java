@@ -37,7 +37,7 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
     @NonNull
     @Override
     public DataViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.message_item, viewGroup, false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_message, viewGroup, false);
         return new DataViewHolder(view);
     }
 

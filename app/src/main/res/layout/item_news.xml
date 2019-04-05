@@ -9,6 +9,7 @@
     android:layout_marginTop="@dimen/small_margin"
     android:layout_marginEnd="@dimen/small_margin"
     android:layout_marginBottom="@dimen/small_margin"
+    android:background="?android:attr/selectableItemBackground"
     app:cardCornerRadius="@dimen/normal_margin">
 
     <android.support.constraint.ConstraintLayout

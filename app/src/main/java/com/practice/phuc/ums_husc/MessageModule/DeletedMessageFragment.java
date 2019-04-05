@@ -103,6 +103,7 @@ public class DeletedMessageFragment extends Fragment implements SwipeRefreshLayo
         View view = inflater.inflate(R.layout.fragment_received_message, container, false);
         mRvMessage = view.findViewById(R.id.rv_message);
         mLoadMoreLayout = view.findViewById(R.id.load_more_layout);
+        mIsDestroyed = false;
 
         setUpRecyclerView();
         setUpSwipeRefreshLayout(view);
@@ -141,12 +142,14 @@ public class DeletedMessageFragment extends Fragment implements SwipeRefreshLayo
     public void onPause() {
         showNetworkErrorSnackbar(false);
         showErrorSnackbar(false, mErrorMessage);
+        mIsDestroyed = true;
         super.onPause();
     }
 
     @Override
     public void onDestroy() {
         mIsDestroyed = true;
+        mLoadDeletedMessageTask.cancel(true);
         mLoadDeletedMessageTask = null;
         mMessageList.clear();
         super.onDestroy();
@@ -155,7 +158,8 @@ public class DeletedMessageFragment extends Fragment implements SwipeRefreshLayo
     @Override
     public void onRefresh() {
         mLastAction = ACTION_REFRESH;
-
+        showNetworkErrorSnackbar(false);
+        showErrorSnackbar(false, "");
         if (NetworkUtil.getConnectivityStatus(mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
             mStatus = STATUS_NOT_NETWORK;
             new Handler().postDelayed(new Runnable() {
@@ -301,6 +305,7 @@ public class DeletedMessageFragment extends Fragment implements SwipeRefreshLayo
     private void setUpRecyclerView() {
         final LinearLayoutManager manager = new LinearLayoutManager(mContext);
         mRvMessage.setLayoutManager(manager);
+        mRvMessage.setHasFixedSize(true);
         mRvMessage.setAdapter(mAdapter);
         mRvMessage.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -364,21 +369,19 @@ public class DeletedMessageFragment extends Fragment implements SwipeRefreshLayo
 
         @Override
         protected void onPostExecute(Boolean success) {
-            Log.d("DEBUG", "Get tin nhan : " + success);
+            if (mLoadDeletedMessageTask == null) return;
             mSwipeRefreshLayout.setRefreshing(false);
-            if (mLoadDeletedMessageTask != null) {
-                if (success) {
-                    mStatus = STATUS_SHOW_DATA;
-                    mCurrentPage += 1;
-                    mIsScrolling = false;
-                    if (mIsMessageListChanged) {
-                        mAdapter.notifyDataSetChanged();
-                        mIsMessageListChanged = false;
-                    }
-                    mLoadMoreLayout.setVisibility(View.GONE);
-                } else {
-                    showErrorSnackbar(true, mErrorMessage);
+            if (success) {
+                mStatus = STATUS_SHOW_DATA;
+                mCurrentPage += 1;
+                mIsScrolling = false;
+                if (mIsMessageListChanged) {
+                    mAdapter.notifyItemRangeInserted(mAdapter.getItemCount(), ITEM_PER_PAGE);
+                    mIsMessageListChanged = false;
                 }
+                mLoadMoreLayout.setVisibility(View.GONE);
+            } else {
+                showErrorSnackbar(true, mErrorMessage);
             }
         }
 
