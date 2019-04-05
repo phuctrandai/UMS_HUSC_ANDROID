@@ -167,9 +167,11 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public void onDestroy() {
         mIsDestroyed = true;
-        mLoadNewsTask.cancel(true);
-        mLoadNewsTask = null;
         mThongBaoList.clear();
+        if (mLoadNewsTask != null) {
+            mLoadNewsTask.cancel(true);
+            mLoadNewsTask = null;
+        }
         super.onDestroy();
     }
 

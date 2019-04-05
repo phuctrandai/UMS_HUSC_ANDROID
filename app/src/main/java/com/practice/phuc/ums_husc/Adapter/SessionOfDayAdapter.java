@@ -29,7 +29,7 @@ public class SessionOfDayAdapter extends RecyclerView.Adapter<SessionOfDayAdapte
     }
 
     @Override
-    public void onBindViewHolder(@NonNull DataViewHolder dataViewHolder, int i) {
+    public void onBindViewHolder(@NonNull DataViewHolder viewHolder, int i) {
 
     }
 

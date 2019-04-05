@@ -126,8 +126,10 @@ public class ResumeFragment extends Fragment {
     @Override
     public void onDestroy() {
         mIsDestroyed = true;
-        mLoadResumeTask.cancel(true);
-        mLoadResumeTask = null;
+        if (mLoadResumeTask != null) {
+            mLoadResumeTask.cancel(true);
+            mLoadResumeTask = null;
+        }
         super.onDestroy();
     }
 

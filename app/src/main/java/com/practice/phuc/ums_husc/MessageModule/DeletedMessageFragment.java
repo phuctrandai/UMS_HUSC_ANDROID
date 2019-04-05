@@ -149,9 +149,11 @@ public class DeletedMessageFragment extends Fragment implements SwipeRefreshLayo
     @Override
     public void onDestroy() {
         mIsDestroyed = true;
-        mLoadDeletedMessageTask.cancel(true);
-        mLoadDeletedMessageTask = null;
         mMessageList.clear();
+        if (mLoadDeletedMessageTask != null) {
+            mLoadDeletedMessageTask.cancel(true);
+            mLoadDeletedMessageTask = null;
+        }
         super.onDestroy();
     }
 

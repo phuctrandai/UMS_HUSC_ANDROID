@@ -146,9 +146,11 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
     @Override
     public void onDestroy() {
         mIsDestroyed = true;
-        mLoadSentMessageTask.cancel(true);
-        mLoadSentMessageTask = null;
         mMessageList.clear();
+        if (mLoadSentMessageTask != null) {
+            mLoadSentMessageTask.cancel(true);
+            mLoadSentMessageTask = null;
+        }
         super.onDestroy();
     }
 

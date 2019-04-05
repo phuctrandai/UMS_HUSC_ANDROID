@@ -147,9 +147,11 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
     @Override
     public void onDestroy() {
         mIsDestroyed = true;
-        mLoadReceivedMessageTask.cancel(true);
-        mLoadReceivedMessageTask = null;
         mMessageList.clear();
+        if (mLoadReceivedMessageTask != null) {
+            mLoadReceivedMessageTask.cancel(true);
+            mLoadReceivedMessageTask = null;
+        }
         super.onDestroy();
     }
 
