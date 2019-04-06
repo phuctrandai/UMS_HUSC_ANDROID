@@ -102,10 +102,10 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-//        Log.d("DEBUG", "On create VIEW Received message fragment");
         View view = inflater.inflate(R.layout.fragment_received_message, container, false);
         mRvMessage = view.findViewById(R.id.rv_message);
         mLoadMoreLayout = view.findViewById(R.id.load_more_layout);
+        mIsDestroyed = false;
 
         setUpRecyclerView();
         setUpSwipeRefreshLayout(view);
@@ -140,21 +140,26 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
     public void onPause() {
         showNetworkErrorSnackbar(false);
         showErrorSnackbar(false, mErrorMessage);
+        mIsDestroyed = true;
         super.onPause();
     }
 
     @Override
     public void onDestroy() {
         mIsDestroyed = true;
-        mLoadReceivedMessageTask = null;
         mMessageList.clear();
+        if (mLoadReceivedMessageTask != null) {
+            mLoadReceivedMessageTask.cancel(true);
+            mLoadReceivedMessageTask = null;
+        }
         super.onDestroy();
     }
 
     @Override
     public void onRefresh() {
         mLastAction = ACTION_REFRESH;
-
+        showNetworkErrorSnackbar(false);
+        showErrorSnackbar(false, "");
         if (NetworkUtil.getConnectivityStatus(mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
             mStatus = STATUS_NOT_NETWORK;
             new Handler().postDelayed(new Runnable() {
@@ -300,6 +305,7 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
     private void setUpRecyclerView() {
         final LinearLayoutManager manager = new LinearLayoutManager(mContext);
         mRvMessage.setLayoutManager(manager);
+        mRvMessage.setHasFixedSize(true);
         mRvMessage.setAdapter(mAdapter);
         mRvMessage.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -337,7 +343,6 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
             try {
                 mResponse = fetchData();
                 if (mResponse == null) {
-                    Log.d("DEBUG", "Get tin nhan Response null");
                     mErrorMessage = getString(R.string.error_time_out);
                     return false;
 
@@ -363,21 +368,19 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
 
         @Override
         protected void onPostExecute(Boolean success) {
-            Log.d("DEBUG", "Get tin nhan : " + success);
+            if (mLoadReceivedMessageTask == null) return;
             mSwipeRefreshLayout.setRefreshing(false);
-            if (mLoadReceivedMessageTask != null) {
-                if (success) {
-                    mStatus = STATUS_SHOW_DATA;
-                    mCurrentPage += 1;
-                    mIsScrolling = false;
-                    if (mIsMessageListChanged) {
-                        mAdapter.notifyDataSetChanged();
-                        mIsMessageListChanged = false;
-                    }
-                    mLoadMoreLayout.setVisibility(View.GONE);
-                } else {
-                    showErrorSnackbar(true, mErrorMessage);
+            if (success) {
+                mStatus = STATUS_SHOW_DATA;
+                mCurrentPage += 1;
+                mIsScrolling = false;
+                if (mIsMessageListChanged) {
+                    mAdapter.notifyItemRangeInserted(mAdapter.getItemCount(), ITEM_PER_PAGE);
+                    mIsMessageListChanged = false;
                 }
+                mLoadMoreLayout.setVisibility(View.GONE);
+            } else {
+                showErrorSnackbar(true, mErrorMessage);
             }
         }
 

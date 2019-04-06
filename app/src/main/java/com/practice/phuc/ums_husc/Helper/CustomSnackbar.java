@@ -17,6 +17,9 @@ import com.practice.phuc.ums_husc.R;
 public class CustomSnackbar {
     public static Snackbar createTwoButtonSnackbar(final Context context, final View rootLayout, String message
                             , View.OnClickListener negativeClickListener, View.OnClickListener positiveClickListener) {
+        if (context == null || rootLayout == null)
+            return null;
+
         // Create the Snackbar
         LinearLayout.LayoutParams objLayoutParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);

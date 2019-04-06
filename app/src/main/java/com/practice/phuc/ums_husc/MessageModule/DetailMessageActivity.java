@@ -85,8 +85,11 @@ public class DetailMessageActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        mLoadTask = null;
         mIsDestroyed = true;
+        if (mLoadTask != null) {
+            mLoadTask.cancel(true);
+            mLoadTask = null;
+        }
         super.onDestroy();
     }
 

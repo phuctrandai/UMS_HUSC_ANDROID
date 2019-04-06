@@ -99,7 +99,6 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
         String messageSender = remoteMessage.getData().get("title");
         String messageSendTime = DateHelper.formatDateTimeString(remoteMessage.getData().get("postTime"));
 
-
         Intent intent;
         PendingIntent pendingIntent;
         Context context;
@@ -114,6 +113,7 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
             intent.putExtra(Reference.BUNDLE_KEY_MESSAGE_SEND_TIME, messageSendTime);
             intent.putExtra(Reference.BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, true);
         } else {
+            context = mContext;
             intent = new Intent(mContext, DetailMessageActivity.class);
             bundle.putString(Reference.BUNDLE_KEY_MESSAGE_ID, messageId);
             bundle.putString(Reference.BUNDLE_KEY_MESSAGE_TITLE, messageTitle);
@@ -121,7 +121,6 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
             bundle.putString(Reference.BUNDLE_KEY_MESSAGE_SEND_TIME, messageSendTime);
             bundle.putBoolean(Reference.BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, true);
             intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, bundle);
-            context = mContext;
         }
 
         pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);

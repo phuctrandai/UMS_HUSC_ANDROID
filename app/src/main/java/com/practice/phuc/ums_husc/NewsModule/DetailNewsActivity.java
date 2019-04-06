@@ -77,7 +77,10 @@ public class DetailNewsActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        mLoadTask = null;
+        if (mLoadTask != null) {
+            mLoadTask.cancel(true);
+            mLoadTask = null;
+        }
         mIsDestroyed = true;
         super.onDestroy();
     }

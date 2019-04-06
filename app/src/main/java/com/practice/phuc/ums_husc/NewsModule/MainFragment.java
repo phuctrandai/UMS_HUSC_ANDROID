@@ -69,7 +69,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private LinearLayout mLoadMoreLayout;
 
     public MainFragment() {
-        // Required empty public constructor
     }
 
     public static Fragment newInstance(Context context) {
@@ -80,7 +79,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-//        Log.d("DEBUG", "On create MainFragment");
         mStatus = STATUS_INIT;
         mThongBaoList = new ArrayList<>();
         mIsThongBaoListChange = false;
@@ -105,6 +103,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         final View view = inflater.inflate(R.layout.fragment_main, container, false);
         rvItems = view.findViewById(R.id.rv_thongBao);
         mLoadMoreLayout = view.findViewById(R.id.load_more_layout);
+        mIsDestroyed = false;
 
         setUpRecyclerView();
         setUpSwipeRefreshLayout(view);
@@ -141,13 +140,12 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onPause() {
         showNetworkErrorSnackbar(false);
         showErrorSnackbar(false, mErrorMessage);
-        Log.d("DEBUG", "on PAUSE Main fragment - STATUS: " + mStatus);
+        mIsDestroyed = true;
         super.onPause();
     }
 
     @Override
     public void onResume() {
-        Log.d("DEBUG", "On RESUME Main fragment");
         super.onResume();
         onHasNewNews();
     }
@@ -167,18 +165,20 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onDestroy() {
-//        Log.d("DEBUG", "ON DESTROY MAIN FRAGMENT");
         mIsDestroyed = true;
-        mLoadNewsTask = null;
         mThongBaoList.clear();
+        if (mLoadNewsTask != null) {
+            mLoadNewsTask.cancel(true);
+            mLoadNewsTask = null;
+        }
         super.onDestroy();
     }
 
     @Override
     public void onRefresh() {
-//        Log.d("DEBUG", "on REFRESH Main fragment");
         mLastAction = ACTION_REFRESH;
-
+        showNetworkErrorSnackbar(false);
+        showErrorSnackbar(false, "");
         if (NetworkUtil.getConnectivityStatus(mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
             mStatus = STATUS_NOT_NETWORK;
             new Handler().postDelayed(new Runnable() {
@@ -233,6 +233,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         final LinearLayoutManager manager = new LinearLayoutManager(mContext);
         rvItems.setLayoutManager(manager);
         rvItems.setAdapter(mAdapter);
+        rvItems.setHasFixedSize(true);
         rvItems.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -337,22 +338,21 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
         @Override
         protected void onPostExecute(Boolean success) {
-            Log.d("DEBUG", "Get thong bao : " + success);
+            if (mLoadNewsTask == null) return;
             mSwipeRefreshLayout.setRefreshing(false);
-            if (mLoadNewsTask != null) {
-                if (success) {
-                    mStatus = STATUS_SHOW_DATA;
-                    mCurrentPage += 1;
-                    mIsScrolling = false;
-                    if (mIsThongBaoListChange) {
-                        mAdapter.notifyDataSetChanged();
-                        mIsThongBaoListChange = false;
-                    }
-                    mLoadMoreLayout.setVisibility(View.GONE);
-                } else {
-                    showErrorSnackbar(true, mErrorMessage);
+            if (success) {
+                mStatus = STATUS_SHOW_DATA;
+                mCurrentPage += 1;
+                mIsScrolling = false;
+                if (mIsThongBaoListChange) {
+                    mAdapter.notifyItemRangeInserted(mAdapter.getItemCount(), ITEM_PER_PAGE);
+                    mIsThongBaoListChange = false;
                 }
+                mLoadMoreLayout.setVisibility(View.GONE);
+            } else {
+                showErrorSnackbar(true, mErrorMessage);
             }
+            Log.d("DEBUG", "Get thong bao : " + success);
         }
 
         @Override
@@ -429,7 +429,9 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                             mNotNetworkSnackbar.dismiss();
                         }
                     });
-            mNotNetworkSnackbar.show();
+            if (mNotNetworkSnackbar != null)
+                mNotNetworkSnackbar.show();
+
         } else if (mNotNetworkSnackbar != null) {
             mNotNetworkSnackbar.dismiss();
         }
@@ -437,7 +439,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     private void showErrorSnackbar(boolean show, String message) {
         if (mIsDestroyed) return;
-
         if (show) {
             mStatus = STATUS_SHOW_ERROR;
             mErrorSnackbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mSwipeRefreshLayout,
@@ -464,7 +465,9 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                             }
                         }
                     });
-            mErrorSnackbar.show();
+            if (mErrorSnackbar != null)
+                mErrorSnackbar.show();
+
         } else if (mErrorSnackbar != null) {
             mErrorSnackbar.dismiss();
         }

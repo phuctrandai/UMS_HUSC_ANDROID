@@ -26,10 +26,14 @@ import android.widget.TextView;
 import com.practice.phuc.ums_husc.Helper.FireBaseIDTask;
 import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.Helper.Reference;
+import com.practice.phuc.ums_husc.MessageModule.DetailMessageActivity;
 import com.practice.phuc.ums_husc.ResumeModule.ResumeFragment;
 import com.practice.phuc.ums_husc.MessageModule.MessageFragment;
 import com.practice.phuc.ums_husc.NewsModule.DetailNewsActivity;
 import com.practice.phuc.ums_husc.NewsModule.MainFragment;
+import com.practice.phuc.ums_husc.ScheduleModule.ScheduleFragment;
+
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -37,21 +41,40 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
 
-    private static String currentFragment;
+    private String currentFragment;
+    private FragmentManager fragmentManager;
     private int currentNavItem;
-    private static FragmentManager fragmentManager;
     private boolean mIsLogined;
+    private boolean mIsLaunchFromNewsNoti;
+    private boolean mIsLaunchFromMessageNoti;
+    private Bundle mBundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mBundle = getIntent().getExtras();
         mIsLogined = localLogin();
         if (mIsLogined) {
             initAll();
             initFragmentManager();
-            initFragment(MainFragment.newInstance(this));
             showAccountInfo();
+
+            if (mBundle != null) {
+                mIsLaunchFromNewsNoti = mBundle.getBoolean(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, false);
+                mIsLaunchFromMessageNoti = mBundle.getBoolean(Reference.BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, false);
+
+                if (mIsLaunchFromMessageNoti) {
+                    initFragment(MessageFragment.newInstance(this));
+
+                } else {
+                    initFragment(MainFragment.newInstance(this));
+                }
+
+            } else {
+                initFragment(MainFragment.newInstance(this));
+            }
         }
     }
 
@@ -61,13 +84,13 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
             this.finish();
+
         } else {
             // xem tin tu thong bao o thanh trang thai
-            Bundle bundle = getIntent().getExtras();
-            if (bundle != null && bundle.getBoolean(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI)) {
-                String title = bundle.getString(Reference.BUNDLE_KEY_NEWS_TITLE);
-                String postTime = bundle.getString(Reference.BUNDLE_KEY_NEWS_POST_TIME);
-                String id = bundle.getString(Reference.BUNDLE_KEY_NEWS_ID);
+            if (mBundle != null && mIsLaunchFromNewsNoti) {
+                String title = mBundle.getString(Reference.BUNDLE_KEY_NEWS_TITLE, "");
+                String postTime = mBundle.getString(Reference.BUNDLE_KEY_NEWS_POST_TIME, "");
+                String id = mBundle.getString(Reference.BUNDLE_KEY_NEWS_ID, "");
 
                 Bundle b = new Bundle();
                 b.putString(Reference.BUNDLE_KEY_NEWS_TITLE, title);
@@ -77,6 +100,22 @@ public class MainActivity extends AppCompatActivity
                 Intent intent = new Intent(this, DetailNewsActivity.class);
                 intent.putExtra(Reference.BUNDLE_EXTRA_NEWS, b);
                 startActivity(intent);
+
+            } else if (mBundle != null && mIsLaunchFromMessageNoti) {
+                String title = mBundle.getString(Reference.BUNDLE_KEY_MESSAGE_TITLE, "");
+                String sendTime = mBundle.getString(Reference.BUNDLE_KEY_MESSAGE_SEND_TIME, "");
+                String sender = mBundle.getString(Reference.BUNDLE_KEY_MESSAGE_SENDER, "");
+                String id = mBundle.getString(Reference.BUNDLE_KEY_MESSAGE_ID, "");
+
+                Bundle b = new Bundle();
+                b.putString(Reference.BUNDLE_KEY_MESSAGE_ID, id);
+                b.putString(Reference.BUNDLE_KEY_MESSAGE_TITLE, title);
+                b.putString(Reference.BUNDLE_KEY_MESSAGE_SENDER, sender);
+                b.putString(Reference.BUNDLE_KEY_MESSAGE_SEND_TIME, sendTime);
+                b.putBoolean(Reference.BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, true);
+                Intent intent = new Intent(this, DetailMessageActivity.class);
+                intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, b);
+                startActivity(intent);
             }
         }
         super.onPostCreate(savedInstanceState);
@@ -84,7 +123,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onResume() {
-//        Log.d("DEBUG", "ON RESUME Main activity");
         MyFireBaseMessagingService.mContext = this;
         super.onResume();
     }
@@ -97,8 +135,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-//        Log.d("UMS_HUSC", "Back pressed !!!");
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
 
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -200,6 +237,9 @@ public class MainActivity extends AppCompatActivity
         } else if (fragmentTag.equals(ResumeFragment.class.getName())) {
             showDrawerButton(false);
             currentNavItem = R.id.nav_resume;
+        } else if (fragmentTag.equals(SettingFragment.class.getName())) {
+            showDrawerButton(false);
+            currentNavItem = R.id.nav_setting;
         }
     }
 
@@ -218,15 +258,15 @@ public class MainActivity extends AppCompatActivity
 
     private void initFragmentManager() {
         fragmentManager = getSupportFragmentManager();
-        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
-            @Override
-            public void onBackStackChanged() {
-                Fragment fragment = fragmentManager.findFragmentById(R.id.frame_layout);
-                if (fragment != null) {
-                    updateByFragmentTag(fragment.getTag());
-                }
-            }
-        });
+//        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+//            @Override
+//            public void onBackStackChanged() {
+//                Fragment fragment = fragmentManager.findFragmentById(R.id.frame_layout);
+//                if (fragment != null) {
+//                    updateByFragmentTag(fragment.getTag());
+//                }
+//            }
+//        });
     }
 
     private void initFragment(Fragment fragment) {
@@ -274,10 +314,7 @@ public class MainActivity extends AppCompatActivity
         String maSinhVien = sp.getString("maSinhVien", null);
         String matKhau = sp.getString("matKhau", null);
 
-        if ((maSinhVien != null) && (matKhau != null))
-            return true;
-
-        return false;
+        return (maSinhVien != null) && (matKhau != null);
     }
 
     private void logOut() {
@@ -335,7 +372,7 @@ public class MainActivity extends AppCompatActivity
 
     private void showDrawerButton(boolean show)  {
         if (show) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
             getSupportActionBar().setDisplayShowHomeEnabled(false);
             drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
             toggle.setDrawerIndicatorEnabled(true);
@@ -350,7 +387,7 @@ public class MainActivity extends AppCompatActivity
                     onBackPressed();
                 }
             });
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
     }
