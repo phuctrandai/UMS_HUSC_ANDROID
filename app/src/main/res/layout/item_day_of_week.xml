@@ -5,18 +5,20 @@
     android:id="@+id/layout_rootDayOfWeekItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/normal_margin"
+    android:layout_marginTop="0dp"
     android:layout_marginBottom="@dimen/normal_margin"
     android:background="@android:color/white">
 
     <RelativeLayout
         android:id="@+id/layout_title"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_margin="0dp"
+        android:background="#80BEBEBE">
 
         <TextView
             android:id="@+id/tv_dayOfWeek"
-            android:layout_width="120dp"
+            android:layout_width="220dp"
             android:layout_height="wrap_content"
             android:padding="@dimen/normal_padding"
             android:text="@string/monday"
@@ -41,13 +43,14 @@
         android:layout_below="@id/layout_title"
         android:layout_margin="0dp"
         android:background="@drawable/layout_top_bottom_border"
+        android:minHeight="96dp"
         android:orientation="horizontal"
         android:paddingTop="@dimen/tiny_padding"
         android:paddingBottom="@dimen/tiny_padding">
 
         <TextView
             android:id="@+id/tv_sessionMorning"
-            android:layout_width="60dp"
+            android:layout_width="52dp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:padding="@dimen/normal_padding"
@@ -57,6 +60,7 @@
             android:id="@+id/rv_sessionMorning"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_toEndOf="@id/tv_sessionMorning"
             android:orientation="horizontal"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
@@ -70,13 +74,14 @@
         android:layout_below="@id/layout_morning"
         android:layout_margin="0dp"
         android:background="@drawable/layout_top_bottom_border"
+        android:minHeight="96dp"
         android:orientation="horizontal"
         android:paddingTop="@dimen/tiny_padding"
         android:paddingBottom="@dimen/tiny_padding">
 
         <TextView
             android:id="@+id/tv_sessionAfternoon"
-            android:layout_width="60dp"
+            android:layout_width="52dp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:padding="@dimen/normal_padding"
@@ -86,6 +91,7 @@
             android:id="@+id/rv_sessionAfternoon"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_toEndOf="@id/tv_sessionAfternoon"
             android:orientation="horizontal"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
@@ -99,13 +105,14 @@
         android:layout_below="@id/layout_afternoon"
         android:layout_margin="0dp"
         android:background="@drawable/layout_top_bottom_border"
+        android:minHeight="96dp"
         android:orientation="horizontal"
         android:paddingTop="@dimen/tiny_padding"
         android:paddingBottom="@dimen/tiny_padding">
 
         <TextView
             android:id="@+id/tv_sessionEvening"
-            android:layout_width="60dp"
+            android:layout_width="52dp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:padding="@dimen/normal_padding"
@@ -115,6 +122,7 @@
             android:id="@+id/rv_sessionEvening"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_toEndOf="@id/tv_sessionEvening"
             android:orientation="horizontal"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager" />

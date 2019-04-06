@@ -1,5 +1,7 @@
 package com.practice.phuc.ums_husc.Helper;
 
+import android.annotation.SuppressLint;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -14,6 +16,10 @@ public class DateHelper {
     public final static int THURSDAY = 5;
     public final static int FRIDAY = 6;
     public final static int SATURDAY = 7;
+
+    public final static int MORNING = 8;
+    public final static int AFTERNOON = 9;
+    public final static int EVENING = 10;
 
     private static Calendar calendar;
     public static Calendar getCalendar() {
@@ -41,7 +47,7 @@ public class DateHelper {
         return result;
     }
 
-    public static String formatMDYToDMY(String dateString) {
+    private static String formatMDYToDMY(String dateString) {
         String result = "";
         if (dateString != null) {
             String arr[] = {};
@@ -67,7 +73,7 @@ public class DateHelper {
     }
 
     // MM/DD/YYYY hh:mm:ss pm -> DD/MM/YYYY hh:mm pm
-    public static String formatDateTimeString(String dateTimeString) {
+    static String formatDateTimeString(String dateTimeString) {
         String result = "";
         if (dateTimeString != null) {
             String arr[] = dateTimeString.split(" ");
@@ -81,7 +87,7 @@ public class DateHelper {
     }
 
     // hh:mm:ss -> hh:mm
-    public static String formatTimeString(String timeString) {
+    private static String formatTimeString(String timeString) {
         String result = "";
         if (timeString != null) {
             String arr[] = timeString.split(":");
@@ -105,7 +111,7 @@ public class DateHelper {
 
     public static Date stringToDate(String dateStr, String dateFormat) {
         try {
-            Date date = new SimpleDateFormat(dateFormat).parse(dateStr);
+            @SuppressLint("SimpleDateFormat") Date date = new SimpleDateFormat(dateFormat).parse(dateStr);
             return date;
         } catch (ParseException e) {
             e.printStackTrace();
@@ -118,9 +124,9 @@ public class DateHelper {
         int length = dateArr.length;
         if (length > 0) {
             minDate = dateArr[0];
-            for (int i = 0; i < length; i++) {
-                int compare = compareDate(minDate, dateArr[i]);
-                if (compare > 0) minDate = dateArr[i];
+            for (Date aDateArr : dateArr) {
+                int compare = compareDate(minDate, aDateArr);
+                if (compare > 0) minDate = aDateArr;
             }
         }
         return minDate;
@@ -131,9 +137,9 @@ public class DateHelper {
         int length = dateArr.length;
         if (length > 0) {
             maxDate = dateArr[0];
-            for (int i = 0; i < length; i++) {
-                int compare = compareDate(maxDate, dateArr[i]);
-                if (compare < 0) maxDate = dateArr[i];
+            for (Date aDateArr : dateArr) {
+                int compare = compareDate(maxDate, aDateArr);
+                if (compare < 0) maxDate = aDateArr;
             }
         }
         return maxDate;
@@ -152,25 +158,38 @@ public class DateHelper {
         }
     }
 
-    public static int getDayOfWeek(Date date) {
+    public static Date getDate(Date startDateOfWeek, int dayOfWeek) {
+        switch (dayOfWeek) {
+            case MONDAY: return startDateOfWeek;
+            case TUESDAY: return plusDay(startDateOfWeek, 1);
+            case WEDNESDAY: return plusDay(startDateOfWeek, 2);
+            case THURSDAY: return plusDay(startDateOfWeek, 3);
+            case FRIDAY: return plusDay(startDateOfWeek, 4);
+            case SATURDAY: return plusDay(startDateOfWeek, 5);
+            case SUNDAY: return plusDay(startDateOfWeek, 6);
+            default: return null;
+        }
+    }
+
+    private static int getDayOfWeek(Date date) {
         Calendar calendar = Calendar.getInstance(new Locale("vie", "VN"));
         calendar.setTime(date);
         return calendar.get(Calendar.DAY_OF_WEEK);
     }
 
-    public static int getMonth(Date date) {
+    private static int getMonth(Date date) {
         Calendar calendar = Calendar.getInstance(new Locale("vie", "VN"));
         calendar.setTime(date);
         return calendar.get(Calendar.MONTH) + 1;
     }
 
-    public static int getDayOfMonth(Date date) {
+    private static int getDayOfMonth(Date date) {
         Calendar calendar = Calendar.getInstance(new Locale("vie", "VN"));
         calendar.setTime(date);
         return calendar.get(Calendar.DAY_OF_MONTH);
     }
 
-    public static int getYear(Date date) {
+    private static int getYear(Date date) {
         Calendar calendar = Calendar.getInstance(new Locale("vie", "VN"));
         calendar.setTime(date);
         return calendar.get(Calendar.YEAR);

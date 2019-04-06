@@ -23,13 +23,14 @@ import java.util.List;
 public class ScheduleFragment extends Fragment {
 
     private Context mContext;
-    private WeeksTabAdapter mFragmentsTabAdapter;
+    private WeeksTabAdapter mWeeksTabAdapter;
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
 
     private List<LOPHOCPHAN> mClassList;
     private Date mMinStartDate;
     private Date mMaxEndDate;
+    private int mTotalWeek;
 
     public ScheduleFragment() {
     }
@@ -42,8 +43,12 @@ public class ScheduleFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        mFragmentsTabAdapter = new WeeksTabAdapter(getChildFragmentManager());
+        mWeeksTabAdapter = new WeeksTabAdapter(getChildFragmentManager());
         mClassList = new ArrayList<>();
+
+        setData();
+        mTotalWeek = countTotalWeek();
+
         super.onCreate(savedInstanceState);
     }
 
@@ -54,43 +59,40 @@ public class ScheduleFragment extends Fragment {
         mViewPager = view.findViewById(R.id.vp_schedule);
         mTabLayout = view.findViewById(R.id.tabs_schedule);
 
-        setData();
         setUpFragments();
         return view;
     }
 
     @Override
     public void onDestroyView() {
-        mFragmentsTabAdapter.clearFragment();
+        mWeeksTabAdapter.clearFragment();
         super.onDestroyView();
     }
 
     private void setUpFragments() {
         int currentWeekPos = 0;
-        int plusDay = 6;
-        int totalWeek = countTotalWeek();
 
         Date startDateOfWeek = mMinStartDate;
-        Date endDateOfWeek = DateHelper.plusDay(startDateOfWeek, plusDay);
+        Date endDateOfWeek = DateHelper.plusDay(startDateOfWeek, 6);
 
         Date now = DateHelper.getCalendar().getTime();
         boolean isBetween;
 
-        for (int i = 0; i < totalWeek; i++) {
+        for (int i = 0; i < mTotalWeek; i++) {
             String weekTitle = "Tuần " + (i + 1);
             // Ngay hien tai co thuoc tuan nay khong
             isBetween = DateHelper.isBetweenTwoDate(startDateOfWeek, endDateOfWeek, now);
             if (isBetween) currentWeekPos = i;  // Neu thuoc, luu lai vi tri cua tab/page
 
-            mFragmentsTabAdapter.addFragment(
-                    WeekFragment.newInstance(mContext, startDateOfWeek, endDateOfWeek, /*Debug:*/ weekTitle)
+            mWeeksTabAdapter.addFragment(
+                    WeekFragment.newInstance(mContext, startDateOfWeek, endDateOfWeek, mClassList)
                     , weekTitle
             );
             startDateOfWeek = DateHelper.plusDay(endDateOfWeek,1);
-            endDateOfWeek = DateHelper.plusDay(startDateOfWeek, plusDay);
+            endDateOfWeek = DateHelper.plusDay(startDateOfWeek, 6);
         }
 
-        mViewPager.setAdapter(mFragmentsTabAdapter);
+        mViewPager.setAdapter(mWeeksTabAdapter);
         mViewPager.setCurrentItem(currentWeekPos);
         mTabLayout.setupWithViewPager(mViewPager);
     }
@@ -158,14 +160,14 @@ public class ScheduleFragment extends Fragment {
         l = new LOPHOCPHAN(
                 "2018-2019.1.TIN4403.003", "Lập trình ứng dụng cho các thiết bị di động - Nhóm 3",
                 "Lab 4_CNTT", 1, 3, "Nguyễn Dũng",
-                "24/01/2019", "10/05/2019", DateHelper.WEDNESDAY
+                "24/01/2019", "10/05/2019", DateHelper.FRIDAY
         );
         mClassList.add(l);
 
         l = new LOPHOCPHAN(
                 "2018-2019.1.TIN4483.002", "Xây dựng ứng dụng với .NET FrameWork - Nhóm 2",
                 "Lab 2_CNTT", 9, 11, "Nguyễn Hoàng Hà",
-                "21/01/2019", "27/04/2019", DateHelper.WEDNESDAY
+                "21/01/2019", "27/04/2019", DateHelper.TUESDAY
         );
         mClassList.add(l);
     }

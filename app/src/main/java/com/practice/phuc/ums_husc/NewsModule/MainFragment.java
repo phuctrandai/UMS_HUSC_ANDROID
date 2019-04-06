@@ -69,7 +69,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private LinearLayout mLoadMoreLayout;
 
     public MainFragment() {
-        // Required empty public constructor
     }
 
     public static Fragment newInstance(Context context) {

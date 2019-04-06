@@ -12,11 +12,28 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.Helper.DateHelper;
+import com.practice.phuc.ums_husc.Model.LOPHOCPHAN;
 import com.practice.phuc.ums_husc.R;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import static com.practice.phuc.ums_husc.Helper.DateHelper.AFTERNOON;
+import static com.practice.phuc.ums_husc.Helper.DateHelper.EVENING;
+import static com.practice.phuc.ums_husc.Helper.DateHelper.FRIDAY;
+import static com.practice.phuc.ums_husc.Helper.DateHelper.MONDAY;
+import static com.practice.phuc.ums_husc.Helper.DateHelper.MORNING;
+import static com.practice.phuc.ums_husc.Helper.DateHelper.SATURDAY;
+import static com.practice.phuc.ums_husc.Helper.DateHelper.SUNDAY;
+import static com.practice.phuc.ums_husc.Helper.DateHelper.THURSDAY;
+import static com.practice.phuc.ums_husc.Helper.DateHelper.TUESDAY;
+import static com.practice.phuc.ums_husc.Helper.DateHelper.WEDNESDAY;
+import static com.practice.phuc.ums_husc.Helper.DateHelper.getDate;
+import static com.practice.phuc.ums_husc.Helper.DateHelper.isBetweenTwoDate;
+import static com.practice.phuc.ums_husc.Helper.DateHelper.stringToDate;
+import static com.practice.phuc.ums_husc.Helper.DateHelper.toShortDateString;
 
 public class DayOfWeekAdapter extends Adapter<DayOfWeekAdapter.DataViewHolder> {
 
@@ -26,17 +43,34 @@ public class DayOfWeekAdapter extends Adapter<DayOfWeekAdapter.DataViewHolder> {
     private SessionOfDayAdapter mEveningAdapter;
     private boolean mNowIsInThisWeek;
     private Date mStartDateOfWeek;
+    private Date mEndDateOfWeek;
+    private Date mTodate;
 
-    private List<String> mClassesOfDay; // Danh sach cac lop hoc trong ngay hom nay
+    private List<LOPHOCPHAN> mClassList; // Danh sach cac lop hoc
+    private List<LOPHOCPHAN> mMondayClassList;
+    private List<LOPHOCPHAN> mTuesdayClassList;
+    private List<LOPHOCPHAN> mWednesdayClassList;
+    private List<LOPHOCPHAN> mThursdayClassList;
+    private List<LOPHOCPHAN> mFridayClassList;
+    private List<LOPHOCPHAN> mSaturdayClassList;
+    private List<LOPHOCPHAN> mSundayClassList;
 
-    public DayOfWeekAdapter(Context context, List<String> classesOfDay, Date startDateOfWeek) {
+    public DayOfWeekAdapter(Context context, List<LOPHOCPHAN> classList, Date startDateOfWeek, Date endDateOfWeek) {
         mContext = context;
-        mClassesOfDay = classesOfDay;
         mStartDateOfWeek = startDateOfWeek;
+        mEndDateOfWeek = endDateOfWeek;
+        mClassList = classList;
+        mMondayClassList = getClassesOnThisDay(MONDAY);
+        mTuesdayClassList = getClassesOnThisDay(TUESDAY);
+        mWednesdayClassList = getClassesOnThisDay(WEDNESDAY);
+        mThursdayClassList = getClassesOnThisDay(THURSDAY);
+        mFridayClassList = getClassesOnThisDay(FRIDAY);
+        mSaturdayClassList = getClassesOnThisDay(SATURDAY);
+        mSundayClassList = getClassesOnThisDay(SUNDAY);
 
-        mMorningAdapter = new SessionOfDayAdapter(mContext, null);
-        mAfternoonAdapter = new SessionOfDayAdapter(mContext, null);
-        mEveningAdapter = new SessionOfDayAdapter(mContext, null);
+        mMorningAdapter = new SessionOfDayAdapter(mContext);
+        mAfternoonAdapter = new SessionOfDayAdapter(mContext);
+        mEveningAdapter = new SessionOfDayAdapter(mContext);
     }
 
     public void setNowIsInThisWeek(boolean value) {
@@ -54,62 +88,47 @@ public class DayOfWeekAdapter extends Adapter<DayOfWeekAdapter.DataViewHolder> {
     public void onBindViewHolder(@NonNull DataViewHolder viewHolder, int i) {
         if (i == 0) {
             viewHolder.tvDayOfWeek.setText(mContext.getString(R.string.monday));
-            String toDate = DateHelper.toShortDateString(mStartDateOfWeek);
-            viewHolder.tvDayOfMonth.setText(toDate);
+            setUpSessionAdapter(mMondayClassList, MONDAY);
         }
         if (i == 1) {
             viewHolder.tvDayOfWeek.setText(mContext.getString(R.string.tuesday));
-            String toDate = DateHelper.toShortDateString(DateHelper.plusDay(mStartDateOfWeek, 1));
-            viewHolder.tvDayOfMonth.setText(toDate);
+            setUpSessionAdapter(mTuesdayClassList, TUESDAY);
         }
         if (i == 2) {
             viewHolder.tvDayOfWeek.setText(mContext.getString(R.string.wednesday));
-            String toDate = DateHelper.toShortDateString(DateHelper.plusDay(mStartDateOfWeek, 2));
-            viewHolder.tvDayOfMonth.setText(toDate);
+            setUpSessionAdapter(mWednesdayClassList, WEDNESDAY);
         }
         if (i == 3) {
             viewHolder.tvDayOfWeek.setText(mContext.getString(R.string.thursday));
-            String toDate = DateHelper.toShortDateString(DateHelper.plusDay(mStartDateOfWeek, 3));
-            viewHolder.tvDayOfMonth.setText(toDate);
+            setUpSessionAdapter(mThursdayClassList, THURSDAY);
         }
         if (i == 4) {
             viewHolder.tvDayOfWeek.setText(mContext.getString(R.string.friday));
-            String toDate = DateHelper.toShortDateString(DateHelper.plusDay(mStartDateOfWeek, 4));
-            viewHolder.tvDayOfMonth.setText(toDate);
+            setUpSessionAdapter(mFridayClassList, FRIDAY);
         }
         if (i == 5) {
             viewHolder.tvDayOfWeek.setText(mContext.getString(R.string.saturday));
-            String toDate = DateHelper.toShortDateString(DateHelper.plusDay(mStartDateOfWeek, 5));
-            viewHolder.tvDayOfMonth.setText(toDate);
+            setUpSessionAdapter(mSaturdayClassList, SATURDAY);
         }
         if (i == 6) {
             viewHolder.tvDayOfWeek.setText(mContext.getString(R.string.sunday));
-            String toDate = DateHelper.toShortDateString(DateHelper.plusDay(mStartDateOfWeek, 6));
-            viewHolder.tvDayOfMonth.setText(toDate);
+            setUpSessionAdapter(mSundayClassList, SUNDAY);
         }
+        /* Phai goi sau ham setUpSessionAdapter */
+        viewHolder.tvDayOfMonth.setText(toShortDateString(mTodate));
 
-        // Morning
-        viewHolder.rvSessionMorning.setLayoutManager(
-                new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false)
-        );
-        viewHolder.rvSessionMorning.setHasFixedSize(true);
-        viewHolder.rvSessionMorning.setAdapter(mMorningAdapter);
-        // Afternoon
-        viewHolder.rvSessionAfternoon.setLayoutManager(
-                new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false)
-        );
-        viewHolder.rvSessionAfternoon.setHasFixedSize(true);
-        viewHolder.rvSessionAfternoon.setAdapter(mAfternoonAdapter);
-        // Evening
-        viewHolder.rvSessionEvening.setLayoutManager(
-                new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false)
-        );
-        viewHolder.rvSessionEvening.setHasFixedSize(true);
-        viewHolder.rvSessionEvening.setAdapter(mEveningAdapter);
+        setUpSessionRecyclerView(viewHolder.rvSessionMorning, mMorningAdapter);
+        setUpSessionRecyclerView(viewHolder.rvSessionAfternoon, mAfternoonAdapter);
+        setUpSessionRecyclerView(viewHolder.rvSessionEvening, mEveningAdapter);
+        // Neu hom nay la ngay nay, lam sang ngay nay len
+        setUpToday(viewHolder, i);
+    }
 
-        if (mNowIsInThisWeek) { // Neu hom nay la ngay nay, lam sang ngay nay len
+    private void setUpToday(DataViewHolder viewHolder, int i) {
+        if (mNowIsInThisWeek) {
             int toDayOfWeek = DateHelper.getCalendar().get(Calendar.DAY_OF_WEEK);
             if ((toDayOfWeek == 1 && i == 6) || toDayOfWeek - 2 == i) {
+                viewHolder.tvDayOfWeek.append(" ( Hôm nay )");
                 viewHolder.tvDayOfWeek.setTextColor(mContext.getResources().getColor(R.color.colorWhite));
                 viewHolder.tvDayOfWeek.setTypeface(null, Typeface.BOLD);
                 viewHolder.tvDayOfMonth.setTextColor(mContext.getResources().getColor(R.color.colorWhite));
@@ -119,9 +138,64 @@ public class DayOfWeekAdapter extends Adapter<DayOfWeekAdapter.DataViewHolder> {
         }
     }
 
+    private void setUpSessionAdapter(List<LOPHOCPHAN> classList, int dateOfWeek) {
+        mTodate = DateHelper.getDate(mStartDateOfWeek, dateOfWeek);
+        mMorningAdapter.setClassesOfSession(getClassesOnThisSession(classList, MORNING));
+        mAfternoonAdapter.setClassesOfSession(getClassesOnThisSession(classList, AFTERNOON));
+        mEveningAdapter.setClassesOfSession(getClassesOnThisSession(classList, EVENING));
+    }
+
+    private void setUpSessionRecyclerView(RecyclerView recyclerView, SessionOfDayAdapter adapter) {
+        recyclerView.setLayoutManager(
+                new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false)
+        );
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(adapter);
+    }
+
     @Override // Co bay ngay trong tuan
     public int getItemCount() {
         return 7;
+    }
+
+    private List<LOPHOCPHAN> getClassesOnThisDay(int dayOfWeek) {
+        List<LOPHOCPHAN> l = new ArrayList<>();
+        Date startDate, endDate;
+
+        for (LOPHOCPHAN item : mClassList) {
+            startDate = stringToDate(item.getNgayBatDau(), "dd/MM/yyyy");
+            endDate = stringToDate(item.getNgayKetThuc(), "dd/MM/yyyy");
+            if ((item.getNgayTrongTuan() == dayOfWeek)
+            && isBetweenTwoDate(startDate, endDate, getDate(mStartDateOfWeek, dayOfWeek))) {
+                l.add(item);
+            }
+        }
+        return l;
+    }
+
+    private List<LOPHOCPHAN> getClassesOnThisSession(List<LOPHOCPHAN> classes, int sessionOfDay) {
+        List<LOPHOCPHAN> l = new ArrayList<>();
+        switch (sessionOfDay) {
+            case MORNING:
+                for (LOPHOCPHAN item : classes) {
+                    if (1 <= item.getTietBatDau() && item.getTietBatDau() <= 4)
+                        l.add(item);
+                }
+                break;
+            case AFTERNOON:
+                for (LOPHOCPHAN item : classes) {
+                    if (5 <= item.getTietBatDau() && item.getTietBatDau() <= 8)
+                        l.add(item);
+                }
+                break;
+            case EVENING:
+                for (LOPHOCPHAN item : classes) {
+                    if (9 <= item.getTietBatDau() && item.getTietBatDau() <= 12)
+                        l.add(item);
+                }
+                break;
+        }
+        return l;
     }
 
     static class DataViewHolder extends RecyclerView.ViewHolder {

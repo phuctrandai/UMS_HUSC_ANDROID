@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +15,12 @@ import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.Adapter.DayOfWeekAdapter;
 import com.practice.phuc.ums_husc.Helper.DateHelper;
+import com.practice.phuc.ums_husc.Model.LOPHOCPHAN;
 import com.practice.phuc.ums_husc.R;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class WeekFragment extends Fragment {
 
@@ -28,17 +29,17 @@ public class WeekFragment extends Fragment {
     private RecyclerView mRvDayOfWeek;
     private TextView mTvStartDateOfWeek;
     private TextView mTvEndDateOfWeek;
-    private String mDebugTitle;
     private Date mStartDateOfWeek;
     private Date mEndDateOfWeek;
+    private List<LOPHOCPHAN> mClassList;
 
     public WeekFragment() {
     }
 
-    public static WeekFragment newInstance(Context context, Date startDateOfWeek, Date endDateOfWeek, String debugTitle) {
+    public static WeekFragment newInstance(Context context, Date startDateOfWeek, Date endDateOfWeek, List<LOPHOCPHAN> classList) {
         WeekFragment df = new WeekFragment();
         df.mContext = context;
-        df.mDebugTitle = debugTitle;
+        df.mClassList = classList;
         df.mStartDateOfWeek = startDateOfWeek;
         df.mEndDateOfWeek = endDateOfWeek;
         return df;
@@ -46,8 +47,8 @@ public class WeekFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.d("DEBUG", "On Create Fragment Date: " + mDebugTitle);
-        mDayOfWeekAdapter = new DayOfWeekAdapter(mContext, null, mStartDateOfWeek);
+//        Log.d("DEBUG", "On Create Fragment Date: " + mDebugTitle);
+        mDayOfWeekAdapter = new DayOfWeekAdapter(mContext, mClassList, mStartDateOfWeek, mEndDateOfWeek);
         super.onCreate(savedInstanceState);
     }
 
@@ -55,21 +56,21 @@ public class WeekFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d("DEBUG", "On Create View Fragment Date: " + mDebugTitle);
+//        Log.d("DEBUG", "On Create View Fragment Date: " + mDebugTitle);
         View view = inflater.inflate(R.layout.fragment_week, container, false);
         mRvDayOfWeek = view.findViewById(R.id.rv_dayOfWeek);
         mTvStartDateOfWeek = view.findViewById(R.id.tv_startDateOfWeeek);
         mTvEndDateOfWeek = view.findViewById(R.id.tv_endDateOfWeek);
 
         setUpStartEndDate();
-
         setUpRecyclerView();
+
         return view;
     }
 
     @Override
     public void onDestroy() {
-        Log.d("DEBUG", "On Destroy Fragment Date: " + mDebugTitle);
+//        Log.d("DEBUG", "On Destroy Fragment Date: " + mDebugTitle);
         super.onDestroy();
     }
 

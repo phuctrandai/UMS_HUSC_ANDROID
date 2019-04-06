@@ -15,7 +15,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/white"
-            android:padding="@dimen/normal_padding">
+            android:paddingStart="@dimen/normal_padding"
+            android:paddingTop="@dimen/tiny_padding"
+            android:paddingEnd="@dimen/normal_padding"
+            android:paddingBottom="@dimen/tiny_padding">
 
             <TextView
                 android:id="@+id/tv_startDateOfWeeek"

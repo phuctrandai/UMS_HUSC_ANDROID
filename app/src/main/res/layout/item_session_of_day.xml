@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="256dp"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginStart="@dimen/normal_margin"
     android:layout_marginTop="@dimen/normal_margin"
     android:layout_marginEnd="@dimen/normal_margin"
-    android:layout_marginBottom="@dimen/normal_margin">
+    android:layout_marginBottom="@dimen/normal_margin"
+    app:cardCornerRadius="4dp">
 
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:padding="@dimen/normal_padding">
 
         <TextView
@@ -18,7 +21,8 @@
             android:layout_height="wrap_content"
             android:text="Quản trị dự án phần mềm - Nhóm 1"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/normal_text" />
+            android:textSize="@dimen/normal_text"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/tv_room"
@@ -29,7 +33,8 @@
             android:drawablePadding="@dimen/small_padding"
             android:gravity="center_vertical"
             android:text="LAP 4_CNTT"
-            android:textSize="@dimen/small_text" />
+            android:textSize="@dimen/small_text"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/tv_time"
@@ -39,7 +44,8 @@
             android:drawableStart="@drawable/ic_access_time_grey_12"
             android:drawablePadding="@dimen/small_padding"
             android:text="Tiết 2 - 4 ( 8h00 - 11h00 )"
-            android:textSize="@dimen/small_text" />
+            android:textSize="@dimen/small_text"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/tv_teacher"
@@ -49,7 +55,8 @@
             android:drawableStart="@drawable/ic_person_grey_12"
             android:drawablePadding="@dimen/small_padding"
             android:text="Nguyễn Văn A"
-            android:textSize="@dimen/tiny_text" />
+            android:textSize="@dimen/tiny_text"
+            tools:ignore="HardcodedText" />
 
     </RelativeLayout>
 </android.support.design.card.MaterialCardView>
