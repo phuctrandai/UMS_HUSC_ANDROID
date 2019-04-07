@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.practice.phuc.ums_husc.Helper.ScheduleDailyNotification.getScheduleTime;
+import static com.practice.phuc.ums_husc.Helper.ScheduleDailyNotification.setUpScheduleAlarm;
+
 public class ScheduleFragment extends Fragment {
 
     private Context mContext;

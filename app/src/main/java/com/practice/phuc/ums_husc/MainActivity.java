@@ -1,6 +1,7 @@
 package com.practice.phuc.ums_husc;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,6 +37,9 @@ import com.practice.phuc.ums_husc.ScheduleModule.ScheduleFragment;
 
 import java.util.Objects;
 
+import static com.practice.phuc.ums_husc.Helper.ScheduleDailyNotification.getScheduleTime;
+import static com.practice.phuc.ums_husc.Helper.ScheduleDailyNotification.setUpScheduleAlarm;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private NavigationView navigationView;
     private DrawerLayout drawer;
@@ -61,6 +65,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             initAll();
             initFragmentManager();
             showAccountInfo();
+
+            SharedPreferences mSharedPreferences = getSharedPreferences(getString(R.string.share_pre_key_setting), Context.MODE_PRIVATE);
+            boolean mSpTimeTableChecked = mSharedPreferences.getBoolean(getString(R.string.share_pre_key_alarm_timetable), true);
+            if (mSpTimeTableChecked) setUpScheduleAlarm(this, getScheduleTime(null));
 
             if (mBundle != null) {
                 mIsLaunchFromNewsNoti = mBundle.getBoolean(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, false);
@@ -192,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.action_refreshResume:
                 ResumeFragment resumeFragment = (ResumeFragment) fragmentManager.findFragmentByTag(ResumeFragment.class.getName());
                 if (resumeFragment != null) {
-
+                    /*TODO: Refresh resume fragment*/
                 }
                 return true;
             case R.id.action_selectSemester:

@@ -91,6 +91,7 @@ public final class Reference {
 
     static String MESSAGE_NOTIFICATION = "message_notification";
     static String NEWS_NOTIFICATION = "news_notification";
+    static String SCHEDULE_NOTIFICATION = "schedule_notification";
 
     public static boolean mHasNewNews = false;
     private static List<THONGBAO> mListNewThongBao = null;

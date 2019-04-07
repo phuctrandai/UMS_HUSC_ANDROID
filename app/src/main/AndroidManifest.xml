@@ -49,6 +49,12 @@
             </intent-filter>
         </service>
 
+        <receiver android:name=".Helper.ScheduleReceiver">
+            <intent-filter>
+                <action android:name="com.practice.phuc.ums_husc.Helper.ScheduleReceiver"/>
+            </intent-filter>
+        </receiver>
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@mipmap/logo" />

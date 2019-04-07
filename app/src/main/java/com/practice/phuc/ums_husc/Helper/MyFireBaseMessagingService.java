@@ -131,7 +131,6 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
         mBuilder.setContentText("Lúc " + messageSendTime); // Noi dung la thoi gian gui
         mBuilder.setContentIntent(pendingIntent);
         mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(messageTitle)); // Noi dung chinh la tieu de tin nhan
-        mBuilder.setContentIntent(pendingIntent);
         mBuilder.setGroup(Reference.MESSAGE_NOTIFICATION);
         return mBuilder.build();
     }

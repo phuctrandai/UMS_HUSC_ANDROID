@@ -1,7 +1,6 @@
 package com.practice.phuc.ums_husc.Helper;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -172,25 +171,39 @@ public class DateHelper {
         }
     }
 
-    private static int getDayOfWeek(Date date) {
+    public static String getDayOfWeekStr(Date date) {
+        int dayOfWeek = getDayOfWeek(date);
+        switch (dayOfWeek){
+            case SUNDAY: return "Chủ nhật";
+            case MONDAY: return "Thứ 2";
+            case TUESDAY: return "Thứ 3";
+            case WEDNESDAY: return "Thứ 4";
+            case THURSDAY: return "Thứ 5";
+            case FRIDAY: return "Thứ 6";
+            case SATURDAY: return "Thứ 7";
+            default: return null;
+        }
+    }
+
+    public static int getDayOfWeek(Date date) {
         Calendar calendar = Calendar.getInstance(new Locale("vie", "VN"));
         calendar.setTime(date);
         return calendar.get(Calendar.DAY_OF_WEEK);
     }
 
-    private static int getMonth(Date date) {
+    public static int getMonth(Date date) {
         Calendar calendar = Calendar.getInstance(new Locale("vie", "VN"));
         calendar.setTime(date);
         return calendar.get(Calendar.MONTH) + 1;
     }
 
-    private static int getDayOfMonth(Date date) {
+    public static int getDayOfMonth(Date date) {
         Calendar calendar = Calendar.getInstance(new Locale("vie", "VN"));
         calendar.setTime(date);
         return calendar.get(Calendar.DAY_OF_MONTH);
     }
 
-    private static int getYear(Date date) {
+    public static int getYear(Date date) {
         Calendar calendar = Calendar.getInstance(new Locale("vie", "VN"));
         calendar.setTime(date);
         return calendar.get(Calendar.YEAR);
