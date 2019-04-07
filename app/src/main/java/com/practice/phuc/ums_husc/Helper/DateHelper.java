@@ -1,6 +1,7 @@
 package com.practice.phuc.ums_husc.Helper;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -125,7 +126,7 @@ public class DateHelper {
         if (length > 0) {
             minDate = dateArr[0];
             for (Date aDateArr : dateArr) {
-                int compare = compareDate(minDate, aDateArr);
+                int compare = minDate.compareTo(aDateArr);
                 if (compare > 0) minDate = aDateArr;
             }
         }
@@ -138,7 +139,7 @@ public class DateHelper {
         if (length > 0) {
             maxDate = dateArr[0];
             for (Date aDateArr : dateArr) {
-                int compare = compareDate(maxDate, aDateArr);
+                int compare = maxDate.compareTo(aDateArr);
                 if (compare < 0) maxDate = aDateArr;
             }
         }
@@ -195,17 +196,36 @@ public class DateHelper {
         return calendar.get(Calendar.YEAR);
     }
 
-    public static int compareDate(Date date1, Date date2) {
-        return date1.compareTo(date2);
-    }
-
     public static int daysBetween(Date d1, Date d2) {
         return (int) ((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24));
     }
 
     public static boolean isBetweenTwoDate(Date startDate, Date endDate, Date current) {
-        boolean isBetween = DateHelper.compareDate(startDate, current) < 0;
-        isBetween = isBetween && DateHelper.compareDate(current, endDate) < 0;
-        return isBetween;
+        boolean a = beforeOrEquals(startDate, current);
+        boolean d = beforeOrEquals(current, endDate);
+        return a && d;
+    }
+
+    private static boolean beforeOrEquals(Date thisDate, Date compareToDate) {
+        int dayOfMonth_1 = getDayOfMonth(thisDate);
+        int month_1 = getMonth(thisDate);
+        int year_1 = getYear(thisDate);
+        int dayOfMonth_2 = getDayOfMonth(compareToDate);
+        int month_2 = getMonth(compareToDate);
+        int year_2 = getYear(compareToDate);
+
+        if (dayOfMonth_1 == dayOfMonth_2 && month_1 == month_2 && year_1 == year_2) return true;
+
+        else if (year_1 == year_2) {
+
+            if (month_1 < month_2) return true;
+
+            else if (month_1 > month_2) return false;
+
+            else return dayOfMonth_1 <= dayOfMonth_2;
+
+        } else {
+            return year_1 <= year_2;
+        }
     }
 }

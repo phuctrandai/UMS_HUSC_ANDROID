@@ -10,7 +10,6 @@ import android.support.v7.preference.SwitchPreferenceCompat;
 
 public class SettingFragment extends PreferenceFragmentCompat {
     private Context mContext;
-    private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mEditor;
     private SwitchPreferenceCompat mSpNews;
     private SwitchPreferenceCompat mSpMessage;
@@ -26,7 +25,7 @@ public class SettingFragment extends PreferenceFragmentCompat {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String s) {
         setPreferencesFromResource(R.xml.setting, s);
-        mSharedPreferences = mContext.getSharedPreferences(getString(R.string.share_pre_key_setting), Context.MODE_PRIVATE);
+        SharedPreferences mSharedPreferences = mContext.getSharedPreferences(getString(R.string.share_pre_key_setting), Context.MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
         // bind UI
         mSpNews = (SwitchPreferenceCompat) findPreference(getString(R.string.pre_key_news));

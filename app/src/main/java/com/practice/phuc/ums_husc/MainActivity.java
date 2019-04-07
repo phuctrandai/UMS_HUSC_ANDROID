@@ -22,21 +22,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.practice.phuc.ums_husc.Helper.FireBaseIDTask;
 import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.MessageModule.DetailMessageActivity;
-import com.practice.phuc.ums_husc.ResumeModule.ResumeFragment;
 import com.practice.phuc.ums_husc.MessageModule.MessageFragment;
 import com.practice.phuc.ums_husc.NewsModule.DetailNewsActivity;
 import com.practice.phuc.ums_husc.NewsModule.MainFragment;
+import com.practice.phuc.ums_husc.ResumeModule.ResumeFragment;
 import com.practice.phuc.ums_husc.ScheduleModule.ScheduleFragment;
 
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private NavigationView navigationView;
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity
     private boolean mIsLaunchFromNewsNoti;
     private boolean mIsLaunchFromMessageNoti;
     private Bundle mBundle;
+    private String mPrevFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,9 +145,24 @@ public class MainActivity extends AppCompatActivity
             MainFragment mainFragment = (MainFragment) fragmentManager.findFragmentByTag(currentFragment);
             if (mainFragment != null && mainFragment.findFirstVisibleItemPosition() > 0) {
                 mainFragment.smoothScrollToTop();
+
             } else {
                 confirmExit();
+
             }
+        } else if (currentFragment.equals(SettingFragment.class.getName())
+                || currentFragment.equals(ResumeFragment.class.getName())
+                || currentFragment.equals(ChangePasswordFragment.class.getName())) {
+
+            if (mPrevFragment.equals(MainFragment.class.getName()))
+                replaceFragment(MainFragment.newInstance(this));
+
+            else if (mPrevFragment.equals(MessageFragment.class.getName()))
+                replaceFragment(MessageFragment.newInstance(this));
+
+            else if (mPrevFragment.equals(ScheduleFragment.class.getName()))
+                replaceFragment(ScheduleFragment.newInstance(this));
+
         } else {
             replaceFragment(MainFragment.newInstance(this));
         }
@@ -154,12 +170,37 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.main, menu);
+        boolean isScheduleFrag = currentFragment.equals(ScheduleFragment.class.getName());
+        boolean isResumeFrag = currentFragment.equals(ResumeFragment.class.getName());
+
+        menu.findItem(R.id.action_goToToday).setVisible(isScheduleFrag);
+        menu.findItem(R.id.action_refreshResume).setVisible(isResumeFrag);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.action_goToToday:
+                ScheduleFragment scheduleFragment = (ScheduleFragment) fragmentManager.findFragmentByTag(ScheduleFragment.class.getName());
+                if (scheduleFragment != null) {
+                    scheduleFragment.goToToday();
+                }
+                return true;
+            case R.id.action_refreshResume:
+                ResumeFragment resumeFragment = (ResumeFragment) fragmentManager.findFragmentByTag(ResumeFragment.class.getName());
+                if (resumeFragment != null) {
+
+                }
+                return true;
+            case R.id.action_selectSemester:
+                showSelectSemesterDialog();
+                return true;
+            default:
+                break;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -172,28 +213,22 @@ public class MainActivity extends AppCompatActivity
                 public void run() {
                     switch (id) {
                         case R.id.nav_news:
-                            currentNavItem = R.id.nav_news;
-                            setTitle(getString(R.string.title_nav_news));
                             replaceFragment(MainFragment.newInstance(MainActivity.this));
                             break;
                         case R.id.nav_timetable:
-                            currentNavItem = R.id.nav_timetable;
-                            setTitle(getString(R.string.title_nav_timetable));
                             replaceFragment(ScheduleFragment.newInstance(MainActivity.this));
                             break;
                         case R.id.nav_message:
-                            currentNavItem = R.id.nav_message;
-                            setTitle(getString(R.string.title_nav_message));
                             replaceFragment(MessageFragment.newInstance(MainActivity.this));
                             break;
                         case R.id.nav_setting:
-                            currentNavItem = R.id.nav_setting;
-                            setTitle(getString(R.string.title_nav_setting));
                             replaceFragment(SettingFragment.newInstance(MainActivity.this));
                             break;
                         case R.id.nav_resume:
-                            setTitle(getString(R.string.title_nav_resume));
                             replaceFragment(ResumeFragment.newInstance(MainActivity.this));
+                            break;
+                        case R.id.nav_change_password:
+                            replaceFragment(ChangePasswordFragment.newInstance(MainActivity.this));
                             break;
                         case R.id.nav_sign_out:
                             logOut();
@@ -227,19 +262,42 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void updateByFragmentTag(String fragmentTag) {
+        mPrevFragment = currentFragment;
         currentFragment = fragmentTag;
+        invalidateOptionsMenu();
+
         if (fragmentTag.equals(MainFragment.class.getName())) {
             setTitle(getString(R.string.title_nav_news));
             navigationView.setCheckedItem(R.id.nav_news);
             currentNavItem = R.id.nav_news;
             showDrawerButton(true);
 
+        } else if (fragmentTag.equals(MessageFragment.class.getName())) {
+            setTitle(getString(R.string.title_nav_message));
+            navigationView.setCheckedItem(R.id.nav_message);
+            currentNavItem = R.id.nav_message;
+            showDrawerButton(true);
+
+        } else if (fragmentTag.equals(ScheduleFragment.class.getName())) {
+            setTitle(getString(R.string.title_nav_timetable));
+            navigationView.setCheckedItem(R.id.nav_timetable);
+            currentNavItem = R.id.nav_timetable;
+            showDrawerButton(true);
+
         } else if (fragmentTag.equals(ResumeFragment.class.getName())) {
+            setTitle(getString(R.string.title_nav_resume));
             showDrawerButton(false);
             currentNavItem = R.id.nav_resume;
+
         } else if (fragmentTag.equals(SettingFragment.class.getName())) {
+            setTitle(getString(R.string.title_nav_setting));
             showDrawerButton(false);
             currentNavItem = R.id.nav_setting;
+
+        } else if (fragmentTag.equals(ChangePasswordFragment.class.getName())) {
+            setTitle(getString(R.string.title_nav_change_password));
+            showDrawerButton(false);
+            currentNavItem = R.id.nav_change_password;
         }
     }
 
@@ -271,7 +329,8 @@ public class MainActivity extends AppCompatActivity
 
     private void initFragment(Fragment fragment) {
         currentNavItem = R.id.nav_news;
-        currentFragment = MainFragment.class.getName();
+        currentFragment = fragment.getClass().getName();
+        mPrevFragment = null;
         navigationView.setCheckedItem(R.id.nav_news);
         replaceFragment(fragment);
     }
@@ -370,7 +429,7 @@ public class MainActivity extends AppCompatActivity
         builder.create().show();
     }
 
-    private void showDrawerButton(boolean show)  {
+    private void showDrawerButton(boolean show) {
         if (show) {
             Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
             getSupportActionBar().setDisplayShowHomeEnabled(false);
@@ -390,5 +449,38 @@ public class MainActivity extends AppCompatActivity
             Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
+    }
+
+    private void showSelectSemesterDialog() {
+        final CharSequence[] items = {
+                "Học kì 2 (2018-2019)",
+                "Học kì 1 (2018-2019)",
+                "Học kì hè (2017-2018)",
+                "Học kì 2 (2017-2018)",
+                "Học kì 1 (2017-2018)"
+        };
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.action_selectSemester));
+        builder.setSingleChoiceItems(items, 0, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
+                saveSelectedSemester(item);
+            }
+        });
+        builder.setPositiveButton("Tác nghiệp", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                Toast.makeText(MainActivity.this,
+                        "Tác nghiệp thành công !" , Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Thôi", null);
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    /* TODO: Lưu học kì và ngành học tác nghiệp */
+    private void saveSelectedSemester(int id) {
+        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.share_pre_key_semester), MODE_PRIVATE).edit();
+        editor.putInt(getString(R.string.pre_key_selected_semester), id);
+        editor.apply();
     }
 }

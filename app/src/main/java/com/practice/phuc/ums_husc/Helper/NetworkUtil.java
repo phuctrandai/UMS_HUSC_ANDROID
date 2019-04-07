@@ -59,14 +59,14 @@ public class NetworkUtil {
             requestBody = RequestBody.create(
                 MediaType.parse("application/xml; charset=utf-8"), ""
             );
-        if (isPostMethod) {
-            request = new Request.Builder().url(url).post(requestBody).build();
-        } else {
-            request = new Request.Builder().url(url).get().build();
-        }
         try {
+            if (isPostMethod) {
+                request = new Request.Builder().url(url).post(requestBody).build();
+            } else {
+                request = new Request.Builder().url(url).get().build();
+            }
             return okHttpClient.newCall(request).execute();
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
 //            Log.d("DEBUG", e.getMessage());
             return null;
         }

@@ -38,7 +38,7 @@ public class DetailNewsActivity extends AppCompatActivity {
     private ProgressBar progressBar;
 
     private LoadNewsContentTask mLoadTask;
-    private boolean mIsDestroyed;
+    private boolean mIsViewDestroyed;
     private Snackbar mNotNetworkSnackbar;
     private Snackbar mErrorSnackbar;
 
@@ -57,6 +57,7 @@ public class DetailNewsActivity extends AppCompatActivity {
         tvThoiGianDang = findViewById(R.id.tv_thoiGianDang);
         tvNoiDung = findViewById(R.id.tv_noiDung);
         progressBar = findViewById(R.id.progressBar);
+        mIsViewDestroyed = false;
 
         // hien thi chi tiet bai dang
         showData();
@@ -81,7 +82,7 @@ public class DetailNewsActivity extends AppCompatActivity {
             mLoadTask.cancel(true);
             mLoadTask = null;
         }
-        mIsDestroyed = true;
+        mIsViewDestroyed = true;
         super.onDestroy();
     }
 
@@ -206,7 +207,7 @@ public class DetailNewsActivity extends AppCompatActivity {
     }
 
     private void showNetworkErrorSnackbar(final boolean show) {
-        if (mIsDestroyed) return;
+        if (mIsViewDestroyed) return;
 
         if (show) {
             if (mNotNetworkSnackbar != null && mNotNetworkSnackbar.isShown()) return;
@@ -234,7 +235,7 @@ public class DetailNewsActivity extends AppCompatActivity {
     }
 
     private void showErrorSnackbar(final boolean show, final String message) {
-        if (mIsDestroyed) return;
+        if (mIsViewDestroyed) return;
 
         if (show) {
             mErrorSnackbar = CustomSnackbar.createTwoButtonSnackbar(this, rootLayout,

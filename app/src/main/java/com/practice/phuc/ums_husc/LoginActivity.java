@@ -8,20 +8,15 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.practice.phuc.ums_husc.Helper.FireBaseIDTask;
@@ -44,38 +39,29 @@ public class LoginActivity extends AppCompatActivity {
     private Response responseLogin = null;
 
     // Keep login information
-    SharedPreferences sharedPreferences = null;
-    SharedPreferences.Editor editor = null;
-    UserLoginTask mAuthTask;
-    // Cast json to model
-    Moshi moshi;
-    Type usersType;
-    JsonAdapter<VThongTinCaNhan> jsonAdapter;
-
+    private SharedPreferences sharedPreferences = null;
+    private SharedPreferences.Editor editor = null;
+    private UserLoginTask mAuthTask;
+    private JsonAdapter<VThongTinCaNhan> jsonAdapter;
+    private boolean mIsViewDestroyed;
     // UI references.
-    private LinearLayout linearLayout;
-    private EditText txtMaSinhVien;
-    private EditText txtMatKhau;
-    private Button btnLogin;
-    private ViewGroup mProgressViewLayout;
+    private LinearLayout mRootLayout;
+    private EditText mTxtStudentId;
+    private EditText mTxtPassword;
+    private Button mBtnLogin;
     private View mProgressView;
-    private View mLoginFormView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        mIsViewDestroyed = false;
 
         GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(this);
 
         initAll();
 
         createNotificationChannel();
-    }
-
-    @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
     }
 
     @Override
@@ -86,8 +72,11 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        mAuthTask.cancel(true);
-        mAuthTask = null;
+        mIsViewDestroyed = true;
+        if (mAuthTask != null) {
+            mAuthTask.cancel(true);
+            mAuthTask = null;
+        }
         super.onDestroy();
     }
 
@@ -95,40 +84,26 @@ public class LoginActivity extends AppCompatActivity {
         bindUI();
         initLoginForm();
 
-        moshi = new Moshi.Builder().build();
-        usersType = Types.newParameterizedType(VThongTinCaNhan.class);
+        Moshi moshi = new Moshi.Builder().build();
+        Type usersType = Types.newParameterizedType(VThongTinCaNhan.class);
         jsonAdapter = moshi.adapter(usersType);
-        // Lay thong tin dang nhap tu truoc
-        sharedPreferences = getSharedPreferences("sinhVien", MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
     }
 
-    private void bindUI(){
-        linearLayout = findViewById(R.id.linearLayout);
-        mProgressViewLayout = findViewById(R.id.login_progress_layout);
-        mLoginFormView = findViewById(R.id.login_form);
+    private void bindUI() {
+        mRootLayout = findViewById(R.id.linearLayout);
         mProgressView = findViewById(R.id.login_progress);
-        txtMaSinhVien = findViewById(R.id.txt_ma_sinh_vien);
-        txtMatKhau = findViewById(R.id.txt_mat_khau);
-        btnLogin = (Button) findViewById(R.id.btn_login);
+        mTxtStudentId = findViewById(R.id.txt_ma_sinh_vien);
+        mTxtPassword = findViewById(R.id.txt_mat_khau);
+        mBtnLogin = findViewById(R.id.btn_login);
     }
 
     private void initLoginForm() {
-        // Set up the login form.
-        txtMatKhau.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
-                }
-                return false;
-            }
-        });
-        btnLogin.setOnClickListener(new OnClickListener() {
+        mBtnLogin.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (NetworkUtil.getConnectivityStatus(LoginActivity.this) == NetworkUtil.TYPE_NOT_CONNECTED) {
-                    Snackbar snackbar = Snackbar.make(linearLayout,
+                if (NetworkUtil.getConnectivityStatus(LoginActivity.this) == NetworkUtil.TYPE_NOT_CONNECTED && !mIsViewDestroyed) {
+                    Snackbar snackbar = Snackbar.make(mRootLayout,
                             getString(R.string.network_not_available), Snackbar.LENGTH_LONG);
                     snackbar.show();
                 } else {
@@ -139,42 +114,37 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void attemptLogin() {
-        // Reset errors.
-        txtMaSinhVien.setError(null);
-        txtMatKhau.setError(null);
+        mTxtStudentId.setError(null);
+        mTxtPassword.setError(null);
 
-        String maSinhVien = txtMaSinhVien.getText().toString();
-        String matKhau = txtMatKhau.getText().toString();
+        String maSinhVien = mTxtStudentId.getText().toString();
+        String matKhau = mTxtPassword.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
-        // Validate ma sinh vien
         if (TextUtils.isEmpty(maSinhVien)) {
-            txtMaSinhVien.setError(getString(R.string.error_truong_bat_buoc));
-            focusView = txtMaSinhVien;
+            mTxtStudentId.setError(getString(R.string.error_truong_bat_buoc));
+            focusView = mTxtStudentId;
             cancel = true;
         } else if (!isMaSinhVienValid(maSinhVien)) {
-            txtMaSinhVien.setError(getString(R.string.error_ma_sinh_vien_khong_hop_le));
-            focusView = txtMaSinhVien;
+            mTxtStudentId.setError(getString(R.string.error_ma_sinh_vien_khong_hop_le));
+            focusView = mTxtStudentId;
             cancel = true;
-        }
-        // Validate mat khau
-        else if (TextUtils.isEmpty(matKhau)) {
-            txtMatKhau.setError(getString(R.string.error_truong_bat_buoc));
-            focusView = txtMatKhau;
+        } else if (TextUtils.isEmpty(matKhau)) {
+            mTxtPassword.setError(getString(R.string.error_truong_bat_buoc));
+            focusView = mTxtPassword;
             cancel = true;
         } else if (!isPasswordValid(matKhau)) {
-            txtMatKhau.setError(getString(R.string.error_mat_khau_qua_ngan));
-            focusView = txtMatKhau;
+            mTxtPassword.setError(getString(R.string.error_mat_khau_qua_ngan));
+            focusView = mTxtPassword;
             cancel = true;
         }
 
         if (cancel) {
-            // There was an error; don't attempt login and focus the first form field with an error.
             focusView.requestFocus();
-        } else {
 
+        } else {
             mAuthTask = new UserLoginTask(maSinhVien, matKhau);
             mAuthTask.execute((String) null);
         }
@@ -207,6 +177,7 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(String... params) {
             if (mAuthTask == null) return false;
+
             try {
                 Thread.sleep(500);
                 responseLogin = onlineLogin(mMaSinhVien, mMatKhau);
@@ -219,44 +190,44 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final Boolean success) {
             if (mAuthTask == null) return;
+
             if (success && (responseLogin != null)) {
                 Log.d("DEBUG", "Login response code: " + responseLogin.code());
                 if (responseLogin.code() == NetworkUtil.OK) {
                     try {
-                        String thongTinCaNhanJson = responseLogin.body().string();
-                        VThongTinCaNhan vThongTinCaNhan = jsonAdapter.fromJson(thongTinCaNhanJson);
+                        if (responseLogin.body() != null) {
+                            String thongTinCaNhanJson = responseLogin.body().string();
+                            VThongTinCaNhan vThongTinCaNhan = jsonAdapter.fromJson(thongTinCaNhanJson);
 
-                        // Luu thong tin dang nhap, se tu dong dang nhap cho lan sau
-                        editor = sharedPreferences.edit();
-                        editor.putString("hoTen", vThongTinCaNhan.getHoTen());
-                        editor.putString("nganhHoc", vThongTinCaNhan.getTenNganh());
-                        editor.putString("khoaHoc", vThongTinCaNhan.getKhoaHoc());
-                        editor.putString("maSinhVien", mMaSinhVien);
-                        editor.putString("matKhau", mMatKhau);
-                        editor.apply();
-                        //
-                        saveTokenForAccount();
+                            // Luu thong tin dang nhap, se tu dong dang nhap cho lan sau
+                            editor = sharedPreferences.edit();
+                            editor.putString("hoTen", vThongTinCaNhan.getHoTen());
+                            editor.putString("nganhHoc", vThongTinCaNhan.getTenNganh());
+                            editor.putString("khoaHoc", vThongTinCaNhan.getKhoaHoc());
+                            editor.putString("maSinhVien", mMaSinhVien);
+                            editor.putString("matKhau", mMatKhau);
+                            editor.apply();
+                            //
+                            saveTokenForAccount();
 
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        LoginActivity.this.finish();
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            LoginActivity.this.finish();
+                        }
                         return;
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                } else if (responseLogin.code() == NetworkUtil.NOT_FOUND) {
-                    Snackbar.make(linearLayout,
-                            getString(R.string.error_dang_nhap_that_bai),
+                } else if (responseLogin.code() == NetworkUtil.NOT_FOUND && !mIsViewDestroyed) {
+                    Snackbar.make(mRootLayout, getString(R.string.error_dang_nhap_that_bai),
                             Snackbar.LENGTH_LONG).show();
-                    txtMatKhau.requestFocus();
-                } else {
-                    Snackbar.make(linearLayout,
-                            getString(R.string.error_server_not_response),
+                    mTxtPassword.requestFocus();
+                } else if (!mIsViewDestroyed) {
+                    Snackbar.make(mRootLayout, getString(R.string.error_server_not_response),
                             Snackbar.LENGTH_LONG).show();
                 }
-            } else {
-                Snackbar.make(linearLayout,
-                        getString(R.string.error_server_not_response),
+            } else if (!mIsViewDestroyed) {
+                Snackbar.make(mRootLayout, getString(R.string.error_server_not_response),
                         Snackbar.LENGTH_LONG).show();
             }
             showProgress(false);
@@ -264,26 +235,27 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void saveTokenForAccount() {
-        final String maSinhVien = getSharedPreferences("sinhVien", MODE_PRIVATE)
+        final String maSinhVien = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE)
                 .getString("maSinhVien", null);
         String token = MyFireBaseMessagingService.getToken(this);
         FireBaseIDTask.saveTokenForAccount(maSinhVien, token);
     }
 
+    /* TODO: Save token when login */
     private Response onlineLogin(String maSinhVien, String matKhau) {
         RequestBody requestBody = RequestBody.create(
                 MediaType.parse("application/xml; charset=utf-8"), ""
         );
         // Lay response
         return NetworkUtil.makeRequest(Reference.getLoginApiUrl(maSinhVien, matKhau),
-                true,
-                requestBody);
+                true, requestBody);
     }
 
     private void showProgress(final boolean show) {
-        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        mProgressViewLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+        mBtnLogin.setVisibility(show ? View.GONE : View.VISIBLE);
+        mTxtStudentId.setEnabled(!show);
+        mTxtPassword.setEnabled(!show);
     }
 
     public void createNotificationChannel() {

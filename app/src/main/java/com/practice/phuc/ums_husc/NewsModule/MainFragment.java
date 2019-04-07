@@ -38,7 +38,7 @@ import java.util.List;
 import okhttp3.Response;
 
 public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-    private boolean mIsDestroyed;
+    private boolean mIsViewDestroyed;
     private DBHelper mDBHelper;
     private LoadNewsTask mLoadNewsTask;
     private Context mContext;
@@ -86,7 +86,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         mIsScrolling = false;
         mLastAction = ACTION_INIT;
         mDBHelper = new DBHelper(mContext);
-        mIsDestroyed = false;
         long countRow = mDBHelper.countRow(DBHelper.NEWS);
         if (countRow > 0) {
             mCurrentPage = countRow / ITEM_PER_PAGE + 1;
@@ -103,7 +102,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         final View view = inflater.inflate(R.layout.fragment_main, container, false);
         rvItems = view.findViewById(R.id.rv_thongBao);
         mLoadMoreLayout = view.findViewById(R.id.load_more_layout);
-        mIsDestroyed = false;
+        mIsViewDestroyed = false;
 
         setUpRecyclerView();
         setUpSwipeRefreshLayout(view);
@@ -140,7 +139,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onPause() {
         showNetworkErrorSnackbar(false);
         showErrorSnackbar(false, mErrorMessage);
-        mIsDestroyed = true;
+        mIsViewDestroyed = true;
         super.onPause();
     }
 
@@ -165,7 +164,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onDestroy() {
-        mIsDestroyed = true;
+        mIsViewDestroyed = true;
         mThongBaoList.clear();
         if (mLoadNewsTask != null) {
             mLoadNewsTask.cancel(true);
@@ -293,7 +292,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             if (mDBHelper.countRow(DBHelper.NEWS) > 0) {
                 List<THONGBAO> list = mDBHelper.getAllNews();
                 mThongBaoList.addAll(list);
-                mAdapter.notifyDataSetChanged();
+                mAdapter.notifyItemRangeInserted(mAdapter.getItemCount(), ITEM_PER_PAGE);
             }
         } else {
             mLoadNewsTask = new LoadNewsTask();
@@ -352,7 +351,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             } else {
                 showErrorSnackbar(true, mErrorMessage);
             }
-            Log.d("DEBUG", "Get thong bao : " + success);
         }
 
         @Override
@@ -400,7 +398,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     private void showNetworkErrorSnackbar(boolean show) {
-        if (mIsDestroyed) return;
+        if (mIsViewDestroyed) return;
         if (show) {
             mStatus = STATUS_NOT_NETWORK;
             if (mNotNetworkSnackbar != null && mNotNetworkSnackbar.isShown()) return;
@@ -438,7 +436,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     private void showErrorSnackbar(boolean show, String message) {
-        if (mIsDestroyed) return;
+        if (mIsViewDestroyed) return;
         if (show) {
             mStatus = STATUS_SHOW_ERROR;
             mErrorSnackbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mSwipeRefreshLayout,

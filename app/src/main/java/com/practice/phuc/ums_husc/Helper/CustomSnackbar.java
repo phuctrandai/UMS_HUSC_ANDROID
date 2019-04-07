@@ -23,7 +23,9 @@ public class CustomSnackbar {
         // Create the Snackbar
         LinearLayout.LayoutParams objLayoutParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        final Snackbar snackbar = Snackbar.make(rootLayout, message, Snackbar.LENGTH_INDEFINITE);
+        final Snackbar snackbar;
+
+        snackbar = Snackbar.make(rootLayout, message, Snackbar.LENGTH_INDEFINITE);
 
         // Get the Snackbar layout view
         Snackbar.SnackbarLayout layout = (Snackbar.SnackbarLayout) snackbar.getView();

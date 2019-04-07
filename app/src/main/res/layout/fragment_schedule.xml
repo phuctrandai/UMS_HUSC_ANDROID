@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             app:tabTextAppearance="@style/TimeTableTabLayoutTextAppearance"
             app:tabTextColor="#80FFFFFF"
-            app:tabBackground="@xml/tab_background"
+            app:tabBackground="@drawable/radius_primary_background"
             app:tabGravity="fill"
             app:tabIndicatorHeight="0dp"
             app:tabMode="scrollable"

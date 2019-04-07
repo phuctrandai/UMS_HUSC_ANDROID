@@ -10,9 +10,13 @@
     <!-- Strings related to login -->
     <string name="prompt_ma_sinh_vien">Mã sinh viên</string>
     <string name="prompt_mat_khau">Mật khẩu</string>
+    <string name="prompt_old_pass">Mật khẩu cũ</string>
+    <string name="prompt_new_pass">Mật khẩu mới</string>
+    <string name="prompt_rep_pass">Xác nhận mật khẩu mới</string>
     <string name="prompt_dang_kiem_tra_thong_tin">Đang kiểm tra thông tin &#8230;</string>
     <string name="action_dang_nhap">Đăng nhập</string>
     <string name="action_dang_nhap_short">Đăng nhập</string>
+    <string name="change_pass">Đổi mật khẩu</string>
     <string name="error_ma_sinh_vien_khong_hop_le">Mã sinh viên không hợp lệ</string>
     <string name="error_mat_khau_qua_ngan">Mật khẩu tối thiểu 6 ký tự</string>
     <string name="error_dang_nhap_that_bai">Tên tài khoản hoặc mật khẩu không đúng</string>
@@ -22,8 +26,8 @@
     <string name="navigation_drawer_open">Mở menu</string>
     <string name="navigation_drawer_close">Đóng menu</string>
     <string name="avatar">Hình đại diện</string>
-    <string name="action_tinNhan">Tin nhắn</string>
-    <string name="action_thongBao">Thông báo</string>
+    <string name="action_goToToday">Đến ngày hiện tại</string>
+    <string name="action_selectSemester">Chọn học kì và ngành học tác nghiệp</string>
 
     <!-- Navigation drawer menu -->
     <string name="title_nav_news">Thông báo và tin tức</string>
@@ -38,9 +42,7 @@
     <string name="title_nav_sign_out">Đăng xuất</string>
     <string name="title_nav_app_info">Thông tin về ứng dụng</string>
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_detail_news">Chi tiết thông báo</string>
-    <string name="title_activity_detail_message">Chi tiết tin nhắn</string>
 
     <!-- THONG BAO -->
     <string name="channel_name">UMS-HUSC</string>
@@ -84,6 +86,7 @@
     </string-array>
 
     <!-- Message -->
+    <string name="title_activity_detail_message">Chi tiết tin nhắn</string>
     <string name="title_received_message">Đã nhận</string>
     <string name="title_sent_message">Đã gửi</string>
     <string name="title_deleted">Đã xóa</string>
@@ -97,8 +100,21 @@
     <string name="saturday">Thứ bảy</string>
     <string name="sunday">Chủ nhật</string>
 
-    <!--  -->
+    <!-- Session of day -->
     <string name="morning">Sáng</string>
     <string name="afternoon">Chiều</string>
     <string name="evening">Tối</string>
+
+    <string name="share_pre_key_semester">semester</string>
+    <string name="pre_key_selected_semester">selected_semester</string>
+    <string name="caution_1">* Mật khẩu được sử dụng để đăng nhập vào hệ thống và có vai trò rất quan trọng. Hãy giữ gìn mật khẩu cẩn thận và tuyệt đối không được giao mật khẩu cho người khác.</string>
+    <string name="caution_2">* Sinh viên phải chịu hoàn toàn trách nhiệm nếu để lộ mật khẩu dẫn đến ảnh hưởng đến thông tin và dữ liệu của cá nhân cũng như công việc của bản thân.</string>
+    <string name="caution_3">* Nên đặt mật khẩu đủ dài và khó đoán. Không nên sử dụng ngày sinh, số điện thoại, cách viết tắt của họ tên,.... để làm mật khẩu.</string>
+    <string name="caution_4">* Để tránh các sai sót khi gõ mật khẩu, nên tắt chế độ gõ tiếng Việt trước khi thay đổi mật khẩu.</string>
+    <string name="changePassSuccess">Đổi mật khẩu thành công !</string>
+    <string name="share_pre_key_account_info">sinhVien</string>
+    <string name="error_old_pass_incorect">Mật khẩu cũ không đúng</string>
+    <string name="error_rep_password_incorrect">Xác nhận mật khẩu không đúng</string>
+    <string name="share_pre_key_account_password">matKhau</string>
+    <string name="action_refresh_resume">Làm mới</string>
 </resources>

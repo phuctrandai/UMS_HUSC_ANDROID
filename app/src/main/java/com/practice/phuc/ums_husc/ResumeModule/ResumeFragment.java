@@ -58,7 +58,7 @@ public class ResumeFragment extends Fragment {
     private String mErrorMessage;
     private Snackbar mErrorSnackbar;
     private Snackbar mNotNetworkSnackbar;
-    private boolean mIsDestroyed;
+    private boolean mIsViewDestroyed;
     private int mStatus;
 
     private final int STATUS_INIT = 0;
@@ -69,7 +69,7 @@ public class ResumeFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         mResumePagerAdapter = new ResumePagerAdapter(getChildFragmentManager());
-        mIsDestroyed = false;
+        mIsViewDestroyed = false;
         mStatus = STATUS_INIT;
         Moshi mMoshi = new Moshi.Builder().build();
         Type mUsersType = Types.newParameterizedType(VLyLichCaNhan.class);
@@ -88,6 +88,7 @@ public class ResumeFragment extends Fragment {
         mTabLayout = view.findViewById(R.id.tabs);
         mViewPager = view.findViewById(R.id.vp_resume);
         mViewPager.setOffscreenPageLimit(mResumePagerAdapter.getCount());
+        mIsViewDestroyed = false;
 
         return view;
     }
@@ -120,12 +121,14 @@ public class ResumeFragment extends Fragment {
     public void onPause() {
         showErrorSnackbar(false, "");
         showNetworkErrorSnackbar(false);
+        mIsViewDestroyed = true;
+
         super.onPause();
     }
 
     @Override
     public void onDestroy() {
-        mIsDestroyed = true;
+        mIsViewDestroyed = true;
         if (mLoadResumeTask != null) {
             mLoadResumeTask.cancel(true);
             mLoadResumeTask = null;
@@ -233,7 +236,7 @@ public class ResumeFragment extends Fragment {
     }
 
     private void showNetworkErrorSnackbar(boolean show) {
-        if (mIsDestroyed) return;
+        if (mIsViewDestroyed) return;
 
         if (show) {
             mStatus = STATUS_NOT_NETWORK;
@@ -254,7 +257,7 @@ public class ResumeFragment extends Fragment {
     }
 
     private void showErrorSnackbar(boolean show, String message) {
-        if (mIsDestroyed) return;
+        if (mIsViewDestroyed) return;
 
         if (show) {
             mStatus = STATUS_SHOW_ERROR;

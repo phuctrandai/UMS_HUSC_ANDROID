@@ -7,4 +7,5 @@
 
     <!-- Man hinh dang nhap -->
     <color name="colorButtonLogin">@color/colorPrimary</color>
+    <color name="colorNormalTab">#BEBEBE</color>
 </resources>

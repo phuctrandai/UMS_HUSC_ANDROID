@@ -59,7 +59,7 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
     private int mLastAction;
     private long mCurrentPage;
     private boolean mIsMessageListChanged;
-    private boolean mIsDestroyed;
+    private boolean mIsViewDestroyed;
     private Snackbar mNotNetworkSnackbar;
     private Snackbar mErrorSnackbar;
     private DBHelper mDBHelper;
@@ -87,7 +87,6 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
         mAdapter = new MessageRecyclerDataAdapter(mContext, mMessageList, false);
         mIsScrolling = true;
         mDBHelper = new DBHelper(mContext);
-        mIsDestroyed = false;
         long countRow = mDBHelper.countRow(DBHelper.MESSAGE);
         if (countRow > 0) {
             mCurrentPage = countRow / ITEM_PER_PAGE + 1;
@@ -104,7 +103,7 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
         View view = inflater.inflate(R.layout.fragment_sent_message, container, false);
         mRvMessage = view.findViewById(R.id.rv_message);
         mLoadMoreLayout = view.findViewById(R.id.load_more_layout);
-        mIsDestroyed = false;
+        mIsViewDestroyed = false;
 
         setUpRecyclerView();
         setUpSwipeRefreshLayout(view);
@@ -139,13 +138,13 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
     public void onPause() {
         showNetworkErrorSnackbar(false);
         showErrorSnackbar(false, mErrorMessage);
-        mIsDestroyed = true;
+        mIsViewDestroyed = true;
         super.onPause();
     }
 
     @Override
     public void onDestroy() {
-        mIsDestroyed = true;
+        mIsViewDestroyed = true;
         mMessageList.clear();
         if (mLoadSentMessageTask != null) {
             mLoadSentMessageTask.cancel(true);
@@ -223,7 +222,7 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
     }
 
     private void showErrorSnackbar(boolean show, String message) {
-        if (mIsDestroyed) return;
+        if (mIsViewDestroyed) return;
 
         if (show) {
             mStatus = STATUS_SHOW_ERROR;
@@ -258,7 +257,7 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
     }
 
     private void showNetworkErrorSnackbar(boolean show) {
-        if (mIsDestroyed) return;
+        if (mIsViewDestroyed) return;
 
         if (show) {
             mStatus = STATUS_NOT_NETWORK;

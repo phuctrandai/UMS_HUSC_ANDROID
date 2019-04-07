@@ -26,6 +26,7 @@ public class ScheduleFragment extends Fragment {
     private WeeksTabAdapter mWeeksTabAdapter;
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
+    private int mCurrentWeekPos;
 
     private List<LOPHOCPHAN> mClassList;
     private Date mMinStartDate;
@@ -70,20 +71,19 @@ public class ScheduleFragment extends Fragment {
     }
 
     private void setUpFragments() {
-        int currentWeekPos = 0;
-
         Date startDateOfWeek = mMinStartDate;
         Date endDateOfWeek = DateHelper.plusDay(startDateOfWeek, 6);
 
         Date now = DateHelper.getCalendar().getTime();
-        boolean isBetween;
-
+        boolean isBetween = false;
+        mCurrentWeekPos = 0;
         for (int i = 0; i < mTotalWeek; i++) {
             String weekTitle = "Tuần " + (i + 1);
             // Ngay hien tai co thuoc tuan nay khong
-            isBetween = DateHelper.isBetweenTwoDate(startDateOfWeek, endDateOfWeek, now);
-            if (isBetween) currentWeekPos = i;  // Neu thuoc, luu lai vi tri cua tab/page
-
+            if (!isBetween) {
+                isBetween = DateHelper.isBetweenTwoDate(startDateOfWeek, endDateOfWeek, now);
+                if (isBetween) mCurrentWeekPos = i;  // Neu thuoc, luu lai vi tri cua tab/page
+            }
             mWeeksTabAdapter.addFragment(
                     WeekFragment.newInstance(mContext, startDateOfWeek, endDateOfWeek, mClassList)
                     , weekTitle
@@ -91,9 +91,8 @@ public class ScheduleFragment extends Fragment {
             startDateOfWeek = DateHelper.plusDay(endDateOfWeek,1);
             endDateOfWeek = DateHelper.plusDay(startDateOfWeek, 6);
         }
-
         mViewPager.setAdapter(mWeeksTabAdapter);
-        mViewPager.setCurrentItem(currentWeekPos);
+        mViewPager.setCurrentItem(mCurrentWeekPos);
         mTabLayout.setupWithViewPager(mViewPager);
     }
 
@@ -170,5 +169,13 @@ public class ScheduleFragment extends Fragment {
                 "21/01/2019", "27/04/2019", DateHelper.TUESDAY
         );
         mClassList.add(l);
+    }
+
+    public void goToToday() {
+        if (mTabLayout != null) {
+            TabLayout.Tab tab = mTabLayout.getTabAt(mCurrentWeekPos);
+            if (mTabLayout.getSelectedTabPosition() != mCurrentWeekPos && tab != null)
+                tab.select();
+        }
     }
 }

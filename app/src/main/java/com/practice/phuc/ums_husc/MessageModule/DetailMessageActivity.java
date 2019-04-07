@@ -39,7 +39,7 @@ public class DetailMessageActivity extends AppCompatActivity {
     private ProgressBar mProgressBar;
     private Snackbar mNotNetworkSnackbar;
     private Snackbar mErrorSnackbar;
-    private boolean mIsDestroyed;
+    private boolean mIsViewDestroyed;
 
     private View rootLayout;
     private TextView tvTieuDe;
@@ -85,7 +85,7 @@ public class DetailMessageActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        mIsDestroyed = true;
+        mIsViewDestroyed = true;
         if (mLoadTask != null) {
             mLoadTask.cancel(true);
             mLoadTask = null;
@@ -263,7 +263,7 @@ public class DetailMessageActivity extends AppCompatActivity {
     }
 
     private void showNetworkErrorSnackbar(final boolean show) {
-        if (mIsDestroyed) return;
+        if (mIsViewDestroyed) return;
         if (show) {
             if (mNotNetworkSnackbar != null && mNotNetworkSnackbar.isShown()) return;
 
@@ -290,7 +290,7 @@ public class DetailMessageActivity extends AppCompatActivity {
     }
 
     private void showErrorSnackbar(final boolean show, final String message) {
-        if (mIsDestroyed) return;
+        if (mIsViewDestroyed) return;
 
         if (show) {
             mErrorSnackbar = CustomSnackbar.createTwoButtonSnackbar(this, rootLayout,
