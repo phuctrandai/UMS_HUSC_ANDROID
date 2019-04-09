@@ -5,8 +5,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TableRow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.R;
@@ -27,17 +26,17 @@ public class DacDiemBanThanFragment extends Fragment {
     private TextView mNoiKetNapDang;
     private TextView mNgayChinhThucVaoDang;
 
-    private TableRow mLayoutXuatThan;
-    private TableRow mLayoutUuTienGiaDinh;
-    private TableRow mLayoutUuTienBanThan;
-    private TableRow mLayoutTinhTrangHonNhan;
-    private LinearLayout mLayoutChieuCao;
-    private LinearLayout mLayoutNhomMau;
-    private TableRow mLayoutNgayVaoDoan;
-    private TableRow mLayoutNoiKetNapDoan;
-    private TableRow mLayoutNgayVaoDang;
-    private TableRow mLayoutNoiKetNapDang;
-    private TableRow mLayoutNgayChinhThuc;
+    private RelativeLayout mLayoutXuatThan;
+    private RelativeLayout mLayoutUuTienGiaDinh;
+    private RelativeLayout mLayoutUuTienBanThan;
+    private RelativeLayout mLayoutTinhTrangHonNhan;
+    private RelativeLayout mLayoutChieuCao;
+    private RelativeLayout mLayoutNhomMau;
+    private RelativeLayout mLayoutNgayVaoDoan;
+    private RelativeLayout mLayoutNoiKetNapDoan;
+    private RelativeLayout mLayoutNgayVaoDang;
+    private RelativeLayout mLayoutNoiKetNapDang;
+    private RelativeLayout mLayoutNgayChinhThuc;
 
 
     public DacDiemBanThanFragment() {

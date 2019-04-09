@@ -17,15 +17,15 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/normal_margin"
-            android:layout_marginBottom="@dimen/normal_margin">
+            android:layout_marginTop="@dimen/normal_margin">
 
             <TextView
                 android:id="@+id/tv_thongTinChung"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Thông tin chung"
-                android:textSize="@dimen/big_text" />
+                android:textSize="@dimen/normal_text"
+                tools:ignore="HardcodedText" />
 
             <Button
                 android:id="@+id/btn_suaThongTinChung"
@@ -56,7 +56,8 @@
                     android:layout_height="wrap_content"
                     android:text="Giới tính"
                     android:textColor="@android:color/black"
-                    android:textSize="@dimen/normal_text" />
+                    android:textSize="@dimen/normal_text"
+                    tools:ignore="HardcodedText" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -64,7 +65,8 @@
                     android:drawableStart="@drawable/ic_person_grey_12"
                     android:drawablePadding="@dimen/small_padding"
                     android:text="Giới tính"
-                    android:textSize="@dimen/small_text" />
+                    android:textSize="@dimen/small_text"
+                    tools:ignore="HardcodedText" />
             </LinearLayout>
 
             <LinearLayout
@@ -80,7 +82,8 @@
                     android:layout_height="wrap_content"
                     android:text="Ngày sinh"
                     android:textColor="@android:color/black"
-                    android:textSize="@dimen/normal_text" />
+                    android:textSize="@dimen/normal_text"
+                    tools:ignore="HardcodedText" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -88,7 +91,8 @@
                     android:drawableStart="@drawable/ic_date_range_grey_12"
                     android:drawablePadding="@dimen/small_padding"
                     android:text="Ngày sinh"
-                    android:textSize="@dimen/small_text" />
+                    android:textSize="@dimen/small_text"
+                    tools:ignore="HardcodedText" />
 
             </LinearLayout>
         </LinearLayout>
@@ -108,7 +112,8 @@
                 android:layout_height="wrap_content"
                 android:text="Nơi sinh"
                 android:textColor="@android:color/black"
-                android:textSize="@dimen/normal_text" />
+                android:textSize="@dimen/normal_text"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -116,7 +121,8 @@
                 android:drawableStart="@drawable/ic_building_grey_12"
                 android:drawablePadding="@dimen/small_padding"
                 android:text="Nơi sinh"
-                android:textSize="@dimen/small_text" />
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
 
 
         </LinearLayout>
@@ -136,7 +142,8 @@
                 android:layout_height="wrap_content"
                 android:text="Quốc tịch"
                 android:textColor="@android:color/black"
-                android:textSize="@dimen/normal_text" />
+                android:textSize="@dimen/normal_text"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -144,7 +151,8 @@
                 android:drawableStart="@drawable/ic_building_grey_12"
                 android:drawablePadding="@dimen/small_padding"
                 android:text="Quốc tịch"
-                android:textSize="@dimen/small_text" />
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <LinearLayout
@@ -168,7 +176,8 @@
                     android:layout_height="wrap_content"
                     android:text="Dân tộc"
                     android:textColor="@android:color/black"
-                    android:textSize="@dimen/normal_text" />
+                    android:textSize="@dimen/normal_text"
+                    tools:ignore="HardcodedText" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -176,7 +185,8 @@
                     android:drawableStart="@drawable/ic_person_grey_12"
                     android:drawablePadding="@dimen/small_padding"
                     android:text="Dân tộc"
-                    android:textSize="@dimen/small_text" />
+                    android:textSize="@dimen/small_text"
+                    tools:ignore="HardcodedText" />
             </LinearLayout>
 
             <LinearLayout
@@ -192,7 +202,8 @@
                     android:layout_height="wrap_content"
                     android:text="Tôn giáo"
                     android:textColor="@android:color/black"
-                    android:textSize="@dimen/normal_text" />
+                    android:textSize="@dimen/normal_text"
+                    tools:ignore="HardcodedText" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -200,7 +211,8 @@
                     android:drawableStart="@drawable/ic_public_grey_12"
                     android:drawablePadding="@dimen/small_padding"
                     android:text="Tôn giáo"
-                    android:textSize="@dimen/small_text" />
+                    android:textSize="@dimen/small_text"
+                    tools:ignore="HardcodedText" />
 
             </LinearLayout>
         </LinearLayout>
@@ -226,7 +238,8 @@
                     android:layout_height="wrap_content"
                     android:text="Số CMND"
                     android:textColor="@android:color/black"
-                    android:textSize="@dimen/normal_text" />
+                    android:textSize="@dimen/normal_text"
+                    tools:ignore="HardcodedText" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -234,7 +247,8 @@
                     android:drawableStart="@drawable/ic_credit_card_grey_12"
                     android:drawablePadding="@dimen/small_padding"
                     android:text="Số CMND"
-                    android:textSize="@dimen/small_text" />
+                    android:textSize="@dimen/small_text"
+                    tools:ignore="HardcodedText" />
 
             </LinearLayout>
 
@@ -252,7 +266,8 @@
                     android:layout_height="wrap_content"
                     android:text="Ngày cấp CMND"
                     android:textColor="@android:color/black"
-                    android:textSize="@dimen/normal_text" />
+                    android:textSize="@dimen/normal_text"
+                    tools:ignore="HardcodedText" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -260,7 +275,8 @@
                     android:drawableStart="@drawable/ic_date_range_grey_12"
                     android:drawablePadding="@dimen/small_padding"
                     android:text="Ngày cấp CMND"
-                    android:textSize="@dimen/small_text" />
+                    android:textSize="@dimen/small_text"
+                    tools:ignore="HardcodedText" />
 
             </LinearLayout>
         </LinearLayout>
@@ -280,7 +296,8 @@
                 android:layout_height="wrap_content"
                 android:text="Nới cấp CMND"
                 android:textColor="@android:color/black"
-                android:textSize="@dimen/normal_text" />
+                android:textSize="@dimen/normal_text"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -288,7 +305,8 @@
                 android:drawableStart="@drawable/ic_building_grey_12"
                 android:drawablePadding="@dimen/small_padding"
                 android:text="Nơi cấp CMND"
-                android:textSize="@dimen/small_text" />
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
 
         </LinearLayout>
     </LinearLayout>

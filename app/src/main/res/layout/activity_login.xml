@@ -36,7 +36,6 @@
         android:layout_marginBottom="@dimen/extra_margin"
         android:visibility="visible">
 
-
         <EditText
             android:id="@+id/txt_ma_sinh_vien"
             android:layout_width="match_parent"

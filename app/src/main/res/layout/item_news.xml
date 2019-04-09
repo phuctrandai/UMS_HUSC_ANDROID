@@ -6,11 +6,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/small_margin"
-    android:layout_marginTop="@dimen/small_margin"
+    android:layout_marginTop="@dimen/tiny_margin"
     android:layout_marginEnd="@dimen/small_margin"
-    android:layout_marginBottom="@dimen/small_margin"
-    android:background="?android:attr/selectableItemBackground"
-    app:cardCornerRadius="@dimen/normal_margin">
+    android:layout_marginBottom="@dimen/tiny_margin"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    app:cardElevation="1dp"
+    app:cardCornerRadius="1dp">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -30,7 +33,8 @@
             android:textColor="@android:color/black"
             android:textSize="@dimen/normal_text"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/tv_thoiGianDang"
@@ -41,7 +45,8 @@
             android:text="12/03/2019 08:05"
             android:textSize="@dimen/small_text"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_tieuDe" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_tieuDe"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -51,7 +56,8 @@
             android:text="Thời điểm đăng tin"
             android:textSize="@dimen/tiny_text"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_thoiGianDang" />
+            app:layout_constraintTop_toBottomOf="@id/tv_thoiGianDang"
+            tools:ignore="HardcodedText" />
 
         <ImageView
             android:id="@+id/imageView"
@@ -63,7 +69,8 @@
             android:src="@drawable/ic_arrow_right_grey_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
     </android.support.constraint.ConstraintLayout>
 

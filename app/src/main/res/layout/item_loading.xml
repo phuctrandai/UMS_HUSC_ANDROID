@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
     <ProgressBar
-        style="@android:style/Widget.ProgressBar.Small"
+        style="@android:style/Widget.DeviceDefault.ProgressBar.Small"
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

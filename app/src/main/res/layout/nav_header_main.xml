@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/nav_header_height"
     android:background="@drawable/side_nav_bar"
@@ -19,10 +20,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/normal_margin"
-        android:text="Trần Đại Phúc"
+        android:text="Họ tên sinh viên"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="@android:color/white"
-        android:textSize="@dimen/extra_text" />
+        android:textSize="@dimen/extra_text"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/tv_maSinhVien"
@@ -30,20 +32,31 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/small_margin"
         android:text="Mã sinh viên"
-        android:textColor="@android:color/white" />
+        android:textColor="@android:color/white"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/tv_khoaHoc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Khóa học"
-        android:textColor="@android:color/white" />
+        android:textColor="@android:color/white"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/tv_nganhHoc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Ngành học"
-        android:textColor="@android:color/white" />
+        android:textColor="@android:color/white"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/tv_hocKi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Học kì - Năm học"
+        android:textColor="@color/colorWhite"
+        tools:ignore="HardcodedText" />
 
 </LinearLayout>

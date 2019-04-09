@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/my_snackbar_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -16,32 +17,39 @@
         android:gravity="center_vertical"
         android:text="Two button snackbar"
         android:textColor="@android:color/white"
-        android:textSize="@dimen/normal_text" />
+        android:textSize="@dimen/normal_text"
+        tools:ignore="HardcodedText" />
 
     <Button
         android:id="@+id/btn_negative"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight=".1"
-        android:background="@android:color/transparent"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
         android:gravity="center"
         android:paddingTop="@dimen/big_padding"
         android:paddingBottom="@dimen/big_padding"
         android:text="Deny"
         android:textColor="@android:color/white"
-        android:textSize="@dimen/small_text" />
+        android:textSize="@dimen/small_text"
+        tools:ignore="HardcodedText" />
 
     <Button
         android:id="@+id/btn_positive"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight=".1"
-        android:background="@android:color/transparent"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
         android:gravity="center"
         android:paddingTop="@dimen/big_padding"
         android:paddingBottom="@dimen/big_padding"
         android:text="Accept"
         android:textColor="@android:color/white"
-        android:textSize="@dimen/small_text" />
+        android:textSize="@dimen/small_text"
+        tools:ignore="HardcodedText" />
 
 </LinearLayout>
