@@ -1,14 +1,12 @@
 package com.practice.phuc.ums_husc.ViewModel;
 
-import com.practice.phuc.ums_husc.Model.LICHSUBANTHAN;
-
 public class VLyLichCaNhan {
     private VThongTinChung ThongTinChung;
     private VThongTinLienHe ThongTinLienHe;
     private VThuongTru ThuongTru;
     private VQueQuan QueQuan;
     private VDacDiemBanThan DacDiemBanThan;
-    private LICHSUBANTHAN LichSuBanThan;
+    private VLichSuBanThan LichSuBanThan;
 
     public VThongTinChung getThongTinChung() {
         return ThongTinChung;
@@ -50,17 +48,17 @@ public class VLyLichCaNhan {
         DacDiemBanThan = dacDiemBanThan;
     }
 
-    public LICHSUBANTHAN getLichSuBanThan() {
+    public VLichSuBanThan getLichSuBanThan() {
         return LichSuBanThan;
     }
 
-    public void setLichSuBanThan(LICHSUBANTHAN lichSuBanThan) {
+    public void setLichSuBanThan(VLichSuBanThan lichSuBanThan) {
         LichSuBanThan = lichSuBanThan;
     }
 
     public VLyLichCaNhan(VThongTinChung thongTinChung, VThongTinLienHe thongTinLienHe,
                          VThuongTru thuongTru, VQueQuan queQuan, VDacDiemBanThan dacDiemBanThan,
-                         LICHSUBANTHAN lichSuBanThan) {
+                         VLichSuBanThan lichSuBanThan) {
         ThongTinChung = thongTinChung;
         ThongTinLienHe = thongTinLienHe;
         ThuongTru = thuongTru;

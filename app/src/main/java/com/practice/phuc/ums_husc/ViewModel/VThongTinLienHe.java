@@ -5,7 +5,7 @@ public class VThongTinLienHe {
     private String DienThoai;
     private String DiDong;
     private String Email;
-    private int HinhThucCuTru;
+    private String HinhThucCuTru;
     private String TenKyTucXa;
     private String TenQuocGia;
     private String TenThanhPho;
@@ -46,11 +46,11 @@ public class VThongTinLienHe {
         Email = email;
     }
 
-    public int getHinhThucCuTru() {
+    public String getHinhThucCuTru() {
         return HinhThucCuTru;
     }
 
-    public void setHinhThucCuTru(int hinhThucCuTru) {
+    public void setHinhThucCuTru(String hinhThucCuTru) {
         HinhThucCuTru = hinhThucCuTru;
     }
 
@@ -111,7 +111,7 @@ public class VThongTinLienHe {
     }
 
     public VThongTinLienHe(String maSinhVient, String dienThoai, String diDong, String email,
-                           int hinhThucCuTru, String tenKyTucXa, String tenQuocGia,
+                           String hinhThucCuTru, String tenKyTucXa, String tenQuocGia,
                            String tenThanhPho, String tenQuanHuyen, String tenPhuongXa,
                            String diaChi, String ngayBatDauCuTru) {
         MaSinhVient = maSinhVient;

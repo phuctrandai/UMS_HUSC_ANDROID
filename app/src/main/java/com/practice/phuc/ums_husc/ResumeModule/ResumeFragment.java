@@ -11,6 +11,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +31,6 @@ import com.squareup.moshi.Types;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -87,7 +86,6 @@ public class ResumeFragment extends Fragment {
         mRootLayout = view.findViewById(R.id.layout_root_resume);
         mTabLayout = view.findViewById(R.id.tabs);
         mViewPager = view.findViewById(R.id.vp_resume);
-        mViewPager.setOffscreenPageLimit(mResumePagerAdapter.getCount());
         mIsViewDestroyed = false;
 
         return view;
@@ -99,6 +97,8 @@ public class ResumeFragment extends Fragment {
 
         switch (mStatus) {
             case STATUS_INIT:
+                mViewPager.setAdapter(mResumePagerAdapter);
+                mTabLayout.setupWithViewPager(mViewPager);
                 attempGetData();
                 break;
             case STATUS_NOT_NETWORK:
@@ -113,8 +113,15 @@ public class ResumeFragment extends Fragment {
                 mLayoutLoading.setVisibility(View.GONE);
                 mLayoutData.setVisibility(View.VISIBLE);
                 break;
+            default:
+                    break;
         }
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    public void onRefresh() {
+        showProgress(true);
+        attempGetData();
     }
 
     @Override
@@ -146,9 +153,11 @@ public class ResumeFragment extends Fragment {
 
             try {
                 mRespose = fetchData();
+
                 if (mRespose == null) {
-                    mErrorMessage = getString(R.string.error_time_out);
+                    mErrorMessage = getString(R.string.error_server_not_response);
                     return false;
+
                 } else {
                     if (mRespose.code() == NetworkUtil.OK) {
                         try {
@@ -160,9 +169,13 @@ public class ResumeFragment extends Fragment {
                                     lyLichCaNhan.getThuongTru(),
                                     lyLichCaNhan.getDacDiemBanThan(),
                                     lyLichCaNhan.getLichSuBanThan());
+                            Log.d("DEBUG", json);
+
                             return true;
+
                         } catch (IOException e) {
                             e.printStackTrace();
+                            mErrorMessage = "Có lỗi xảy ra bất ngờ";
                             return false;
                         }
                     } else if (mRespose.code() == NetworkUtil.BAD_REQUEST) {
@@ -174,6 +187,7 @@ public class ResumeFragment extends Fragment {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                mErrorMessage = "Có lỗi xảy ra bất ngờ";
                 return false;
             }
         }
@@ -183,13 +197,9 @@ public class ResumeFragment extends Fragment {
             if (mLoadResumeTask == null) return;
             if (success) {
                 mStatus = STATUS_SHOW_DATA;
-                mViewPager.setAdapter(mResumePagerAdapter);
-                mTabLayout.setupWithViewPager(mViewPager);
+                mResumePagerAdapter.notifyDataSetChanged();
 
-                mLayoutData.setVisibility(View.VISIBLE);
-                mLayoutData.setAlpha(0f);
-                mLayoutData.animate().alpha(1f).setDuration(500).start();
-                mLayoutLoading.setVisibility(View.GONE);
+                showProgress(false);
             } else {
                 showErrorSnackbar(true, mErrorMessage);
             }
@@ -209,11 +219,9 @@ public class ResumeFragment extends Fragment {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
         String maSinhVien = sharedPreferences.getString(getString(R.string.pre_key_student_id), null);
         String matKhau = sharedPreferences.getString(getString(R.string.pre_key_password), null);
-        RequestBody requestBody = RequestBody.create(
-                MediaType.parse("application/xml; charset=utf-8"), ""
-        );
+
         return NetworkUtil.makeRequest(Reference.getLoadLyLichApiUrl(maSinhVien, matKhau),
-                true, requestBody);
+                false, null);
     }
 
     private void displayPersonalData(View view) {
@@ -231,6 +239,19 @@ public class ResumeFragment extends Fragment {
         tvHoTen.setText(hoTen);
         String khoaNganh = khoaHoc + " - " + nganhHoc;
         tvKhoaHocNganhHoc.setText(khoaNganh);
+    }
+
+    private void showProgress(boolean show) {
+        if (show) {
+            mLayoutLoading.setVisibility(View.VISIBLE);
+            mLayoutData.setVisibility(View.GONE);
+
+        } else {
+            mLayoutLoading.setVisibility(View.GONE);
+            mLayoutData.setVisibility(View.VISIBLE);
+            mLayoutData.setAlpha(0f);
+            mLayoutData.animate().alpha(1f).setDuration(500).start();
+        }
     }
 
     private void showNetworkErrorSnackbar(boolean show) {

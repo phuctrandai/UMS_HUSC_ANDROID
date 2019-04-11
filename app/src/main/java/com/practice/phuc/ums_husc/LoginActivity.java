@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -30,8 +31,6 @@ import com.squareup.moshi.Types;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity {
@@ -228,6 +227,13 @@ public class LoginActivity extends AppCompatActivity {
                     mTxtPassword.requestFocus();
 
                 }
+                Log.d("DEBUG", "Login: " + mResponseLogin.code());
+                try {
+                    assert mResponseLogin.body() != null;
+                    Log.d("DEBUG", "Login: " + mResponseLogin.body().string());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             } else {
                 Snackbar.make(mRootLayout, R.string.error_not_handle,
                         Snackbar.LENGTH_LONG).show();
@@ -237,6 +243,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void saveAccountInfo(VThongTinCaNhan vThongTinCaNhan, String maSinhVien, String matKhau) {
+        if (maSinhVien.contains("t"))
+            maSinhVien = maSinhVien.replace('t', 'T');
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putString(getString(R.string.pre_key_student_name), vThongTinCaNhan.getHoTen());
         editor.putString(getString(R.string.pre_key_majors), vThongTinCaNhan.getTenNganh());
@@ -254,11 +262,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private Response onlineLogin(String maSinhVien, String matKhau) {
-        RequestBody requestBody = RequestBody.create(
-                MediaType.parse("application/xml; charset=utf-8"), ""
-        );
         return NetworkUtil.makeRequest(Reference.getLoginApiUrl(maSinhVien, matKhau),
-                true, requestBody);
+                false, null);
     }
 
     private void showProgress(final boolean show) {

@@ -3,7 +3,7 @@ package com.practice.phuc.ums_husc.ViewModel;
 public class VDacDiemBanThan {
     private String MaSinhVien;
     private String TinhTrangHonNhan;
-    private int ChieuCao;
+    private String ChieuCao;
     private String NhomMau;
     private String ThanhPhanXuatThan;
     private String DienUuTienGiaDinh;
@@ -30,11 +30,11 @@ public class VDacDiemBanThan {
         TinhTrangHonNhan = tinhTrangHonNhan;
     }
 
-    public int getChieuCao() {
+    public String getChieuCao() {
         return ChieuCao;
     }
 
-    public void setChieuCao(int chieuCao) {
+    public void setChieuCao(String chieuCao) {
         ChieuCao = chieuCao;
     }
 
@@ -110,7 +110,7 @@ public class VDacDiemBanThan {
         NgayChinhThucVaoDang = ngayChinhThucVaoDang;
     }
 
-    public VDacDiemBanThan(String maSinhVien, String tinhTrangHonNhan, int chieuCao, String nhomMau,
+    public VDacDiemBanThan(String maSinhVien, String tinhTrangHonNhan, String chieuCao, String nhomMau,
                            String thanhPhanXuatThan, String dienUuTienGiaDinh,
                            String tenDienUuTienBanThan, String ngayVaoDoan, String noiKetNapDoan,
                            String ngayVaoDang, String noiKetNapDang, String ngayChinhThucVaoDang) {

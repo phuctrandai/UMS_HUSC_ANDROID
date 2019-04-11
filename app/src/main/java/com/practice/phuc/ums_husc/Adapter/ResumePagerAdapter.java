@@ -1,15 +1,17 @@
 package com.practice.phuc.ums_husc.Adapter;
 
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.util.Log;
 
 import com.practice.phuc.ums_husc.ResumeModule.DacDiemBanThanFragment;
 import com.practice.phuc.ums_husc.ResumeModule.LichSuBanThanFragment;
 import com.practice.phuc.ums_husc.ResumeModule.LienHeCuTruFragment;
 import com.practice.phuc.ums_husc.ResumeModule.ThongTinChungFragment;
-import com.practice.phuc.ums_husc.Model.LICHSUBANTHAN;
 import com.practice.phuc.ums_husc.ViewModel.VDacDiemBanThan;
+import com.practice.phuc.ums_husc.ViewModel.VLichSuBanThan;
 import com.practice.phuc.ums_husc.ViewModel.VQueQuan;
 import com.practice.phuc.ums_husc.ViewModel.VThongTinChung;
 import com.practice.phuc.ums_husc.ViewModel.VThongTinLienHe;
@@ -22,16 +24,25 @@ public class ResumePagerAdapter extends FragmentPagerAdapter {
     private VQueQuan queQuan;
     private VThuongTru thuongTru;
     private VDacDiemBanThan dacDiemBanThan;
-    private LICHSUBANTHAN lichSuBanThan;
+    private VLichSuBanThan lichSuBanThan;
+
+    private ThongTinChungFragment thongTinChungFragment;
+    private LienHeCuTruFragment lienHeCuTruFragment;
+    private DacDiemBanThanFragment dacDiemBanThanFragment;
+    private LichSuBanThanFragment lichSuBanThanFragment;
 
     public ResumePagerAdapter(FragmentManager fm) {
         super(fm);
+        thongTinChungFragment = ThongTinChungFragment.newInstance(thongTinChung);
+        lienHeCuTruFragment = LienHeCuTruFragment.newInstance(thongTinLienHe, thuongTru, queQuan);
+        dacDiemBanThanFragment = DacDiemBanThanFragment.newInstance(dacDiemBanThan);
+        lichSuBanThanFragment = LichSuBanThanFragment.newInstance(lichSuBanThan);
     }
 
     public void setThongTin(VThongTinChung thongTinChung,
                                 VThongTinLienHe thongTinLienHe,
                                 VQueQuan queQuan, VThuongTru thuongTru,
-                                VDacDiemBanThan dacDiemBanThan, LICHSUBANTHAN lichSuBanThan) {
+                                VDacDiemBanThan dacDiemBanThan, VLichSuBanThan lichSuBanThan) {
         this.thongTinChung = thongTinChung;
         this.thongTinLienHe = thongTinLienHe;
         this.queQuan = queQuan;
@@ -41,25 +52,36 @@ public class ResumePagerAdapter extends FragmentPagerAdapter {
     }
 
     @Override
+    public int getItemPosition(@NonNull Object object) {
+        return POSITION_NONE;
+    }
+
+    @Override
     public Fragment getItem(int position) {
+        Log.d("DEBUG", "Get item " + position);
         switch (position) {
             case 0:
-                ThongTinChungFragment c0 = new ThongTinChungFragment();
-                c0.setThongTin(thongTinChung);
-                return c0;
+                thongTinChungFragment.setThongTin(thongTinChung);
+                return thongTinChungFragment;
             case 1:
-                LienHeCuTruFragment c1 = new LienHeCuTruFragment();
-                c1.setThongTin(thongTinLienHe, thuongTru, queQuan);
-                return c1;
+                lienHeCuTruFragment.setThongTin(thongTinLienHe, thuongTru, queQuan);
+                return lienHeCuTruFragment;
             case 2:
-                DacDiemBanThanFragment c2 = new DacDiemBanThanFragment();
-                c2.setThongTin(dacDiemBanThan);
-                return c2;
+                dacDiemBanThanFragment.setThongTin(dacDiemBanThan);
+                return dacDiemBanThanFragment;
             default:
-                LichSuBanThanFragment d = new LichSuBanThanFragment();
-                d.setThongTin(this.lichSuBanThan);
-                return d;
+                lichSuBanThanFragment.setThongTin(lichSuBanThan);
+                return lichSuBanThanFragment;
         }
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        thongTinChungFragment.setThongTin(thongTinChung);
+        lienHeCuTruFragment.setThongTin(thongTinLienHe, thuongTru, queQuan);
+        dacDiemBanThanFragment.setThongTin(dacDiemBanThan);
+        lichSuBanThanFragment.setThongTin(lichSuBanThan);
+        super.notifyDataSetChanged();
     }
 
     @Override

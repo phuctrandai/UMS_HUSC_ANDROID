@@ -19,6 +19,7 @@ public class SettingFragment extends PreferenceFragmentCompat {
     private SharedPreferences.Editor mEditor;
     private SwitchPreferenceCompat mSpNews;
     private SwitchPreferenceCompat mSpMessage;
+    private SwitchPreferenceCompat mSpSendMessage;
     private SwitchPreferenceCompat mSpTimeTable;
     private ListPreference mSpTimeTableTime;
 
@@ -35,17 +36,20 @@ public class SettingFragment extends PreferenceFragmentCompat {
         mEditor = mSharedPreferences.edit();
         // bind UI
         mSpNews = (SwitchPreferenceCompat) findPreference(getString(R.string.pre_key_news));
-        mSpMessage = (SwitchPreferenceCompat) findPreference(getString(R.string.pre_key_message));
+        mSpMessage = (SwitchPreferenceCompat) findPreference(getString(R.string.pre_key_receive_message));
+        mSpSendMessage = (SwitchPreferenceCompat) findPreference(getString(R.string.pre_key_send_message));
         mSpTimeTable = (SwitchPreferenceCompat) findPreference(getString(R.string.pre_key_alarm_timetable));
         mSpTimeTableTime = (ListPreference) findPreference(getString(R.string.pre_key_alarm_timetable_time));
         // Get save value
         boolean mSpNewsChecked = mSharedPreferences.getBoolean(getString(R.string.share_pre_key_news), true);
-        boolean mSpMessageChecked = mSharedPreferences.getBoolean(getString(R.string.share_pre_key_message), true);
+        boolean mSpMessageChecked = mSharedPreferences.getBoolean(getString(R.string.share_pre_key_receive_message), true);
+        boolean mSpSendMessageChecked = mSharedPreferences.getBoolean(getString(R.string.share_pre_key_send_message), true);
         boolean mSpTimeTableChecked = mSharedPreferences.getBoolean(getString(R.string.share_pre_key_alarm_timetable), true);
         String mSpTimeTableTimeValue = mSharedPreferences.getString(getString(R.string.share_pre_key_alarm_timetable_time), "30");
         // Set value from saved value
         mSpNews.setChecked(mSpNewsChecked);
         mSpMessage.setChecked(mSpMessageChecked);
+        mSpSendMessage.setChecked(mSpSendMessageChecked);
         mSpTimeTable.setChecked(mSpTimeTableChecked);
         mSpTimeTableTime.setValue(mSpTimeTableTimeValue);
         mSpTimeTableTime.setEnabled(mSpTimeTableChecked);
@@ -65,7 +69,16 @@ public class SettingFragment extends PreferenceFragmentCompat {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 mSpMessage.setDefaultValue(newValue);
-                mEditor.putBoolean(getString(R.string.share_pre_key_message), (boolean) newValue);
+                mEditor.putBoolean(getString(R.string.share_pre_key_receive_message), (boolean) newValue);
+                mEditor.apply();
+                return true;
+            }
+        });
+        mSpSendMessage.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                mSpSendMessage.setDefaultValue(newValue);
+                mEditor.putBoolean(getString(R.string.share_pre_key_send_message), (boolean) newValue);
                 mEditor.apply();
                 return true;
             }

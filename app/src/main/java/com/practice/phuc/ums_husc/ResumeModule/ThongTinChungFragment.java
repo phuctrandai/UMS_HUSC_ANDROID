@@ -1,6 +1,7 @@
 package com.practice.phuc.ums_husc.ResumeModule;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,13 +12,26 @@ import android.widget.TextView;
 import com.practice.phuc.ums_husc.R;
 import com.practice.phuc.ums_husc.ViewModel.VThongTinChung;
 
+import static com.practice.phuc.ums_husc.Helper.StringHelper.isNullOrEmpty;
+
 public class ThongTinChungFragment extends Fragment {
 
     public ThongTinChungFragment() {
         // Required empty public constructor
     }
 
-    private static VThongTinChung thongTinChung = null;
+    public static ThongTinChungFragment newInstance(VThongTinChung thongTinChung) {
+        Log.d("DEBUG", "New instance thong tin chung fragment");
+        ThongTinChungFragment f = new ThongTinChungFragment();
+        f.thongTinChung = thongTinChung;
+        return f;
+    }
+
+    public void setThongTin(VThongTinChung thongTinChung) {
+        this.thongTinChung = thongTinChung;
+    }
+
+    private VThongTinChung thongTinChung;
     private TextView mGioiTinh;
     private TextView mNgaySinh;
     private TextView mNoiSinh;
@@ -29,7 +43,7 @@ public class ThongTinChungFragment extends Fragment {
     private TextView mNoiCapCMND;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_thong_tin_chung, container, false);
 
         mGioiTinh = view.findViewById(R.id.tv_gioiTinh);
@@ -44,29 +58,38 @@ public class ThongTinChungFragment extends Fragment {
 
         displayThongTin();
 
-        Log.d("UMS", "Create thong tin chung !!!");
         return view;
-    }
-
-    public void setThongTin(VThongTinChung thongTinChung) {
-        this.thongTinChung = thongTinChung;
     }
 
     public void displayThongTin() {
         if (thongTinChung != null) {
+            String empty = "...";
             String gioiTinh = thongTinChung.getGioiTinh() ? "Nam" : "Nữ";
-            String noiSinh = thongTinChung.getNoiSinh().getTenThanhPho()
-                    + ", " + thongTinChung.getNoiSinh().getTenQuocGia();
+            String noiSinh = empty;
+            if (thongTinChung.getNoiSinh() != null) {
+                String thanhPhoSinh = !isNullOrEmpty(thongTinChung.getNoiSinh().getTenQuocGia()) ?
+                        thongTinChung.getNoiSinh().getTenThanhPho() : empty;
+                String quocGiaSinh = !isNullOrEmpty(thongTinChung.getNoiSinh().getTenQuocGia()) ?
+                        thongTinChung.getNoiSinh().getTenQuocGia() : empty;
+                noiSinh = thanhPhoSinh + ", " + quocGiaSinh;
+            }
+            String ngaySinh = !isNullOrEmpty(thongTinChung.getNgaySinh()) ? thongTinChung.getNgaySinh().substring(0, 10) : empty;
+            String quocTich = !isNullOrEmpty(thongTinChung.getTenQuocGia()) ? thongTinChung.getTenQuocGia() : empty;
+            String danToc = !isNullOrEmpty(thongTinChung.getTenDanToc()) ? thongTinChung.getTenDanToc() : empty;
+            String tonGiao = !isNullOrEmpty(thongTinChung.getTenTonGiao()) ? thongTinChung.getTenTonGiao() : empty;
+            String soCMND = !isNullOrEmpty(thongTinChung.getSoCMND()) ? thongTinChung.getSoCMND() : empty;
+            String ngayCapCMND = !isNullOrEmpty(thongTinChung.getNgayCap()) ? thongTinChung.getNgayCap().substring(0, 10) : empty;
+            String noiCapCMND = !isNullOrEmpty(thongTinChung.getNoiCap()) ? thongTinChung.getNoiCap() : empty;
 
             mGioiTinh.setText(gioiTinh);
-            mNgaySinh.setText(thongTinChung.getNgaySinh().substring(0, 10));
+            mNgaySinh.setText(ngaySinh);
             mNoiSinh.setText(noiSinh);
-            mQuocTich.setText(thongTinChung.getTenQuocGia());
-            mDanToc.setText(thongTinChung.getTenDanToc());
-            mTonGiao.setText(thongTinChung.getTenTonGiao());
-            mSoCMND.setText(thongTinChung.getSoCMND());
-            mNgayCapCMND.setText(thongTinChung.getNgayCap().substring(0, 10));
-            mNoiCapCMND.setText(thongTinChung.getNoiCap());
+            mQuocTich.setText(quocTich);
+            mDanToc.setText(danToc);
+            mTonGiao.setText(tonGiao);
+            mSoCMND.setText(soCMND);
+            mNgayCapCMND.setText(ngayCapCMND);
+            mNoiCapCMND.setText(noiCapCMND);
         }
     }
 }

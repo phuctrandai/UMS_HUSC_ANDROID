@@ -52,14 +52,17 @@
     <!-- SETTING -->
     <string name="share_pre_key_setting">setting</string>
     <string name="share_pre_key_news">sp_notification</string>
-    <string name="share_pre_key_message">sp_message</string>
+    <string name="share_pre_key_receive_message">sp_message</string>
+    <string name="share_pre_key_send_message">sp_send_message</string>
     <string name="share_pre_key_alarm_timetable">sp_alarm_timetabel</string>
     <string name="share_pre_key_alarm_timetable_time">sp_alarm_timetable_time</string>
     <string name="pre_category_notifications">notifications_category</string>
     <string name="pre_key_news">pre_key_news</string>
     <string name="pre_sum_news">Nhận thông báo khi có tin tức mới từ phòng đào tạo</string>
-    <string name="pre_key_message">pre_key_message</string>
-    <string name="pre_sum_message">Nhận thông báo khi có tin nhắn đến</string>
+    <string name="pre_key_receive_message">pre_key_receive_message</string>
+    <string name="pre_sum_receive_message">Nhận thông báo khi có tin nhắn đến</string>
+    <string name="pre_key_send_message">pre_key_send_message</string>
+    <string name="pre_sum_send_message">Nhận thông báo trạng thái tin nhắn đi</string>
     <string name="pre_category_alarm">alarm_category</string>
     <string name="pre_key_alarm_timetable">pre_key_alarm_timetable</string>
     <string name="pre_sum_alarm_timetable">Nhắc nhở lịch học hằng ngày</string>

@@ -43,7 +43,7 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
                 }
 
             } else if (messageType != null && messageType.equals(Reference.MESSAGE_NOTIFICATION)) {
-                boolean isAllow = mSharedPreferences.getBoolean(getString(R.string.share_pre_key_message), true);
+                boolean isAllow = mSharedPreferences.getBoolean(getString(R.string.share_pre_key_receive_message), true);
                 if (isAllow) {
                     riseNotification(createMessageNotification(remoteMessage));
                 }

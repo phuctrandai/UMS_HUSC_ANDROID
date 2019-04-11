@@ -2,17 +2,27 @@ package com.practice.phuc.ums_husc.ResumeModule;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.practice.phuc.ums_husc.Model.LICHSUBANTHAN;
 import com.practice.phuc.ums_husc.R;
+import com.practice.phuc.ums_husc.ViewModel.VLichSuBanThan;
+
+import static com.practice.phuc.ums_husc.Helper.StringHelper.getValueOrEmpty;
+import static com.practice.phuc.ums_husc.Helper.StringHelper.isNullOrEmpty;
 
 public class LichSuBanThanFragment extends Fragment {
-    private static LICHSUBANTHAN mLichSuBanThan;
+    public static LichSuBanThanFragment newInstance(VLichSuBanThan lichSuBanThan) {
+        LichSuBanThanFragment f = new LichSuBanThanFragment();
+        f.mLichSuBanThan = lichSuBanThan;
+        return f;
+    }
+
+    private VLichSuBanThan mLichSuBanThan;
 
     private TextView mNamTotNghiepTHPT;
     private TextView mXepLoaiTotNghiepTHPT;
@@ -34,7 +44,7 @@ public class LichSuBanThanFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_lich_su_ban_than, container, false);
 
@@ -53,28 +63,36 @@ public class LichSuBanThanFragment extends Fragment {
         mQuanHamLLVT = view.findViewById(R.id.tv_quanHam);
         mNoiCongTacLLVT = view.findViewById(R.id.tv_noiCongTac);
 
-        return view;
-    }
+        dislayThongTin();
 
-    public void setThongTin(LICHSUBANTHAN lichsubanthan) {
-        mLichSuBanThan = lichsubanthan;
+        return view;
     }
 
     @SuppressLint("SetTextI18n")
     private void dislayThongTin() {
-        mNamTotNghiepTHPT.setText(mLichSuBanThan.getNamTotNghiepTHPT() + "");
-        mXepLoaiTotNghiepTHPT.setText(mLichSuBanThan.getXepLoaiTotNghiepTHPT());
-        mNoiTotNghiepTHPT.setText(mLichSuBanThan.getNoiTotNghiepTHPT());
-        mXepLoaiHocTapLop10.setText(mLichSuBanThan.getXepLoaiHocTap10());
-        mXepLoaiHocTapLop11.setText(mLichSuBanThan.getXepLoaiHocTap11());
-        mXepLoaiHocTapLop12.setText(mLichSuBanThan.getXepLoaiHocTap12());
-        mXepLoaiHanhKiemLop10.setText(mLichSuBanThan.getXepLoaiHanhKiem10());
-        mXepLoaiHanhKiemLop11.setText(mLichSuBanThan.getXepLoaiHanhKiem11());
-        mXepLoaiHanhKiemLop12.setText(mLichSuBanThan.getXepLoaiHanhKiem12());
-        mTenLVT.setText(mLichSuBanThan.getTenLucLuongVuTrang());
-        mNgayBatDauLLVT.setText(mLichSuBanThan.getNgayBatDauLLVT());
-        mNgayKetThucLLVT.setText(mLichSuBanThan.getNgayKetThucLLVT());
-        mQuanHamLLVT.setText(mLichSuBanThan.getQuanHamLLVT());
-        mNoiCongTacLLVT.setText(mLichSuBanThan.getNoiCongTacLLVT());
+        mNamTotNghiepTHPT.setText(getValueOrEmpty(mLichSuBanThan.getNamTotNghiepTHPT()));
+        mXepLoaiTotNghiepTHPT.setText(getValueOrEmpty(mLichSuBanThan.getXepLoaiTotNghiepTHPT()));
+        mNoiTotNghiepTHPT.setText(getValueOrEmpty(mLichSuBanThan.getNoiTotNghiepTHPT()));
+        mXepLoaiHocTapLop10.setText(getValueOrEmpty(mLichSuBanThan.getXepLoaiHocTap10()));
+        mXepLoaiHocTapLop11.setText(getValueOrEmpty(mLichSuBanThan.getXepLoaiHocTap11()));
+        mXepLoaiHocTapLop12.setText(getValueOrEmpty(mLichSuBanThan.getXepLoaiHocTap12()));
+        mXepLoaiHanhKiemLop10.setText(getValueOrEmpty(mLichSuBanThan.getXepLoaiHanhKiem10()));
+        mXepLoaiHanhKiemLop11.setText(getValueOrEmpty(mLichSuBanThan.getXepLoaiHanhKiem11()));
+        mXepLoaiHanhKiemLop12.setText(getValueOrEmpty(mLichSuBanThan.getXepLoaiHanhKiem12()));
+        mTenLVT.setText(getValueOrEmpty(mLichSuBanThan.getTenLucLuongVuTrang()));
+
+        String ngayBdLLVT = isNullOrEmpty(mLichSuBanThan.getNgayBatDauLLVT()) ? "..." :
+                mLichSuBanThan.getNgayBatDauLLVT().substring(0, 10);
+        mNgayBatDauLLVT.setText(ngayBdLLVT);
+
+        String ngayKtLLVT = isNullOrEmpty(mLichSuBanThan.getNgayKetThucLLVT()) ? "..." :
+                mLichSuBanThan.getNgayKetThucLLVT();
+        mNgayKetThucLLVT.setText(ngayKtLLVT);
+        mQuanHamLLVT.setText(getValueOrEmpty(mLichSuBanThan.getQuanHamLLVT()));
+        mNoiCongTacLLVT.setText(getValueOrEmpty(mLichSuBanThan.getNoiCongTacLLVT()));
+    }
+
+    public void setThongTin(VLichSuBanThan lichSuBanThan) {
+        this.mLichSuBanThan = lichSuBanThan;
     }
 }

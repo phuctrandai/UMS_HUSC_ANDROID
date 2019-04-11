@@ -25,6 +25,8 @@ public final class Reference {
 
     private static final String LOAD_NOI_DUNG_TIN_NHAN_API = "api/SinhVien/NoiDungTinNhan/";
 
+    private static final String REPLY_TIN_NHAN_API = "api/SinhVien/";
+
     private static final String SAVE_TOKEN_API = "api/fcm/save/";
 
     private static final String DELETE_TOKEN_API = "api/fcm/delete/";
@@ -79,6 +81,12 @@ public final class Reference {
                 + "&id=" + id;
     }
 
+    public static String getReplyTinNhanApiUrl(String maSinhVien, String matKhau) {
+        return HOST + REPLY_TIN_NHAN_API
+                + "?masinhvien=" + maSinhVien
+                + "&matkhau=" + matKhau;
+    }
+
     public static String getLoadLyLichApiUrl(String maSinhVien, String matKhau) {
         return Reference.HOST + Reference.LOAD_LY_LICH_API
                 + "?masinhvien=" + maSinhVien
@@ -100,6 +108,7 @@ public final class Reference {
     static String MESSAGE_NOTIFICATION = "message_notification";
     static String NEWS_NOTIFICATION = "news_notification";
     static String SCHEDULE_NOTIFICATION = "schedule_notification";
+    public static String SEND_MESSAGE_NOTIFICATION = "send_message_notification";
 
     public static boolean mHasNewNews = false;
     private static List<THONGBAO> mListNewThongBao = null;

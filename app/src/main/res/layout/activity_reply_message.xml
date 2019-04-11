@@ -2,6 +2,7 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_root_reply_message"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
@@ -23,11 +24,11 @@
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
-                app:title="Trả lời tin nhắn"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
-                app:popupTheme="@style/AppTheme.PopupOverlay" />
+                app:popupTheme="@style/AppTheme.PopupOverlay"
+                app:title="Trả lời tin nhắn" />
 
         </android.support.design.widget.AppBarLayout>
 
@@ -68,8 +69,6 @@
                 android:background="@color/colorGrey" />
 
             <TextView
-                android:textColor="@color/colorPrimary"
-                android:textStyle="bold"
                 android:id="@+id/tv_nguoiNhan"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -78,7 +77,9 @@
                 android:layout_marginTop="32dp"
                 android:layout_toEndOf="@id/tv_nguoiNhan_lb"
                 android:text="Không xác định"
+                android:textColor="@color/colorPrimary"
                 android:textSize="@dimen/normal_text"
+                android:textStyle="bold"
                 tools:ignore="HardcodedText" />
 
             <TextView
@@ -103,7 +104,8 @@
                 android:layout_marginBottom="@dimen/normal_margin"
                 android:background="@color/colorGrey" />
 
-            <TextView
+            <EditText
+                android:background="@null"
                 android:id="@+id/tv_tieuDe"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -115,7 +117,8 @@
                 android:text="Tiêu đề tin nhắn"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/big_text"
-                tools:ignore="HardcodedText" />
+                tools:ignore="HardcodedText,LabelFor,TextFields,UnusedAttribute"
+                android:importantForAutofill="no" />
 
             <View
                 android:id="@+id/v_horLine"
@@ -147,7 +150,7 @@
             <Button
                 android:id="@+id/btn_gui"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="32dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
                 android:layout_marginStart="@dimen/big_margin"

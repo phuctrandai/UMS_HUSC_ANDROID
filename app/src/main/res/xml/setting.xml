@@ -11,9 +11,15 @@
 
         <android.support.v7.preference.SwitchPreferenceCompat
             android:defaultValue="true"
-            android:key="@string/pre_key_message"
-            android:summary="@string/pre_sum_message"
-            android:title="Tin nhắn" />
+            android:key="@string/pre_key_receive_message"
+            android:summary="@string/pre_sum_receive_message"
+            android:title="Tin nhắn đến" />
+
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="@string/pre_key_send_message"
+            android:summary="@string/pre_sum_send_message"
+            android:title="Tin nhắn đi" />
     </android.support.v7.preference.PreferenceCategory>
 
     <android.support.v7.preference.PreferenceCategory

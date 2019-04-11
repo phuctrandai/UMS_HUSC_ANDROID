@@ -9,7 +9,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -111,7 +110,6 @@ public class DetailMessageActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch (id) {
             case R.id.item_traLoi:
-                Toast.makeText(this, "Tra loi tin nhan", Toast.LENGTH_SHORT).show();
                 replyMessage();
                 break;
             case R.id.item_xoa:
@@ -317,21 +315,8 @@ public class DetailMessageActivity extends AppCompatActivity {
     }
 
     private void replyMessage() {
-        SharedPreferences sp = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
         Bundle bundle = getIntent().getBundleExtra(Reference.BUNDLE_EXTRA_MESSAGE);
 
-        String tieuDe = bundle.getString(Reference.BUNDLE_KEY_MESSAGE_TITLE);
-        String maNguoiNhan = bundle.getString(Reference.BUNDLE_KEY_MESSAGE_SENDER_ID);
-        String hoTenNguoiNhan = bundle.getString(Reference.BUNDLE_KEY_MESSAGE_SENDER_NAME);
-        String maNguoiGui = sp.getString(getString(R.string.pre_key_student_id), null);
-        String hoTenNguoiGui = sp.getString(getString(R.string.pre_key_student_name), null);
-
-        Log.d("DEBUG", tieuDe);
-        Log.d("DEBUG", maNguoiGui);
-        Log.d("DEBUG", maNguoiNhan);
-        Log.d("DEBUG", hoTenNguoiGui);
-        Log.d("DEBUG", hoTenNguoiNhan);
-        // Start activity reply message
         Intent intent = new Intent(this, ReplyMessageActivity.class);
         intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, bundle);
         startActivity(intent);

@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.action_refreshResume:
                 ResumeFragment resumeFragment = (ResumeFragment) fragmentManager.findFragmentByTag(ResumeFragment.class.getName());
                 if (resumeFragment != null) {
-                    /*TODO: Refresh resume fragment*/
+                    resumeFragment.onRefresh();
                 }
                 return true;
             case R.id.action_selectSemester:
