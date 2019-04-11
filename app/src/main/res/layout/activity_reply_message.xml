@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    tools:context=".MessageModule.ReplyMessageActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="0dp"
+            android:theme="@style/AppTheme.AppBarOverlay"
+            app:elevation="0dp">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                app:title="Trả lời tin nhắn"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+        </android.support.design.widget.AppBarLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            android:paddingTop="@dimen/big_padding">
+
+            <TextView
+                android:id="@+id/tv_nguoiGui_lb"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/big_margin"
+                android:drawableStart="@drawable/ic_person_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="Từ"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/tv_nguoiGui"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/big_margin"
+                android:layout_toEndOf="@id/tv_nguoiGui_lb"
+                android:text="Họ tên người gửi"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="HardcodedText" />
+
+            <View
+                android:id="@+id/v_horLine_1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/tv_nguoiGui_lb"
+                android:layout_marginTop="@dimen/big_margin"
+                android:layout_marginBottom="@dimen/normal_margin"
+                android:background="@color/colorGrey" />
+
+            <TextView
+                android:textColor="@color/colorPrimary"
+                android:textStyle="bold"
+                android:id="@+id/tv_nguoiNhan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_nguoiGui_lb"
+                android:layout_marginStart="@dimen/big_margin"
+                android:layout_marginTop="32dp"
+                android:layout_toEndOf="@id/tv_nguoiNhan_lb"
+                android:text="Không xác định"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/tv_nguoiNhan_lb"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_nguoiGui_lb"
+                android:layout_marginStart="@dimen/big_margin"
+                android:layout_marginTop="32dp"
+                android:drawableStart="@drawable/ic_person_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="Đến"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="HardcodedText" />
+
+            <View
+                android:id="@+id/v_horLine_2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/tv_nguoiNhan_lb"
+                android:layout_marginTop="@dimen/big_margin"
+                android:layout_marginBottom="@dimen/normal_margin"
+                android:background="@color/colorGrey" />
+
+            <TextView
+                android:id="@+id/tv_tieuDe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/v_horLine_2"
+                android:layout_marginStart="@dimen/big_margin"
+                android:layout_marginTop="@dimen/big_margin"
+                android:layout_marginEnd="@dimen/big_margin"
+                android:layout_marginBottom="@dimen/normal_margin"
+                android:text="Tiêu đề tin nhắn"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/big_text"
+                tools:ignore="HardcodedText" />
+
+            <View
+                android:id="@+id/v_horLine"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/tv_tieuDe"
+                android:layout_marginTop="@dimen/normal_margin"
+                android:layout_marginBottom="@dimen/normal_margin"
+                android:background="@color/colorGrey" />
+
+            <EditText
+                android:id="@+id/et_noiDung"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/v_horLine"
+                android:layout_marginStart="@dimen/big_margin"
+                android:layout_marginTop="@dimen/big_margin"
+                android:layout_marginEnd="@dimen/big_margin"
+                android:layout_marginBottom="64dp"
+                android:background="@null"
+                android:hint="Soạn tin nhắn"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine|textCapSentences"
+                android:layerType="software"
+                android:scrollbarStyle="insideOverlay"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="HardcodedText,LabelFor,UnusedAttribute" />
+
+            <Button
+                android:id="@+id/btn_gui"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="@dimen/big_margin"
+                android:layout_marginEnd="@dimen/big_margin"
+                android:layout_marginBottom="@dimen/normal_margin"
+                android:background="@color/colorPrimary"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:text="Xong"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/normal_text"
+                android:textStyle="bold"
+                tools:ignore="HardcodedText,UnusedAttribute" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

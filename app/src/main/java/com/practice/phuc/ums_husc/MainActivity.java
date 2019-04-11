@@ -113,13 +113,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             } else if (mBundle != null && mIsLaunchFromMessageNoti) {
                 String title = mBundle.getString(Reference.BUNDLE_KEY_MESSAGE_TITLE, "");
                 String sendTime = mBundle.getString(Reference.BUNDLE_KEY_MESSAGE_SEND_TIME, "");
-                String sender = mBundle.getString(Reference.BUNDLE_KEY_MESSAGE_SENDER, "");
+                String sender = mBundle.getString(Reference.BUNDLE_KEY_MESSAGE_SENDER_NAME, "");
                 String id = mBundle.getString(Reference.BUNDLE_KEY_MESSAGE_ID, "");
 
                 Bundle b = new Bundle();
                 b.putString(Reference.BUNDLE_KEY_MESSAGE_ID, id);
                 b.putString(Reference.BUNDLE_KEY_MESSAGE_TITLE, title);
-                b.putString(Reference.BUNDLE_KEY_MESSAGE_SENDER, sender);
+                b.putString(Reference.BUNDLE_KEY_MESSAGE_SENDER_NAME, sender);
                 b.putString(Reference.BUNDLE_KEY_MESSAGE_SEND_TIME, sendTime);
                 b.putBoolean(Reference.BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, true);
                 Intent intent = new Intent(this, DetailMessageActivity.class);
@@ -349,17 +349,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView tvHoTen = headerView.findViewById(R.id.tv_hoTen);
         TextView tvKhoaHoc = headerView.findViewById(R.id.tv_khoaHoc);
         TextView tvNganhHoc = headerView.findViewById(R.id.tv_nganhHoc);
+        TextView tvHocKiNamHoc = headerView.findViewById(R.id.tv_hocKiNamHoc);
 
-        SharedPreferences sharedPreferences = getSharedPreferences("sinhVien", MODE_PRIVATE);
-        String maSinhVien = sharedPreferences.getString("maSinhVien", "");
-        String hoTen = sharedPreferences.getString("hoTen", "");
-        String khoaHoc = sharedPreferences.getString("khoaHoc", "");
-        String nganhHoc = sharedPreferences.getString("nganhHoc", "");
+        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
+        String maSinhVien = sharedPreferences.getString(getString(R.string.pre_key_student_id), "");
+        String hoTen = sharedPreferences.getString(getString(R.string.pre_key_student_name), "");
+        String khoaHoc = sharedPreferences.getString(getString(R.string.pre_key_course), "");
+        String nganhHoc = sharedPreferences.getString(getString(R.string.pre_key_majors), "");
+        int index = sharedPreferences.getInt(getString(R.string.pre_key_semester), 0);
+        String hocKi = semesters[index].toString();
 
         tvMaSinhVien.setText(maSinhVien);
         tvHoTen.setText(hoTen);
         tvKhoaHoc.setText(khoaHoc);
         tvNganhHoc.setText(nganhHoc);
+        tvHocKiNamHoc.setText(hocKi);
 
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         String message = "Xin chào " + hoTen;
@@ -367,19 +371,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         snackbar.show();
     }
 
-    private void deleteTokenForAccount() {
-        String maSinhVien = getSharedPreferences("sinhVien", MODE_PRIVATE)
-                .getString("maSinhVien", null);
-        String token = getSharedPreferences("FIREBASE", MODE_PRIVATE)
-                .getString("TOKEN", null);
-        FireBaseIDTask.deleteTokenFromAccount(maSinhVien, token);
-    }
-
     private boolean localLogin() {
-        // Kiem tra da dang nhap truoc do chua
-        SharedPreferences sp = getSharedPreferences("sinhVien", MODE_PRIVATE);
-        String maSinhVien = sp.getString("maSinhVien", null);
-        String matKhau = sp.getString("matKhau", null);
+        SharedPreferences sp = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
+        String maSinhVien = sp.getString(getString(R.string.pre_key_student_id), null);
+        String matKhau = sp.getString(getString(R.string.pre_key_password), null);
 
         return (maSinhVien != null) && (matKhau != null);
     }
@@ -394,12 +389,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(DialogInterface dialog, int which) {
                 deleteTokenForAccount();
 
-                SharedPreferences.Editor editor = getSharedPreferences("sinhVien", MODE_PRIVATE).edit();
-                editor.remove("maSinhVien");
-                editor.remove("matKhau");
-                editor.remove("hoTen");
-                editor.remove("nganhHoc");
-                editor.remove("khoaHoc");
+                SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE).edit();
+                editor.remove(getString(R.string.pre_key_student_id));
+                editor.remove(getString(R.string.pre_key_password));
+                editor.remove(getString(R.string.pre_key_student_name));
+                editor.remove(getString(R.string.pre_key_majors));
+                editor.remove(getString(R.string.pre_key_course));
+                editor.remove(getString(R.string.pre_key_semester));
                 editor.apply();
 
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
@@ -415,6 +411,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+    }
+
+    private void deleteTokenForAccount() {
+        String maSinhVien = getSharedPreferences("sinhVien", MODE_PRIVATE)
+                .getString("maSinhVien", null);
+        String token = getSharedPreferences("FIREBASE", MODE_PRIVATE)
+                .getString("TOKEN", null);
+        FireBaseIDTask.deleteTokenFromAccount(maSinhVien, token);
     }
 
     private void confirmExit() {
@@ -460,18 +464,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void showSelectSemesterDialog() {
-        final CharSequence[] items = {
-                "Học kì 2 (2018-2019)",
-                "Học kì 1 (2018-2019)",
-                "Học kì hè (2017-2018)",
-                "Học kì 2 (2017-2018)",
-                "Học kì 1 (2017-2018)"
-        };
+        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
+        int selectedSemesterIndex = sharedPreferences.getInt(getString(R.string.pre_key_semester),0);
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getString(R.string.action_selectSemester));
-        builder.setSingleChoiceItems(items, 0, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int item) {
-                saveSelectedSemester(item);
+        builder.setSingleChoiceItems(semesters, selectedSemesterIndex, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int index) {
+                saveSelectedSemester(index);
+                ((TextView) findViewById(R.id.tv_hocKiNamHoc)).setText(semesters[index]);
+                findViewById(R.id.tv_hocKiNamHoc).refreshDrawableState();
             }
         });
         builder.setPositiveButton("Tác nghiệp", new DialogInterface.OnClickListener() {
@@ -485,10 +487,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         alert.show();
     }
 
-    /* TODO: Lưu học kì và ngành học tác nghiệp */
     private void saveSelectedSemester(int id) {
-        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.share_pre_key_semester), MODE_PRIVATE).edit();
-        editor.putInt(getString(R.string.pre_key_selected_semester), id);
+        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE).edit();
+        editor.putInt(getString(R.string.pre_key_semester), id);
         editor.apply();
     }
+
+    final CharSequence[] semesters = {
+            "Học kì 2 (2018-2019)",
+            "Học kì 1 (2018-2019)",
+            "Học kì hè (2017-2018)",
+            "Học kì 2 (2017-2018)",
+            "Học kì 1 (2017-2018)",
+            "Học kì hè (2016-2017)",
+            "Học kì 2 (2016-2017)",
+            "Học kì 1 (2016-2017)",
+            "Học kì hè (2015-2016)",
+            "Học kì 2 (2015-2016)",
+            "Học kì 1 (2015-2016)"
+    };
 }

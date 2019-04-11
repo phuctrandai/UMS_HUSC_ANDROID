@@ -109,7 +109,7 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
             intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             intent.putExtra(Reference.BUNDLE_KEY_MESSAGE_ID, messageId);
             intent.putExtra(Reference.BUNDLE_KEY_MESSAGE_TITLE, messageTitle);
-            intent.putExtra(Reference.BUNDLE_KEY_MESSAGE_SENDER, messageSender);
+            intent.putExtra(Reference.BUNDLE_KEY_MESSAGE_SENDER_NAME, messageSender);
             intent.putExtra(Reference.BUNDLE_KEY_MESSAGE_SEND_TIME, messageSendTime);
             intent.putExtra(Reference.BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, true);
         } else {
@@ -117,7 +117,7 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
             intent = new Intent(mContext, DetailMessageActivity.class);
             bundle.putString(Reference.BUNDLE_KEY_MESSAGE_ID, messageId);
             bundle.putString(Reference.BUNDLE_KEY_MESSAGE_TITLE, messageTitle);
-            bundle.putString(Reference.BUNDLE_KEY_MESSAGE_SENDER, messageSender);
+            bundle.putString(Reference.BUNDLE_KEY_MESSAGE_SENDER_NAME, messageSender);
             bundle.putString(Reference.BUNDLE_KEY_MESSAGE_SEND_TIME, messageSendTime);
             bundle.putBoolean(Reference.BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, true);
             intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, bundle);
@@ -137,8 +137,8 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
 
     private NotificationCompat.Builder CreateNotificationCompatBuilder() {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, getString(R.string.chanel_id));
-        mBuilder.setSmallIcon(R.mipmap.logo);
-        mBuilder.setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.mipmap.logo));
+        mBuilder.setSmallIcon(R.mipmap.noti_icon);
+        mBuilder.setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.mipmap.large_icon));
         mBuilder.setColor(getResources().getColor(R.color.colorPrimary));
         mBuilder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
         mBuilder.setAutoCancel(true);

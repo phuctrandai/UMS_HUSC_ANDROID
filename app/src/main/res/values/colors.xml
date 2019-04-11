@@ -4,8 +4,8 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#304FFE</color>
     <color name="colorWhite">#FFFFFF</color>
+    <color name="colorGrey">#80BEBEBE</color>
 
     <!-- Man hinh dang nhap -->
     <color name="colorButtonLogin">@color/colorPrimary</color>
-    <color name="colorNormalTab">#BEBEBE</color>
 </resources>

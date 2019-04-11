@@ -25,7 +25,8 @@
             android:layout_marginBottom="@dimen/small_margin"
             android:text="Tiêu đề tin nhắn"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/big_text" />
+            android:textSize="@dimen/big_text"
+            tools:ignore="HardcodedText" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -39,7 +40,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:text="Không xác định"
-                android:textSize="@dimen/small_text" />
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:id="@+id/tv_nguoiGuiLabel"
@@ -49,7 +51,8 @@
                 android:drawableStart="@drawable/ic_person_grey_12"
                 android:drawablePadding="@dimen/small_padding"
                 android:text="Người gửi"
-                android:textSize="@dimen/tiny_text" />
+                android:textSize="@dimen/tiny_text"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:id="@+id/tv_thoiDiemGui"
@@ -57,7 +60,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:text="Không xác định"
-                android:textSize="@dimen/small_text" />
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -68,7 +72,8 @@
                 android:drawablePadding="@dimen/small_padding"
                 android:layout_marginEnd="22dp"
                 android:text="Thời điểm gửi"
-                android:textSize="@dimen/tiny_text" />
+                android:textSize="@dimen/tiny_text"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:layout_marginTop="@dimen/small_margin"
@@ -78,7 +83,8 @@
                 android:layout_below="@+id/tv_nguoiGuiLabel"
                 android:layout_alignParentStart="true"
                 android:text="Không xác định"
-                android:textSize="@dimen/small_text" />
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -87,7 +93,8 @@
                 android:drawableStart="@drawable/ic_people_grey_12"
                 android:drawablePadding="@dimen/small_padding"
                 android:text="Người nhận"
-                android:textSize="@dimen/tiny_text" />
+                android:textSize="@dimen/tiny_text"
+                tools:ignore="HardcodedText" />
         </RelativeLayout>
 
         <TextView

@@ -363,10 +363,10 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private Response fetchData() {
         if (mLastAction == ACTION_INIT) mCurrentPage = 1;
 
-        String maSinhVien = mContext.getSharedPreferences("sinhVien", Context.MODE_PRIVATE)
-                .getString("maSinhVien", null);
-        String matKhau = mContext.getSharedPreferences("sinhVien", Context.MODE_PRIVATE)
-                .getString("matKhau", null);
+        String maSinhVien = mContext.getSharedPreferences(getString(R.string.share_pre_key_account_info), Context.MODE_PRIVATE)
+                .getString(getString(R.string.pre_key_student_id), null);
+        String matKhau = mContext.getSharedPreferences(getString(R.string.share_pre_key_account_info), Context.MODE_PRIVATE)
+                .getString(getString(R.string.pre_key_password), null);
         String url = Reference.getLoadThongBaoApiUrl(maSinhVien, matKhau, mCurrentPage, ITEM_PER_PAGE);
 
         return NetworkUtil.makeRequest(url, false, null);

@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -36,15 +35,12 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity {
-    private Response responseLogin = null;
-
-    // Keep login information
-    private SharedPreferences sharedPreferences = null;
-    private SharedPreferences.Editor editor = null;
+    private Response mResponseLogin = null;
+    private SharedPreferences mSharedPreferences = null;
     private UserLoginTask mAuthTask;
-    private JsonAdapter<VThongTinCaNhan> jsonAdapter;
+    private JsonAdapter<VThongTinCaNhan> mJsonAdapter;
     private boolean mIsViewDestroyed;
-    // UI references.
+
     private LinearLayout mRootLayout;
     private EditText mTxtStudentId;
     private EditText mTxtPassword;
@@ -86,8 +82,8 @@ public class LoginActivity extends AppCompatActivity {
 
         Moshi moshi = new Moshi.Builder().build();
         Type usersType = Types.newParameterizedType(VThongTinCaNhan.class);
-        jsonAdapter = moshi.adapter(usersType);
-        sharedPreferences = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
+        mJsonAdapter = moshi.adapter(usersType);
+        mSharedPreferences = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
     }
 
     private void bindUI() {
@@ -151,7 +147,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private boolean isMaSinhVienValid(String maSinhVien) {
-        return maSinhVien.contains("T");
+        return maSinhVien.contains("T") || maSinhVien.contains("t");
     }
 
     private boolean isPasswordValid(String password) {
@@ -179,9 +175,12 @@ public class LoginActivity extends AppCompatActivity {
             if (mAuthTask == null) return false;
 
             try {
-                Thread.sleep(500);
-                responseLogin = onlineLogin(mMaSinhVien, mMatKhau);
+                Thread.sleep(1000);
+                mResponseLogin = onlineLogin(mMaSinhVien, mMatKhau);
+
             } catch (Exception e) {
+                mResponseLogin = null;
+                e.printStackTrace();
                 return false;
             }
             return true;
@@ -189,25 +188,22 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            if (mAuthTask == null) return;
+            if (mAuthTask == null || mIsViewDestroyed) return;
 
-            if (success && (responseLogin != null)) {
-                Log.d("DEBUG", "Login response code: " + responseLogin.code());
-                if (responseLogin.code() == NetworkUtil.OK) {
+            if (mResponseLogin == null) {
+                Snackbar.make(mRootLayout, R.string.error_server_not_response
+                        , Snackbar.LENGTH_LONG).show();
+                return;
+            }
+
+            if (success) {
+                if (mResponseLogin.code() == NetworkUtil.OK) {
                     try {
-                        if (responseLogin.body() != null) {
-                            String thongTinCaNhanJson = responseLogin.body().string();
-                            VThongTinCaNhan vThongTinCaNhan = jsonAdapter.fromJson(thongTinCaNhanJson);
+                        if (mResponseLogin.body() != null) {
+                            String thongTinCaNhanJson = mResponseLogin.body().string();
+                            VThongTinCaNhan vThongTinCaNhan = mJsonAdapter.fromJson(thongTinCaNhanJson);
 
-                            // Luu thong tin dang nhap, se tu dong dang nhap cho lan sau
-                            editor = sharedPreferences.edit();
-                            editor.putString("hoTen", vThongTinCaNhan.getHoTen());
-                            editor.putString("nganhHoc", vThongTinCaNhan.getTenNganh());
-                            editor.putString("khoaHoc", vThongTinCaNhan.getKhoaHoc());
-                            editor.putString("maSinhVien", mMaSinhVien);
-                            editor.putString("matKhau", mMatKhau);
-                            editor.apply();
-                            //
+                            saveAccountInfo(vThongTinCaNhan, mMaSinhVien, mMatKhau);
                             saveTokenForAccount();
 
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -216,37 +212,51 @@ public class LoginActivity extends AppCompatActivity {
                         }
                         return;
                     } catch (IOException e) {
+                        Snackbar.make(mRootLayout, R.string.error_not_handle,
+                                Snackbar.LENGTH_LONG).show();
                         e.printStackTrace();
+                        return;
                     }
-                } else if (responseLogin.code() == NetworkUtil.NOT_FOUND && !mIsViewDestroyed) {
-                    Snackbar.make(mRootLayout, getString(R.string.error_dang_nhap_that_bai),
+
+                } else if (mResponseLogin.code() == NetworkUtil.NOT_FOUND) {
+                    Snackbar.make(mRootLayout, R.string.error_time_out,
+                            Snackbar.LENGTH_LONG).show();
+
+                } else if (mResponseLogin.code() == NetworkUtil.BAD_REQUEST) {
+                    Snackbar.make(mRootLayout, R.string.error_login_failed,
                             Snackbar.LENGTH_LONG).show();
                     mTxtPassword.requestFocus();
-                } else if (!mIsViewDestroyed) {
-                    Snackbar.make(mRootLayout, getString(R.string.error_server_not_response),
-                            Snackbar.LENGTH_LONG).show();
+
                 }
-            } else if (!mIsViewDestroyed) {
-                Snackbar.make(mRootLayout, getString(R.string.error_server_not_response),
+            } else {
+                Snackbar.make(mRootLayout, R.string.error_not_handle,
                         Snackbar.LENGTH_LONG).show();
             }
             showProgress(false);
         }
     }
 
+    private void saveAccountInfo(VThongTinCaNhan vThongTinCaNhan, String maSinhVien, String matKhau) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString(getString(R.string.pre_key_student_name), vThongTinCaNhan.getHoTen());
+        editor.putString(getString(R.string.pre_key_majors), vThongTinCaNhan.getTenNganh());
+        editor.putString(getString(R.string.pre_key_course), vThongTinCaNhan.getKhoaHoc());
+        editor.putString(getString(R.string.pre_key_student_id), maSinhVien);
+        editor.putString(getString(R.string.pre_key_password), matKhau);
+        editor.apply();
+    }
+
     private void saveTokenForAccount() {
         final String maSinhVien = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE)
-                .getString("maSinhVien", null);
+                .getString(getString(R.string.pre_key_student_id), null);
         String token = MyFireBaseMessagingService.getToken(this);
         FireBaseIDTask.saveTokenForAccount(maSinhVien, token);
     }
 
-    /* TODO: Save token when login */
     private Response onlineLogin(String maSinhVien, String matKhau) {
         RequestBody requestBody = RequestBody.create(
                 MediaType.parse("application/xml; charset=utf-8"), ""
         );
-        // Lay response
         return NetworkUtil.makeRequest(Reference.getLoginApiUrl(maSinhVien, matKhau),
                 true, requestBody);
     }

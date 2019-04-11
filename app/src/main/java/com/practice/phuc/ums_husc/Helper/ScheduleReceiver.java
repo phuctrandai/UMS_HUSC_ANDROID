@@ -77,8 +77,8 @@ public class ScheduleReceiver extends BroadcastReceiver {
 
     private NotificationCompat.Builder createNotificationCompatBuilder() {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext, mContext.getString(R.string.chanel_id));
-        mBuilder.setSmallIcon(R.mipmap.logo);
-        mBuilder.setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.logo));
+        mBuilder.setSmallIcon(R.mipmap.noti_icon);
+        mBuilder.setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.large_icon));
         mBuilder.setColor(mContext.getResources().getColor(R.color.colorPrimary));
         mBuilder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
         mBuilder.setAutoCancel(true);

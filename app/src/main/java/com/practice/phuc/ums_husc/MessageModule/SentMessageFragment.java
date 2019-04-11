@@ -2,6 +2,7 @@ package com.practice.phuc.ums_husc.MessageModule;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,7 +13,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Response;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
@@ -345,7 +347,6 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
                     return false;
 
                 } else {
-                    Log.d("DEBUG", "Get tin nhan Response code: " + mResponse.code());
                     if (mResponse.code() == NetworkUtil.OK) {
                         String json = mResponse.body() != null ? mResponse.body().string() : "";
                         setData(castData(json));
@@ -393,7 +394,7 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
         Moshi mMoshi = new Moshi.Builder().build();
         Type mUsersType = Types.newParameterizedType(List.class, TINNHAN.class);
         JsonAdapter<List<TINNHAN>> mJsonAdapter = mMoshi.adapter(mUsersType);
-        Log.d("DEBUG", json);
+
         try {
             return mJsonAdapter.fromJson(json);
         } catch (IOException e) {
@@ -406,7 +407,7 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
         if (list != null && list.size() > 0) {
 //            if (mLastAction == ACTION_INIT)
 //                mDBHelper.deleteAllRecord(DBHelper.MESSAGE);
-            Log.d("DEBUG", list.toString());
+
             for (TINNHAN tinnhan : list) {
                 mMessageList.add(tinnhan);
 //                mDBHelper.insertMessage(tinnhan);
@@ -418,10 +419,9 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
     private Response fetchData() {
         if (mLastAction == ACTION_INIT) mCurrentPage = 1;
 
-        String maSinhVien = mContext.getSharedPreferences("sinhVien", Context.MODE_PRIVATE)
-                .getString("maSinhVien", null);
-        String matKhau = mContext.getSharedPreferences("sinhVien", Context.MODE_PRIVATE)
-                .getString("matKhau", null);
+        SharedPreferences sp = mContext.getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
+        String maSinhVien = sp.getString(getString(R.string.pre_key_student_id), null);
+        String matKhau = sp.getString(getString(R.string.pre_key_password), null);
         String url = Reference.getLoadTinNhanDaGuiApiUrl(maSinhVien, matKhau, mCurrentPage, ITEM_PER_PAGE);
 
         return NetworkUtil.makeRequest(url, false, null);

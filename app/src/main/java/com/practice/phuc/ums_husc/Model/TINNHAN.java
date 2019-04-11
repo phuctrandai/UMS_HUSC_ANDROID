@@ -1,7 +1,7 @@
 package com.practice.phuc.ums_husc.Model;
 
 public class TINNHAN {
-    private NGUOINHAN[] NGUOINHANs;
+    private NGUOINHAN[] NguoiNhans;
     private int MaTinNhan;
     private String TieuDe;
     private String NoiDung;
@@ -58,11 +58,11 @@ public class TINNHAN {
     }
 
     public NGUOINHAN[] getNGUOINHANs() {
-        return NGUOINHANs;
+        return NguoiNhans;
     }
 
     public void setNGUOINHANs(NGUOINHAN[] NGUOINHANs) {
-        this.NGUOINHANs = NGUOINHANs;
+        this.NguoiNhans = NGUOINHANs;
     }
 
     public TINNHAN(int maTinNhan, String tieuDe, String noiDung, String hoTenNguoiGui, String maNguoiGui, String thoiDiemGui, NGUOINHAN[] NGUOINHANs) {
@@ -72,7 +72,7 @@ public class TINNHAN {
         HoTenNguoiGui = hoTenNguoiGui;
         MaNguoiGui = maNguoiGui;
         ThoiDiemGui = thoiDiemGui;
-        this.NGUOINHANs = NGUOINHANs;
+        this.NguoiNhans = NGUOINHANs;
     }
 
     public TINNHAN() {

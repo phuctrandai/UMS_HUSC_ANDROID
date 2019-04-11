@@ -2,12 +2,14 @@ package com.practice.phuc.ums_husc.MessageModule;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -57,7 +59,6 @@ public class DetailMessageActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        setTitle("Chi tiết tin nhắn");
 
         rootLayout = findViewById(R.id.layout_detail_message_root);
         mProgressBar = findViewById(R.id.progressBar);
@@ -111,6 +112,7 @@ public class DetailMessageActivity extends AppCompatActivity {
         switch (id) {
             case R.id.item_traLoi:
                 Toast.makeText(this, "Tra loi tin nhan", Toast.LENGTH_SHORT).show();
+                replyMessage();
                 break;
             case R.id.item_xoa:
                 Toast.makeText(this, "Xoa tin nhan", Toast.LENGTH_SHORT).show();
@@ -123,7 +125,7 @@ public class DetailMessageActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getBundleExtra(Reference.BUNDLE_EXTRA_MESSAGE);
         boolean launchFromNotification = bundle.getBoolean(Reference.BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, false);
         tvTieuDe.setText(bundle.getString(Reference.BUNDLE_KEY_MESSAGE_TITLE));
-        tvNguoiGui.setText(bundle.getString(Reference.BUNDLE_KEY_MESSAGE_SENDER));
+        tvNguoiGui.setText(bundle.getString(Reference.BUNDLE_KEY_MESSAGE_SENDER_NAME));
         tvThoiDiemGui.setText(bundle.getString(Reference.BUNDLE_KEY_MESSAGE_SEND_TIME));
         JustifyTextInTextView.justify(tvTieuDe);
 
@@ -177,7 +179,7 @@ public class DetailMessageActivity extends AppCompatActivity {
             try {
                 mResponse = fetchData();
                 if (mResponse == null) {
-                    mErrorMessage = getString(R.string.error_time_out);
+                    mErrorMessage = getString(R.string.error_server_not_response);
                     return false;
                 } else {
                     if (mResponse.code() == NetworkUtil.OK) {
@@ -187,7 +189,7 @@ public class DetailMessageActivity extends AppCompatActivity {
                     } else if (mResponse.code() == NetworkUtil.BAD_REQUEST) {
                         mErrorMessage = mResponse.body() != null ? mResponse.body().string() : "";
                     } else {
-                        mErrorMessage = getString(R.string.error_server_not_response);
+                        mErrorMessage = getString(R.string.error_time_out);
                     }
                     return false;
                 }
@@ -221,10 +223,9 @@ public class DetailMessageActivity extends AppCompatActivity {
     }
 
     private Response fetchData() {
-        String maSinhVien = getSharedPreferences("sinhVien", MODE_PRIVATE)
-                .getString("maSinhVien", null);
-        String matKhau = getSharedPreferences("sinhVien", MODE_PRIVATE)
-                .getString("matKhau", null);
+        SharedPreferences sp = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
+        String maSinhVien = sp.getString(getString(R.string.pre_key_student_id), null);
+        String matKhau = sp.getString(getString(R.string.pre_key_password), null);
         String id = getIntent().getBundleExtra(Reference.BUNDLE_EXTRA_MESSAGE).getString(Reference.BUNDLE_KEY_MESSAGE_ID);
         String url = Reference.getLoadNoiDungTinNhanApiUrl(maSinhVien, matKhau, id);
 
@@ -313,5 +314,26 @@ public class DetailMessageActivity extends AppCompatActivity {
         } else if (mErrorSnackbar != null) {
             mErrorSnackbar.dismiss();
         }
+    }
+
+    private void replyMessage() {
+        SharedPreferences sp = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
+        Bundle bundle = getIntent().getBundleExtra(Reference.BUNDLE_EXTRA_MESSAGE);
+
+        String tieuDe = bundle.getString(Reference.BUNDLE_KEY_MESSAGE_TITLE);
+        String maNguoiNhan = bundle.getString(Reference.BUNDLE_KEY_MESSAGE_SENDER_ID);
+        String hoTenNguoiNhan = bundle.getString(Reference.BUNDLE_KEY_MESSAGE_SENDER_NAME);
+        String maNguoiGui = sp.getString(getString(R.string.pre_key_student_id), null);
+        String hoTenNguoiGui = sp.getString(getString(R.string.pre_key_student_name), null);
+
+        Log.d("DEBUG", tieuDe);
+        Log.d("DEBUG", maNguoiGui);
+        Log.d("DEBUG", maNguoiNhan);
+        Log.d("DEBUG", hoTenNguoiGui);
+        Log.d("DEBUG", hoTenNguoiNhan);
+        // Start activity reply message
+        Intent intent = new Intent(this, ReplyMessageActivity.class);
+        intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, bundle);
+        startActivity(intent);
     }
 }

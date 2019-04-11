@@ -2,6 +2,7 @@ package com.practice.phuc.ums_husc.NewsModule;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -179,10 +180,9 @@ public class DetailNewsActivity extends AppCompatActivity {
     }
 
     private Response fetchData() {
-        String maSinhVien = getSharedPreferences("sinhVien", MODE_PRIVATE)
-                .getString("maSinhVien", null);
-        String matKhau = getSharedPreferences("sinhVien", MODE_PRIVATE)
-                .getString("matKhau", null);
+        SharedPreferences sp = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
+        String maSinhVien = sp.getString(getString(R.string.pre_key_student_id), null);
+        String matKhau = sp.getString(getString(R.string.pre_key_password), null);
         String id = getIntent().getBundleExtra(Reference.BUNDLE_EXTRA_NEWS).getString(Reference.BUNDLE_KEY_NEWS_ID);
         String url = Reference.getLoadNoiDungThongBaoApiUrl(maSinhVien, matKhau, id);
 

@@ -50,6 +50,7 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
         final String thoiDiemGui = tinnhan.getThoiDiemGui();
         final String noiDung = tinnhan.getNoiDung();
         final String nguoiGui = tinnhan.getHoTenNguoiGui();
+        final String maNguoiGui = tinnhan.getMaNguoiGui();
 
         String temp = "";
         if (soNguoiNhan > 0)
@@ -84,7 +85,8 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
                 bundle.putString(Reference.BUNDLE_KEY_MESSAGE_TITLE, tieuDe);
                 bundle.putString(Reference.BUNDLE_KEY_MESSAGE_SEND_TIME, thoiGianDangStr);
                 bundle.putString(Reference.BUNDLE_KEY_MESSAGE_BODY, noiDung);
-                bundle.putString(Reference.BUNDLE_KEY_MESSAGE_SENDER, nguoiGui);
+                bundle.putString(Reference.BUNDLE_KEY_MESSAGE_SENDER_NAME, nguoiGui);
+                bundle.putString(Reference.BUNDLE_KEY_MESSAGE_SENDER_ID, maNguoiGui);
                 bundle.putString(Reference.BUNDLE_KEY_MESSAGE_RECEIVERS, nguoiNhan);
                 bundle.putStringArray(Reference.BUNDLE_KEY_MESSAGE_RECEIVER_NAMES, dsTenNguoiNhan);
                 Intent intent = new Intent(mContext, DetailMessageActivity.class);

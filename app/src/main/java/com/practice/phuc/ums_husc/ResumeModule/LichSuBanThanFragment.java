@@ -1,5 +1,6 @@
 package com.practice.phuc.ums_husc.ResumeModule;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -59,6 +60,7 @@ public class LichSuBanThanFragment extends Fragment {
         mLichSuBanThan = lichsubanthan;
     }
 
+    @SuppressLint("SetTextI18n")
     private void dislayThongTin() {
         mNamTotNghiepTHPT.setText(mLichSuBanThan.getNamTotNghiepTHPT() + "");
         mXepLoaiTotNghiepTHPT.setText(mLichSuBanThan.getXepLoaiTotNghiepTHPT());

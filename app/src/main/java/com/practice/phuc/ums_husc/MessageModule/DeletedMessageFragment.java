@@ -2,6 +2,7 @@ package com.practice.phuc.ums_husc.MessageModule;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,6 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Response;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class DeletedMessageFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
@@ -421,10 +424,9 @@ public class DeletedMessageFragment extends Fragment implements SwipeRefreshLayo
     private Response fetchData() {
         if (mLastAction == ACTION_INIT) mCurrentPage = 1;
 
-        String maSinhVien = mContext.getSharedPreferences("sinhVien", Context.MODE_PRIVATE)
-                .getString("maSinhVien", null);
-        String matKhau = mContext.getSharedPreferences("sinhVien", Context.MODE_PRIVATE)
-                .getString("matKhau", null);
+        SharedPreferences sp = mContext.getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
+        String maSinhVien = sp.getString(getString(R.string.pre_key_student_id), null);
+        String matKhau = sp.getString(getString(R.string.pre_key_password), null);
         String url = Reference.getLoadTinNhanDenApiUrl(maSinhVien, matKhau, mCurrentPage, ITEM_PER_PAGE);
 
         return NetworkUtil.makeRequest(url, false, null);

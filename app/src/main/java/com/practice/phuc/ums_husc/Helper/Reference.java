@@ -11,6 +11,8 @@ public final class Reference {
 
     private static final String LOGIN_API = "api/SinhVien/DangNhap/";
 
+    private static final String CHANGE_PASS_API = "api/SinhVien/DoiMatKhau";
+
     private static final String LOAD_LY_LICH_API = "api/SinhVien/LyLichCaNhan/";
 
     private static final String LOAD_THONG_BAO_API = "api/ThongBao/";
@@ -29,6 +31,12 @@ public final class Reference {
 
     public static String getLoginApiUrl(String maSinhVien, String matKhau) {
         return Reference.HOST + Reference.LOGIN_API
+                + "?masinhvien=" + maSinhVien
+                + "&matkhau=" + matKhau;
+    }
+
+    public static String getChangePassApiUrl(String maSinhVien, String matKhau) {
+        return Reference.HOST + Reference.CHANGE_PASS_API
                 + "?masinhvien=" + maSinhVien
                 + "&matkhau=" + matKhau;
     }
@@ -116,7 +124,8 @@ public final class Reference {
     public static String BUNDLE_KEY_MESSAGE_ID = "message_id";
     public static String BUNDLE_KEY_MESSAGE_RECEIVERS = "message_receivers";
     public static String BUNDLE_KEY_MESSAGE_RECEIVER_NAMES = "message_receiver_names";
-    public static String BUNDLE_KEY_MESSAGE_SENDER = "message_sender";
+    public static String BUNDLE_KEY_MESSAGE_SENDER_NAME = "message_sender";
+    public static String BUNDLE_KEY_MESSAGE_SENDER_ID = "message_sender_id";
     public static String BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI = "launch_from_noti";
 
 }

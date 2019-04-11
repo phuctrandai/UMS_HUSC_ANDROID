@@ -19,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
+import com.practice.phuc.ums_husc.Helper.Reference;
 
 import java.io.IOException;
 
@@ -103,7 +104,7 @@ public class ChangePasswordFragment extends Fragment {
                 Thread.sleep(1000);
 
                 if (mResponse == null) {
-                    mErrorMessage = getString(R.string.error_server_not_response);
+                    mErrorMessage = getString(R.string.error_time_out);
                     return false;
                 } else if (mResponse.code() == NetworkUtil.NOT_FOUND) {
                     mErrorMessage = getString(R.string.error_server_not_response);
@@ -187,7 +188,7 @@ public class ChangePasswordFragment extends Fragment {
             mTxtOldPass.setError(getString(R.string.error_truong_bat_buoc));
             focusView = mTxtOldPass;
             cancel = true;
-        } else if (!oldPass.equals(mSharedPreferences.getString(getString(R.string.share_pre_key_account_password), ""))) {
+        } else if (!oldPass.equals(mSharedPreferences.getString(getString(R.string.pre_key_password), ""))) {
             mTxtOldPass.setError(getString(R.string.error_old_pass_incorect));
             focusView = mTxtOldPass;
             cancel = true;
@@ -223,15 +224,18 @@ public class ChangePasswordFragment extends Fragment {
     }
 
     private Response postChangePass() {
-        String url = "";
+        SharedPreferences sp = mContext.getSharedPreferences(getString(R.string.share_pre_key_account_info), Context.MODE_PRIVATE);
+        String maSinhVien = sp.getString(getString(R.string.pre_key_student_id), "");
+        String matKhau = sp.getString(getString(R.string.pre_key_password), "");
+        String url = Reference.getChangePassApiUrl(maSinhVien, matKhau);
 
         return NetworkUtil.makeRequest(url, false, null);
     }
 
     private void saveNewPass() {
-//        SharedPreferences.Editor editor = mSharedPreferences.edit();
-//        editor.putString("matKhau", mTxtNewPass.getText().toString());
-//        editor.apply();
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString(getString(R.string.pre_key_password), mTxtNewPass.getText().toString());
+        editor.apply();
 
         mTxtOldPass.setText("");
         mTxtNewPass.setText("");

@@ -151,9 +151,8 @@ public class ResumeFragment extends Fragment {
                     return false;
                 } else {
                     if (mRespose.code() == NetworkUtil.OK) {
-                        String json = null;
                         try {
-                            json = mRespose.body().string();
+                            String json = (mRespose.body() != null) ? mRespose.body().string() : "";
                             VLyLichCaNhan lyLichCaNhan = mJsonAdapter.fromJson(json);
                             mResumePagerAdapter.setThongTin(lyLichCaNhan.getThongTinChung(),
                                     lyLichCaNhan.getThongTinLienHe(),
@@ -207,10 +206,9 @@ public class ResumeFragment extends Fragment {
     }
 
     private Response fetchData() {
-        String maSinhVien = mContext.getSharedPreferences("sinhVien", MODE_PRIVATE)
-                .getString("maSinhVien", null);
-        String matKhau = mContext.getSharedPreferences("sinhVien", MODE_PRIVATE)
-                .getString("matKhau", null);
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
+        String maSinhVien = sharedPreferences.getString(getString(R.string.pre_key_student_id), null);
+        String matKhau = sharedPreferences.getString(getString(R.string.pre_key_password), null);
         RequestBody requestBody = RequestBody.create(
                 MediaType.parse("application/xml; charset=utf-8"), ""
         );
@@ -223,11 +221,11 @@ public class ResumeFragment extends Fragment {
         TextView tvHoTen = view.findViewById(R.id.tv_hoTen);
         TextView tvKhoaHocNganhHoc = view.findViewById(R.id.tv_khoaHocNganhHoc);
 
-        SharedPreferences sharedPreferences = mContext.getSharedPreferences("sinhVien", MODE_PRIVATE);
-        String maSinhVien = sharedPreferences.getString("maSinhVien", "");
-        String hoTen = sharedPreferences.getString("hoTen", "");
-        String khoaHoc = sharedPreferences.getString("khoaHoc", "");
-        String nganhHoc = sharedPreferences.getString("nganhHoc", "");
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
+        String maSinhVien = sharedPreferences.getString(getString(R.string.pre_key_student_id), "");
+        String hoTen = sharedPreferences.getString(getString(R.string.pre_key_student_name), "");
+        String khoaHoc = sharedPreferences.getString(getString(R.string.pre_key_course), "");
+        String nganhHoc = sharedPreferences.getString(getString(R.string.pre_key_majors), "");
 
         tvMaSinhVien.setText(maSinhVien);
         tvHoTen.setText(hoTen);

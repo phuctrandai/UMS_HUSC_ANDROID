@@ -21,7 +21,7 @@ public class FireBaseIDTask extends AsyncTask<String, Void, Boolean> {
                     return true;
                 } else if (response.code() == NetworkUtil.BAD_REQUEST) {
                     Log.d("DEBUG", "FireBase token id do in background Badrequest: " +
-                            response.body().string());
+                            (response.body() != null ? response.body().string() : null));
                     return false;
                 }
             }

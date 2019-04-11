@@ -1,14 +1,6 @@
 package com.practice.phuc.ums_husc.Model;
 
 public class NGUOINHAN {
-    public int getMaTinNhan() {
-        return MaTinNhan;
-    }
-
-    public void setMaTinNhan(int maTinNhan) {
-        MaTinNhan = maTinNhan;
-    }
-
     public String getMaNguoiNhan() {
         return MaNguoiNhan;
     }
@@ -18,11 +10,11 @@ public class NGUOINHAN {
     }
 
     public String getHoTenNguoiNhan() {
-        return HoTen;
+        return HoTenNguoiNhan;
     }
 
     public void setHoTenNguoiNhan(String hoTenNguoiNhan) {
-        HoTen = hoTenNguoiNhan;
+        HoTenNguoiNhan = hoTenNguoiNhan;
     }
 
     public String getThoiDiemXem() {
@@ -33,29 +25,17 @@ public class NGUOINHAN {
         ThoiDiemXem = thoiDiemXem;
     }
 
-    public boolean isDaXoa() {
-        return DaXoa;
-    }
-
-    public void setDaXoa(boolean daXoa) {
-        DaXoa = daXoa;
-    }
-
-    private int MaTinNhan;
     private String MaNguoiNhan;
-    private String HoTen;
+    private String HoTenNguoiNhan;
     private String ThoiDiemXem;
-    private boolean DaXoa;
 
     public NGUOINHAN() {
 
     }
 
-    public NGUOINHAN(int maTinNhan, String maNguoiNhan, String hoTenNguoiNhan, String thoiDiemXem, boolean daXoa) {
-        MaTinNhan = maTinNhan;
+    public NGUOINHAN(String maNguoiNhan, String hoTenNguoiNhan, String thoiDiemXem) {
         MaNguoiNhan = maNguoiNhan;
-        HoTen = hoTenNguoiNhan;
+        HoTenNguoiNhan = hoTenNguoiNhan;
         ThoiDiemXem = thoiDiemXem;
-        DaXoa = daXoa;
     }
 }
