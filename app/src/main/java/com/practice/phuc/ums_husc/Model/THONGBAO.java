@@ -1,5 +1,12 @@
 package com.practice.phuc.ums_husc.Model;
 
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+
 public class THONGBAO {
     private int MaThongBao;
     private String TieuDe;
@@ -38,14 +45,25 @@ public class THONGBAO {
         ThoiGianDang = thoiGianDang;
     }
 
-
-    public THONGBAO(int maThongBao, String tieuDe, String noiDung, String thoiGianDang) {
-        MaThongBao = maThongBao;
-        TieuDe = tieuDe;
-        NoiDung = noiDung;
-        ThoiGianDang = thoiGianDang;
+    public THONGBAO() {
     }
 
-    public THONGBAO() {
+    public static String toJson(THONGBAO model) {
+        Moshi mMoshi = new Moshi.Builder().build();
+        Type mUsersType = Types.newParameterizedType(THONGBAO.class);
+        JsonAdapter<THONGBAO> mJsonAdapter = mMoshi.adapter(mUsersType);
+        return mJsonAdapter.toJson(model);
+    }
+
+    public static THONGBAO fromJson(String json) {
+        Moshi mMoshi = new Moshi.Builder().build();
+        Type mUsersType = Types.newParameterizedType(THONGBAO.class);
+        JsonAdapter<THONGBAO> mJsonAdapter = mMoshi.adapter(mUsersType);
+        try {
+            return mJsonAdapter.fromJson(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

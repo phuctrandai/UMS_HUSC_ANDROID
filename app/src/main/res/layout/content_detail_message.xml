@@ -53,9 +53,8 @@
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@id/tv_nguoiGuiLabel"
                 android:text="Họ tên người gửi "
-                android:textColor="@android:color/black"
+                android:textColor="@color/colorDarkGrey"
                 android:textSize="@dimen/normal_text"
-                android:textStyle="bold"
                 tools:ignore="HardcodedText" />
 
             <RelativeLayout

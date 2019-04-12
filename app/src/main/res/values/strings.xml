@@ -129,4 +129,6 @@
     <string name="error_not_handle">Có lỗi bất ngờ xảy ra, vui lòng thử lại sau</string>
 
     <string name="title_activity_reply_message">Trả lời tin nhắn</string>
+    <string name="share_pre_key_firebase">FIREBASE</string>
+    <string name="pre_key_token">TOKEN</string>
 </resources>

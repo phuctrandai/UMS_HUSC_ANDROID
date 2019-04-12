@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
@@ -20,12 +21,7 @@ import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.Model.THONGBAO;
 import com.practice.phuc.ums_husc.R;
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.Objects;
 
 import okhttp3.Response;
@@ -42,6 +38,7 @@ public class DetailNewsActivity extends AppCompatActivity {
     private boolean mIsViewDestroyed;
     private Snackbar mNotNetworkSnackbar;
     private Snackbar mErrorSnackbar;
+    private THONGBAO mThongBao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,15 +57,18 @@ public class DetailNewsActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         mIsViewDestroyed = false;
 
-        // hien thi chi tiet bai dang
-        showData();
+        String json = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_NEWS);
+        mThongBao = THONGBAO.fromJson(json);
+        showData(Objects.requireNonNull(mThongBao));
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        showData();
+        String json = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_NEWS);
+        mThongBao = THONGBAO.fromJson(json);
+        showData(mThongBao);
     }
 
     @Override
@@ -93,22 +93,22 @@ public class DetailNewsActivity extends AppCompatActivity {
         return true;
     }
 
-    private void showData() {
-        Bundle bundle = getIntent().getBundleExtra(Reference.BUNDLE_EXTRA_NEWS);
-        boolean launchFromNotification = bundle.getBoolean(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, false);
-        tvTieuDe.setText(bundle.getString(Reference.BUNDLE_KEY_NEWS_TITLE, ""));
-        tvThoiGianDang.setText(bundle.getString(Reference.BUNDLE_KEY_NEWS_POST_TIME, ""));
+    private void showData(THONGBAO thongBao) {
+        boolean launchFromNotification = getIntent().getBooleanExtra(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, false);
+        tvThoiGianDang.setText(thongBao.getThoiGianDang());
+        tvTieuDe.setText(thongBao.getTieuDe());
         JustifyTextInTextView.justify(tvTieuDe);
 
         if (launchFromNotification) {
             Reference.mHasNewNews = true;
-            mLoadTask = new LoadNewsContentTask();
+            mLoadTask = new LoadNewsContentTask(thongBao.getMaThongBao() + "");
             mLoadTask.execute((String) null);
+
         } else {
             progressBar.setVisibility(View.GONE);
-            String content = bundle.getString(Reference.BUNDLE_KEY_NEWS_BODY);
+            String content = thongBao.getNoiDung();
             String htmlContent = "<div style='text-align: justify'>" + content + "</div>";
-            tvNoiDung.loadData(htmlContent, "text/html; charset=UTF-8",null);
+            tvNoiDung.loadData(htmlContent, "text/html; charset=UTF-8", null);
         }
     }
 
@@ -117,11 +117,14 @@ public class DetailNewsActivity extends AppCompatActivity {
         private Response mResponse;
         private String mErrorMessage;
         private String json;
+        private String newsId;
+
+        LoadNewsContentTask(String newsId) {
+            this.newsId = newsId;
+        }
 
         @Override
         protected void onPreExecute() {
-            tvNoiDung.setVisibility(View.GONE);
-
             if (NetworkUtil.getConnectivityStatus(DetailNewsActivity.this) == NetworkUtil.TYPE_NOT_CONNECTED) {
                 showNetworkErrorSnackbar(true);
                 mLoadTask.cancel(true);
@@ -133,7 +136,8 @@ public class DetailNewsActivity extends AppCompatActivity {
             if (mLoadTask == null) return false;
 
             try {
-                mResponse = fetchData();
+                mResponse = fetchData(newsId);
+
                 if (mResponse == null) {
                     mErrorMessage = getString(R.string.error_time_out);
                     return false;
@@ -160,12 +164,13 @@ public class DetailNewsActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean success) {
             if (mLoadTask != null) {
                 if (success) {
-                    setData(json);
+                    showBodyNews(Objects.requireNonNull(THONGBAO.fromJson(json)));
+
                     progressBar.setVisibility(View.GONE);
-                    tvNoiDung.setVisibility(View.VISIBLE);
                     showNetworkErrorSnackbar(false);
                     showErrorSnackbar(false, "");
                 } else {
+                    Log.d("DEBUG", mErrorMessage);
                     showErrorSnackbar(true, mErrorMessage);
                 }
             }
@@ -179,31 +184,21 @@ public class DetailNewsActivity extends AppCompatActivity {
         }
     }
 
-    private Response fetchData() {
+    private Response fetchData(String newsId) {
         SharedPreferences sp = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
         String maSinhVien = sp.getString(getString(R.string.pre_key_student_id), null);
         String matKhau = sp.getString(getString(R.string.pre_key_password), null);
-        String id = getIntent().getBundleExtra(Reference.BUNDLE_EXTRA_NEWS).getString(Reference.BUNDLE_KEY_NEWS_ID);
-        String url = Reference.getLoadNoiDungThongBaoApiUrl(maSinhVien, matKhau, id);
+        String url = Reference.getLoadNoiDungThongBaoApiUrl(maSinhVien, matKhau, newsId);
 
         return NetworkUtil.makeRequest(url, false, null);
     }
 
-    private void setData(String json) {
-        Moshi moshi = new Moshi.Builder().build();
-        Type usersType = Types.newParameterizedType(THONGBAO.class);
-        JsonAdapter<THONGBAO> jsonAdapter = moshi.adapter(usersType);
+    private void showBodyNews(THONGBAO thongBao) {
+        String htmlContent = "<div style='text-align: justify'>" + thongBao.getNoiDung() + "</div>";
+        tvNoiDung.loadData(htmlContent, "text/html; charset=UTF-8", null);
 
-        try {
-            THONGBAO thongbao = jsonAdapter.fromJson(json);
-            String htmlContent = "<div style='text-align: justify'>" + thongbao.getNoiDung() + "</div>";
-            tvNoiDung.loadData(htmlContent, "text/html; charset=UTF-8",null);
-
-            // Luu lai cac thong bao moi, de them vao o Main fragment
-            Reference.getmListNewThongBao().add(thongbao);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // Luu lai cac thong bao moi, de them vao o Main fragment
+        Reference.getmListNewThongBao().add(thongBao);
     }
 
     private void showNetworkErrorSnackbar(final boolean show) {
@@ -223,7 +218,7 @@ public class DetailNewsActivity extends AppCompatActivity {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            mLoadTask = new DetailNewsActivity.LoadNewsContentTask();
+                            mLoadTask = new DetailNewsActivity.LoadNewsContentTask(mThongBao.getMaThongBao() + "");
                             mLoadTask.execute((String) null);
                             mNotNetworkSnackbar.dismiss();
                         }
@@ -250,7 +245,7 @@ public class DetailNewsActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             mErrorSnackbar.dismiss();
-                            mLoadTask = new DetailNewsActivity.LoadNewsContentTask();
+                            mLoadTask = new DetailNewsActivity.LoadNewsContentTask(mThongBao.getMaThongBao() + "");
                             mLoadTask.execute((String) null);
                         }
                     });

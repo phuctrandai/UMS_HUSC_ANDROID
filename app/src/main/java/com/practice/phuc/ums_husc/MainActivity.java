@@ -1,6 +1,8 @@
 package com.practice.phuc.ums_husc;
 
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,7 +10,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -48,10 +49,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String currentFragment;
     private FragmentManager fragmentManager;
     private int currentNavItem;
-    private boolean mIsLogined;
-    private boolean mIsLaunchFromNewsNoti;
-    private boolean mIsLaunchFromMessageNoti;
-    private Bundle mBundle;
     private String mPrevFragment;
 
     @Override
@@ -59,75 +56,48 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mBundle = getIntent().getExtras();
-        mIsLogined = localLogin();
-        if (mIsLogined) {
-            initAll();
-            initFragmentManager();
-            showAccountInfo();
-
-            SharedPreferences mSharedPreferences = getSharedPreferences(getString(R.string.share_pre_key_setting), Context.MODE_PRIVATE);
-            boolean mSpTimeTableChecked = mSharedPreferences.getBoolean(getString(R.string.share_pre_key_alarm_timetable), true);
-            if (mSpTimeTableChecked) setUpScheduleAlarm(this, getScheduleTime(null));
-
-            if (mBundle != null) {
-                mIsLaunchFromNewsNoti = mBundle.getBoolean(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, false);
-                mIsLaunchFromMessageNoti = mBundle.getBoolean(Reference.BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, false);
-
-                if (mIsLaunchFromMessageNoti) {
-                    initFragment(MessageFragment.newInstance(this));
-
-                } else {
-                    initFragment(MainFragment.newInstance(this));
-                }
-
-            } else {
-                initFragment(MainFragment.newInstance(this));
-            }
-        }
-    }
-
-    @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        boolean mIsLogined = localLogin();
         if (!mIsLogined) {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
             this.finish();
 
         } else {
-            // xem tin tu thong bao o thanh trang thai
-            if (mBundle != null && mIsLaunchFromNewsNoti) {
-                String title = mBundle.getString(Reference.BUNDLE_KEY_NEWS_TITLE, "");
-                String postTime = mBundle.getString(Reference.BUNDLE_KEY_NEWS_POST_TIME, "");
-                String id = mBundle.getString(Reference.BUNDLE_KEY_NEWS_ID, "");
+            initAll();
+            initFragmentManager();
+            showAccountInfo();
 
-                Bundle b = new Bundle();
-                b.putString(Reference.BUNDLE_KEY_NEWS_TITLE, title);
-                b.putString(Reference.BUNDLE_KEY_NEWS_POST_TIME, postTime);
-                b.putString(Reference.BUNDLE_KEY_NEWS_ID, id);
-                b.putBoolean(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, true);
-                Intent intent = new Intent(this, DetailNewsActivity.class);
-                intent.putExtra(Reference.BUNDLE_EXTRA_NEWS, b);
-                startActivity(intent);
+            SharedPreferences mSharedPreferences = getSharedPreferences(getString(R.string.share_pre_key_setting), Context.MODE_PRIVATE);
+            boolean mSpTimeTableChecked = mSharedPreferences.getBoolean(getString(R.string.share_pre_key_alarm_timetable), true);
+            if (mSpTimeTableChecked)
+                setUpScheduleAlarm(this, getScheduleTime(null));
 
-            } else if (mBundle != null && mIsLaunchFromMessageNoti) {
-                String title = mBundle.getString(Reference.BUNDLE_KEY_MESSAGE_TITLE, "");
-                String sendTime = mBundle.getString(Reference.BUNDLE_KEY_MESSAGE_SEND_TIME, "");
-                String sender = mBundle.getString(Reference.BUNDLE_KEY_MESSAGE_SENDER_NAME, "");
-                String id = mBundle.getString(Reference.BUNDLE_KEY_MESSAGE_ID, "");
+            boolean mIsLaunchFromNewsNoti = getIntent().getBooleanExtra(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, false);
+            boolean mIsLaunchFromMessageNoti = getIntent().getBooleanExtra(Reference.BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, false);
 
-                Bundle b = new Bundle();
-                b.putString(Reference.BUNDLE_KEY_MESSAGE_ID, id);
-                b.putString(Reference.BUNDLE_KEY_MESSAGE_TITLE, title);
-                b.putString(Reference.BUNDLE_KEY_MESSAGE_SENDER_NAME, sender);
-                b.putString(Reference.BUNDLE_KEY_MESSAGE_SEND_TIME, sendTime);
-                b.putBoolean(Reference.BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, true);
+            if (mIsLaunchFromMessageNoti) {
+                initFragment(MessageFragment.newInstance(this));
+
+                String messageJson = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_MESSAGE);
                 Intent intent = new Intent(this, DetailMessageActivity.class);
-                intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, b);
+                intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, messageJson);
+                intent.putExtra(Reference.BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, true);
                 startActivity(intent);
+
+            } else if (mIsLaunchFromNewsNoti) {
+                initFragment(MainFragment.newInstance(this));
+
+                String newsJson = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_NEWS);
+                Intent intent = new Intent(this, DetailNewsActivity.class);
+                intent.putExtra(Reference.BUNDLE_EXTRA_NEWS, newsJson);
+                intent.putExtra(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, true);
+                startActivity(intent);
+
+            } else {
+                initFragment(MainFragment.newInstance(this));
+
             }
         }
-        super.onPostCreate(savedInstanceState);
     }
 
     @Override
@@ -387,7 +357,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
                 deleteTokenForAccount();
+
+                clearAllNotification();
 
                 SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE).edit();
                 editor.remove(getString(R.string.pre_key_student_id));
@@ -413,11 +386,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         alertDialog.show();
     }
 
+    private void clearAllNotification() {
+        NotificationManager nm = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
+        nm.cancelAll();
+    }
+
     private void deleteTokenForAccount() {
-        String maSinhVien = getSharedPreferences("sinhVien", MODE_PRIVATE)
-                .getString("maSinhVien", null);
-        String token = getSharedPreferences("FIREBASE", MODE_PRIVATE)
-                .getString("TOKEN", null);
+        String maSinhVien = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE)
+                .getString(getString(R.string.pre_key_student_id), null);
+        String token = getSharedPreferences(getString(R.string.share_pre_key_firebase), MODE_PRIVATE)
+                .getString(getString(R.string.pre_key_token), null);
         FireBaseIDTask.deleteTokenFromAccount(maSinhVien, token);
     }
 
@@ -465,7 +443,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void showSelectSemesterDialog() {
         SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
-        int selectedSemesterIndex = sharedPreferences.getInt(getString(R.string.pre_key_semester),0);
+        int selectedSemesterIndex = sharedPreferences.getInt(getString(R.string.pre_key_semester), 0);
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getString(R.string.action_selectSemester));
@@ -479,7 +457,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         builder.setPositiveButton("Tác nghiệp", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 Toast.makeText(MainActivity.this,
-                        "Tác nghiệp thành công !" , Toast.LENGTH_SHORT).show();
+                        "Tác nghiệp thành công !", Toast.LENGTH_SHORT).show();
             }
         });
         builder.setNegativeButton("Thôi", null);

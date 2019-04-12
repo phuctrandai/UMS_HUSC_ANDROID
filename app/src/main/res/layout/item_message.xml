@@ -6,7 +6,10 @@
     android:layout_height="wrap_content"
     android:background="@color/colorWhite"
     android:foreground="?android:attr/selectableItemBackground"
-    android:padding="@dimen/normal_padding"
+    android:paddingStart="@dimen/normal_padding"
+    android:paddingTop="@dimen/bigger_padding"
+    android:paddingEnd="@dimen/normal_padding"
+    android:paddingBottom="@dimen/bigger_padding"
     tools:ignore="UnusedAttribute">
 
     <TextView
@@ -23,43 +26,48 @@
         tools:ignore="HardcodedText" />
 
     <TextView
-        android:id="@+id/tv_nguoiGui"
-        android:layout_width="wrap_content"
+        android:id="@+id/tv_tieuDe"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/small_margin"
         android:layout_toEndOf="@id/tv_nguoiGuiLabel"
-        android:text="Nguyễn Hoàng Hà"
+        android:text="Thông báo kiểm tra lại điểm quá trình"
+        android:textColor="@android:color/black"
         android:textSize="@dimen/normal_text"
         tools:ignore="HardcodedText" />
 
     <TextView
-        android:id="@+id/tv_tieuDe"
-        android:layout_width="310dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tv_nguoiGui"
-        android:layout_toEndOf="@id/tv_nguoiGuiLabel"
-        android:text="Thông báo kiểm tra lại điểm quá trình"
-        android:textSize="@dimen/small_text"
-        tools:ignore="HardcodedText" />
-
-    <TextView
-        android:id="@+id/tv_nguoiNhan"
+        android:id="@+id/tv_nguoiGui"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tv_tieuDe"
+        android:layout_below="@id/tv_tieuDe"
+        android:layout_marginBottom="@dimen/small_margin"
         android:layout_toEndOf="@id/tv_nguoiGuiLabel"
-        android:text="Trần Đại Phúc"
-        android:textSize="@dimen/small_text"
+        android:text="Nguyễn Hoàng Hà"
+        android:textColor="@color/colorDarkGrey"
+        android:textSize="@dimen/normal_text"
         tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/tv_nguoiNhanLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tv_nguoiNhan"
+        android:layout_below="@id/tv_nguoiGui"
         android:layout_toEndOf="@id/tv_nguoiGuiLabel"
         android:drawableStart="@drawable/ic_people_grey_12"
         android:drawablePadding="@dimen/small_padding"
-        android:text="Người nhận "
+        android:text="Tới "
+        android:textSize="@dimen/tiny_text"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/tv_nguoiNhan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_nguoiGui"
+        android:layout_marginStart="@dimen/small_margin"
+        android:layout_toEndOf="@id/tv_nguoiNhanLabel"
+        android:text="Trần Đại Phúc "
         android:textSize="@dimen/tiny_text"
         tools:ignore="HardcodedText" />
 
@@ -67,9 +75,11 @@
         android:id="@+id/tv_thoiDiemGui"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/tv_tieuDe"
         android:layout_alignParentEnd="true"
+        android:layout_marginTop="@dimen/small_margin"
         android:layout_marginEnd="@dimen/small_margin"
-        android:text="12/03/2019 08:05"
+        android:text="12/03/2019 08:05 "
         android:textSize="@dimen/small_text"
         tools:ignore="HardcodedText" />
 

@@ -23,6 +23,8 @@ public final class Reference {
 
     private static final String LOAD_TIN_NHAN_DA_GUI_API = "api/SinhVien/TinNhanDaGui/";
 
+    private static final String LOAD_TIN_NHAN_DA_XOA_API = "api/SinhVien/TinNhanDaXoa/";
+
     private static final String LOAD_NOI_DUNG_TIN_NHAN_API = "api/SinhVien/NoiDungTinNhan/";
 
     private static final String REPLY_TIN_NHAN_API = "api/SinhVien/";
@@ -67,11 +69,19 @@ public final class Reference {
     }
 
     public static String getLoadTinNhanDaGuiApiUrl(String maSinhVien, String matKhau, long currentPage, int itemPerPage) {
-        return Reference.HOST + Reference.LOAD_TIN_NHAN_DA_GUI_API
+        return HOST + LOAD_TIN_NHAN_DA_GUI_API
                 + "?masinhvien=" + maSinhVien
                 + "&matkhau=" + matKhau
                 + "&sotrang=" + currentPage
                 + "&sodongmoitrang=" + itemPerPage;
+    }
+
+    public static String getLoadTinNhanDaXoaApiUrl(String maSinhVien, String matKhau, long currentPage, int itemPerPage) {
+        return HOST + LOAD_TIN_NHAN_DA_XOA_API +
+                "?masinhvien=" + maSinhVien +
+                "&matkhau=" + matKhau +
+                "&sotrang=" + currentPage +
+                "&sodongmoitrang=" + itemPerPage;
     }
 
     public static String getLoadNoiDungTinNhanApiUrl(String maSinhVien, String matKhau, String id) {

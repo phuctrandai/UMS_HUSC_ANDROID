@@ -3,6 +3,7 @@ package com.practice.phuc.ums_husc.MessageModule;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -24,8 +25,6 @@ import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.Model.NGUOINHAN;
 import com.practice.phuc.ums_husc.Model.TINNHAN;
 import com.practice.phuc.ums_husc.R;
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
 import java.util.Date;
@@ -42,6 +41,8 @@ public class ReplyMessageActivity extends AppCompatActivity {
     private TextView tvNguoiGui;
     private EditText etTieuDe;
     private EditText etNoiDung;
+
+    private TINNHAN mTinNhan;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,9 +61,12 @@ public class ReplyMessageActivity extends AppCompatActivity {
         etNoiDung = findViewById(R.id.et_noiDung);
         etNoiDung.requestFocus();
         Button btnGui = findViewById(R.id.btn_gui);
-        btnGui.setOnClickListener(sendMessage);
+        btnGui.setOnClickListener(sendMessageClickListener);
 
-        setUpData();
+        String json = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_MESSAGE);
+        mTinNhan = TINNHAN.fromJson(json);
+
+        setUpData(mTinNhan);
     }
 
     @Override
@@ -80,9 +84,9 @@ public class ReplyMessageActivity extends AppCompatActivity {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Thông báo");
-        builder.setMessage("Trở lại và hủy tin nhắn đang soạn ?");
+        builder.setMessage("Hủy tin nhắn đang soạn ?");
         builder.setCancelable(false);
-        builder.setPositiveButton("Đúng rồi", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Hủy", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 ReplyMessageActivity.super.onBackPressed();
@@ -97,20 +101,22 @@ public class ReplyMessageActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-    private void setUpData() {
+    private void setUpData(TINNHAN tinNhan) {
         SharedPreferences sp = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
-        Bundle bundle = getIntent().getBundleExtra(Reference.BUNDLE_EXTRA_MESSAGE);
-        String tieuDe = bundle.getString(Reference.BUNDLE_KEY_MESSAGE_TITLE, "");
-        String nguoiNhan = bundle.getString(Reference.BUNDLE_KEY_MESSAGE_SENDER_NAME, "");
+
+        if (tinNhan == null) return;
+
+        String tieuDe = tinNhan.getTieuDe();
+        String hoTenNguoiNhan = tinNhan.getHoTenNguoiGui();
         String hoTenNguoiGui = sp.getString(getString(R.string.pre_key_student_name), null);
 
         String tieuDeReply = "Re: " + tieuDe;
         etTieuDe.setText(tieuDeReply);
-        tvNguoiNhan.setText(nguoiNhan);
+        tvNguoiNhan.setText(hoTenNguoiNhan);
         tvNguoiGui.setText(hoTenNguoiGui);
     }
 
-    View.OnClickListener sendMessage = new View.OnClickListener() {
+    View.OnClickListener sendMessageClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             attempSendMessage();
@@ -143,7 +149,7 @@ public class ReplyMessageActivity extends AppCompatActivity {
         builder.setPositiveButton("Gửi", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                sendMessage();
+                sendMessage(etTieuDe.getText().toString(), etNoiDung.getText().toString());
             }
         });
         builder.setNegativeButton("Chưa", new DialogInterface.OnClickListener() {
@@ -155,14 +161,11 @@ public class ReplyMessageActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-    private void sendMessage() {
+    private void sendMessage(String title, String content) {
         SharedPreferences sp = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
-        Bundle bundle = getIntent().getBundleExtra(Reference.BUNDLE_EXTRA_MESSAGE);
-        String tieuDe = etTieuDe.getText().toString();
-        String noiDung = etNoiDung.getText().toString();
         String maNguoiGui = sp.getString(getString(R.string.pre_key_student_id), "");
-        String maNguoiNhan = bundle.getString(Reference.BUNDLE_KEY_MESSAGE_SENDER_ID, "");
-        String hoTenNguoiNhan = bundle.getString(Reference.BUNDLE_KEY_MESSAGE_SENDER_NAME, "");
+        String maNguoiNhan = mTinNhan.getMaNguoiGui();
+        String hoTenNguoiNhan = mTinNhan.getHoTenNguoiGui();
         String hoTenNguoiGui = sp.getString(getString(R.string.pre_key_student_name), "");
 
         NGUOINHAN nguoiNhan = new NGUOINHAN();
@@ -171,8 +174,8 @@ public class ReplyMessageActivity extends AppCompatActivity {
         nguoiNhan.setThoiDiemXem("");
 
         TINNHAN tinNhan = new TINNHAN();
-        tinNhan.setTieuDe(tieuDe);
-        tinNhan.setNoiDung(noiDung);
+        tinNhan.setTieuDe(title);
+        tinNhan.setNoiDung(content);
         tinNhan.setThoiDiemGui("");
         tinNhan.setMaNguoiGui(maNguoiGui);
         tinNhan.setHoTenNguoiGui(hoTenNguoiGui);
@@ -193,20 +196,13 @@ public class ReplyMessageActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
         protected Boolean doInBackground(String... strings) {
             SharedPreferences sp = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
             String maSinhVien = sp.getString(getString(R.string.pre_key_student_id), "");
             String matKhau = sp.getString(getString(R.string.pre_key_password), "");
             String url = Reference.getReplyTinNhanApiUrl(maSinhVien, matKhau);
 
-            Moshi moshi = new Moshi.Builder().build();
-            JsonAdapter<TINNHAN> jsonAdapter = moshi.adapter(TINNHAN.class);
-            String json = jsonAdapter.toJson(tinNhan);
+            String json = TINNHAN.toJson(tinNhan);
 
             RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json);
 
@@ -220,19 +216,19 @@ public class ReplyMessageActivity extends AppCompatActivity {
             super.onPostExecute(success);
 
             if (mResponse == null) {
-                pushNotification("Không thể kết nối đến máy chủ");
+                pushNotification("Không thể kết nối đến máy chủ", 0);
                 return;
             }
 
             if (mResponse.code() == NetworkUtil.BAD_REQUEST) {
                 Log.d("DEBUG", "Send message: " + mResponse.code());
-                pushNotification("Có lỗi xảy ra khi gửi tin nhắn");
+                pushNotification("Thông tin người gửi không đúng", 0);
                 return;
             }
 
             if (mResponse.code() == NetworkUtil.OK) {
                 Log.d("DEBUG", "Send message: " + mResponse.code());
-                pushNotification("Đã gửi tin nhắn");
+                pushNotification("Đã gửi tin nhắn", 5000);
                 return;
             }
             try {
@@ -242,25 +238,29 @@ public class ReplyMessageActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            pushNotification("Có lỗi xảy ra khi gửi tin nhắn");
+            pushNotification("Có lỗi xảy ra khi gửi tin nhắn", 0);
         }
     }
 
-    private void pushNotification(final String title) {
+    private void pushNotification(final String title, long timeOut) {
         SharedPreferences sp = getSharedPreferences(getString(R.string.share_pre_key_setting), MODE_PRIVATE);
         boolean allow = sp.getBoolean(getString(R.string.share_pre_key_send_message), true);
         if (!allow) return;
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), getString(R.string.chanel_id));
+        mBuilder.setContentTitle(title);
         mBuilder.setSmallIcon(R.mipmap.noti_icon);
         mBuilder.setColor(getResources().getColor(R.color.colorPrimary));
         mBuilder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
         mBuilder.setAutoCancel(true);
         mBuilder.setGroupSummary(true);
-        mBuilder.setContentTitle(title);
         mBuilder.setContentIntent(null);
+        mBuilder.setSound(Uri.EMPTY);
         mBuilder.setGroup(Reference.SEND_MESSAGE_NOTIFICATION);
-
+        if (timeOut > 0) {
+            mBuilder.setAutoCancel(true);
+            mBuilder.setTimeoutAfter(timeOut);
+        }
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
         int norificationId = Integer.parseInt(String.valueOf(new Date().getTime() / 1000));
         notificationManager.notify(norificationId, mBuilder.build());

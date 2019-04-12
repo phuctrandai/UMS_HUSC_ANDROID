@@ -1,5 +1,12 @@
 package com.practice.phuc.ums_husc.Model;
 
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+
 public class TINNHAN {
     private NGUOINHAN[] NguoiNhans;
     private int MaTinNhan;
@@ -65,16 +72,45 @@ public class TINNHAN {
         this.NguoiNhans = NGUOINHANs;
     }
 
-    public TINNHAN(int maTinNhan, String tieuDe, String noiDung, String hoTenNguoiGui, String maNguoiGui, String thoiDiemGui, NGUOINHAN[] NGUOINHANs) {
-        MaTinNhan = maTinNhan;
-        TieuDe = tieuDe;
-        NoiDung = noiDung;
-        HoTenNguoiGui = hoTenNguoiGui;
-        MaNguoiGui = maNguoiGui;
-        ThoiDiemGui = thoiDiemGui;
-        this.NguoiNhans = NGUOINHANs;
+    public TINNHAN() {
     }
 
-    public TINNHAN() {
+    public String[] getTenNguoiNhanArray() {
+        int soNguoiNhan = this.NguoiNhans.length;
+
+        String[] ds = new String[soNguoiNhan];
+        for (int j = 0; j < soNguoiNhan; j++) {
+            ds[j] = NguoiNhans[j].getHoTenNguoiNhan();
+        }
+        return ds;
+    }
+
+    public String getTenNguoiNhanCollapse() {
+        int soNguoiNhan = this.NguoiNhans.length;
+        String temp = "";
+        if (soNguoiNhan > 0)
+            temp = NguoiNhans[(0)].getHoTenNguoiNhan();
+        if (soNguoiNhan > 1)
+            temp += " và " + (soNguoiNhan - 1) + " người khác";
+        return temp;
+    }
+
+    public static String toJson(TINNHAN model) {
+        Moshi mMoshi = new Moshi.Builder().build();
+        Type mUsersType = Types.newParameterizedType(TINNHAN.class);
+        JsonAdapter<TINNHAN> mJsonAdapter = mMoshi.adapter(mUsersType);
+        return mJsonAdapter.toJson(model);
+    }
+
+    public static TINNHAN fromJson(String json) {
+        Moshi mMoshi = new Moshi.Builder().build();
+        Type mUsersType = Types.newParameterizedType(TINNHAN.class);
+        JsonAdapter<TINNHAN> mJsonAdapter = mMoshi.adapter(mUsersType);
+        try {
+            return mJsonAdapter.fromJson(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

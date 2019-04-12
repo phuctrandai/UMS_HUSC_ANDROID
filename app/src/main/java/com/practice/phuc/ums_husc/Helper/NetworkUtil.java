@@ -67,7 +67,7 @@ public class NetworkUtil {
             }
             return okHttpClient.newCall(request).execute();
         } catch (IOException | IllegalArgumentException e) {
-//            Log.d("DEBUG", e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }

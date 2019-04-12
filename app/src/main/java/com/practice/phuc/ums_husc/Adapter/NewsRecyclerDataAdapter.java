@@ -2,7 +2,6 @@ package com.practice.phuc.ums_husc.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -13,10 +12,10 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
-import com.practice.phuc.ums_husc.NewsModule.DetailNewsActivity;
 import com.practice.phuc.ums_husc.Helper.DateHelper;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.Model.THONGBAO;
+import com.practice.phuc.ums_husc.NewsModule.DetailNewsActivity;
 import com.practice.phuc.ums_husc.R;
 
 import java.util.List;
@@ -40,11 +39,9 @@ public class NewsRecyclerDataAdapter extends RecyclerView.Adapter<NewsRecyclerDa
     @Override
     public void onBindViewHolder(@NonNull NewsRecyclerDataAdapter.DataViewHolder viewHolder, int i) {
         final String tieuDe = thongBaoList.get(i).getTieuDe();
-        final String thoiGianDang = thongBaoList.get(i).getThoiGianDang();
-        final String noiDung = thongBaoList.get(i).getNoiDung();
-
         viewHolder.tvTieuDe.setText(tieuDe);
 
+        final String thoiGianDang = thongBaoList.get(i).getThoiGianDang();
         final String ngayDang = DateHelper.formatYMDToDMY(thoiGianDang.substring(0, 10));
         final String gioDang = thoiGianDang.substring(11, 16);
         final String thoiGianDangStr = ngayDang + " " + gioDang;
@@ -53,12 +50,8 @@ public class NewsRecyclerDataAdapter extends RecyclerView.Adapter<NewsRecyclerDa
         viewHolder.setItemClickListener(new ItemClickListener() {
             @Override
             public void onClick(View view, int position, boolean isLongClick) {
-                Bundle bundle = new Bundle();
-                bundle.putString(Reference.BUNDLE_KEY_NEWS_TITLE, tieuDe);
-                bundle.putString(Reference.BUNDLE_KEY_NEWS_POST_TIME, thoiGianDangStr);
-                bundle.putString(Reference.BUNDLE_KEY_NEWS_BODY, noiDung);
                 Intent intent = new Intent(context, DetailNewsActivity.class);
-                intent.putExtra(Reference.BUNDLE_EXTRA_NEWS, bundle);
+                intent.putExtra(Reference.BUNDLE_EXTRA_NEWS, THONGBAO.toJson(thongBaoList.get(position)));
                 context.startActivity(intent);
             }
         });
@@ -81,21 +74,17 @@ public class NewsRecyclerDataAdapter extends RecyclerView.Adapter<NewsRecyclerDa
     }
 
     @Override
-    public void onViewDetachedFromWindow(final DataViewHolder holder) {
+    public void onViewDetachedFromWindow(@NonNull final DataViewHolder holder) {
         holder.clearAnimation();
     }
 
-    /**
-     * Data ViewHolder class.
-     */
     public static class DataViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private CardView mRootLayout;
         private TextView tvTieuDe;
         private TextView tvThoiGianDang;
 
-        private ItemClickListener itemClickListener;
 
-        public DataViewHolder(@NonNull View itemView) {
+        DataViewHolder(@NonNull View itemView) {
             super(itemView);
             mRootLayout = itemView.findViewById(R.id.news_item_layout);
             tvTieuDe = itemView.findViewById(R.id.tv_tieuDe);
@@ -104,11 +93,12 @@ public class NewsRecyclerDataAdapter extends RecyclerView.Adapter<NewsRecyclerDa
             itemView.setOnClickListener(this);
         }
 
-        public void setItemClickListener(ItemClickListener itemClickListener) {
+        private ItemClickListener itemClickListener;
+        void setItemClickListener(ItemClickListener itemClickListener) {
             this.itemClickListener = itemClickListener;
         }
 
-        public void clearAnimation() {
+        void clearAnimation() {
             mRootLayout.clearAnimation();
         }
 

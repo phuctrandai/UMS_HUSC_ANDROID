@@ -3,7 +3,6 @@ package com.practice.phuc.ums_husc.Adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -43,50 +42,28 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
 
     @SuppressLint("ResourceAsColor")
     @Override
-    public void onBindViewHolder(@NonNull DataViewHolder viewHolder, int i) {
-        TINNHAN tinnhan = mTinNhanList.get(i);
-        int soNguoiNhan = tinnhan.getNGUOINHANs().length;
+    public void onBindViewHolder(@NonNull final DataViewHolder viewHolder, int i) {
+        final TINNHAN tinnhan = mTinNhanList.get(i);
 
         final String tieuDe = tinnhan.getTieuDe();
         final String thoiDiemGui = tinnhan.getThoiDiemGui();
-        final String noiDung = tinnhan.getNoiDung();
-        final String nguoiGui = tinnhan.getHoTenNguoiGui();
-        final String maNguoiGui = tinnhan.getMaNguoiGui();
+        final String hoTenNguoiGui = tinnhan.getHoTenNguoiGui();
         String ngayDang = DateHelper.formatYMDToDMY(thoiDiemGui.substring(0, 10));
         String gioDang = thoiDiemGui.substring(11, 16);
         final String thoiGianDangStr = ngayDang + " " + gioDang;
+        final String nguoiNhan = tinnhan.getTenNguoiNhanCollapse();
 
-        String temp = "";
-        if (soNguoiNhan > 0)
-            temp = tinnhan.getNGUOINHANs()[(0)].getHoTenNguoiNhan();
-        if (soNguoiNhan > 1)
-            temp += " và " + (soNguoiNhan - 1) + " người khác";
-        final String nguoiNhan = temp;
-
-        final String[] dsTenNguoiNhan = new String[soNguoiNhan];
-        for (int j = 0; j < soNguoiNhan; j++) {
-            dsTenNguoiNhan[j] = tinnhan.getNGUOINHANs()[j].getHoTenNguoiNhan();
-        }
-
-        viewHolder.tvNguoiGui.setText(nguoiGui);
+        viewHolder.tvTieuDe.setText(tieuDe);
+        viewHolder.tvNguoiGui.setText(hoTenNguoiGui);
         viewHolder.tvNguoiNhan.setText(nguoiNhan);
         viewHolder.tvThoiDiemGui.setText(thoiGianDangStr);
-        viewHolder.tvTieuDe.setText(tieuDe);
-        viewHolder.tvNguoiGuiLabel.setText(StringHelper.getFirstCharToCap(nguoiGui));
+        viewHolder.tvNguoiGuiLabel.setText(StringHelper.getFirstCharToCap(hoTenNguoiGui));
 
         viewHolder.setItemClickListener(new ItemClickListener() {
             @Override
             public void onClick(View view, int position, boolean isLongClick) {
-                Bundle bundle = new Bundle();
-                bundle.putString(Reference.BUNDLE_KEY_MESSAGE_TITLE, tieuDe);
-                bundle.putString(Reference.BUNDLE_KEY_MESSAGE_SEND_TIME, thoiGianDangStr);
-                bundle.putString(Reference.BUNDLE_KEY_MESSAGE_BODY, noiDung);
-                bundle.putString(Reference.BUNDLE_KEY_MESSAGE_SENDER_NAME, nguoiGui);
-                bundle.putString(Reference.BUNDLE_KEY_MESSAGE_SENDER_ID, maNguoiGui);
-                bundle.putString(Reference.BUNDLE_KEY_MESSAGE_RECEIVERS, nguoiNhan);
-                bundle.putStringArray(Reference.BUNDLE_KEY_MESSAGE_RECEIVER_NAMES, dsTenNguoiNhan);
                 Intent intent = new Intent(mContext, DetailMessageActivity.class);
-                intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, bundle);
+                intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, TINNHAN.toJson(tinnhan));
                 mContext.startActivity(intent);
             }
         });
@@ -119,11 +96,6 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
         private TextView tvNguoiGuiLabel;
         private TextView tvNguoiNhan;
 
-        private ItemClickListener itemClickListener;
-        private void setItemClickListener(ItemClickListener itemClickListener) {
-            this.itemClickListener = itemClickListener;
-        }
-
         DataViewHolder(@NonNull View itemView) {
             super(itemView);
             mRootLayout = itemView.findViewById(R.id.message_item_layout);
@@ -135,13 +107,18 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
 
             itemView.setOnClickListener(this);
         }
-        private void clearAnimation() {
-            mRootLayout.clearAnimation();
-        }
 
+        private ItemClickListener itemClickListener;
+        private void setItemClickListener(ItemClickListener itemClickListener) {
+            this.itemClickListener = itemClickListener;
+        }
         @Override
         public void onClick(View v) {
             itemClickListener.onClick(v, getAdapterPosition(), false);
+        }
+
+        private void clearAnimation() {
+            mRootLayout.clearAnimation();
         }
     }
 

@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
-import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
@@ -16,22 +16,22 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.practice.phuc.ums_husc.MainActivity;
 import com.practice.phuc.ums_husc.MessageModule.DetailMessageActivity;
+import com.practice.phuc.ums_husc.Model.THONGBAO;
+import com.practice.phuc.ums_husc.Model.TINNHAN;
 import com.practice.phuc.ums_husc.NewsModule.DetailNewsActivity;
 import com.practice.phuc.ums_husc.R;
 
-import java.util.Date;
+import java.util.Objects;
 
 public class MyFireBaseMessagingService extends FirebaseMessagingService {
 
     @SuppressLint("StaticFieldLeak")
     public static Context mContext;
-    private SharedPreferences mSharedPreferences;
-//    private String mNotificationId;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Log.d("DEBUG", "Nhận thông báo - xử lý ở đây !!!");
-        mSharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
+        SharedPreferences mSharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
 
         if (remoteMessage.getData().size() > 0) {
             String messageType = remoteMessage.getData().get("type");
@@ -62,24 +62,22 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
         Intent intent;
         PendingIntent pendingIntent;
         Context context;
-        Bundle bundle = new Bundle();
+
         if (mContext == null) { // Luc app ko chay
             context = this;
             intent = new Intent(context, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            intent.putExtra(Reference.BUNDLE_KEY_NEWS_ID, newsId);
-            intent.putExtra(Reference.BUNDLE_KEY_NEWS_TITLE, notiBody);
-            intent.putExtra(Reference.BUNDLE_KEY_NEWS_POST_TIME, newsPostTime);
-            intent.putExtra(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, true);
+
         } else {
             intent = new Intent(mContext, DetailNewsActivity.class);
-            bundle.putString(Reference.BUNDLE_KEY_NEWS_ID, newsId);
-            bundle.putString(Reference.BUNDLE_KEY_NEWS_TITLE, notiBody);
-            bundle.putString(Reference.BUNDLE_KEY_NEWS_POST_TIME, newsPostTime);
-            bundle.putBoolean(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, true);
-            intent.putExtra(Reference.BUNDLE_EXTRA_NEWS, bundle);
             context = mContext;
         }
+        THONGBAO thongBao = new THONGBAO();
+        thongBao.setTieuDe(notiBody);
+        thongBao.setThoiGianDang(newsPostTime);
+        thongBao.setMaThongBao(Integer.parseInt(Objects.requireNonNull(newsId)));
+        intent.putExtra(Reference.BUNDLE_EXTRA_NEWS, THONGBAO.toJson(thongBao));
+        intent.putExtra(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, true);
 
         pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -102,27 +100,22 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
         Intent intent;
         PendingIntent pendingIntent;
         Context context;
-        Bundle bundle = new Bundle();
+        TINNHAN tinNhan = new TINNHAN();
+        tinNhan.setMaTinNhan(Integer.parseInt(Objects.requireNonNull(messageId)));
+        tinNhan.setTieuDe(messageTitle);
+        tinNhan.setHoTenNguoiGui(messageSender);
+        tinNhan.setThoiDiemGui(messageSendTime);
+
         if (mContext == null) { // Luc app ko chay
             context = this;
             intent = new Intent(context, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            intent.putExtra(Reference.BUNDLE_KEY_MESSAGE_ID, messageId);
-            intent.putExtra(Reference.BUNDLE_KEY_MESSAGE_TITLE, messageTitle);
-            intent.putExtra(Reference.BUNDLE_KEY_MESSAGE_SENDER_NAME, messageSender);
-            intent.putExtra(Reference.BUNDLE_KEY_MESSAGE_SEND_TIME, messageSendTime);
-            intent.putExtra(Reference.BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, true);
         } else {
             context = mContext;
             intent = new Intent(mContext, DetailMessageActivity.class);
-            bundle.putString(Reference.BUNDLE_KEY_MESSAGE_ID, messageId);
-            bundle.putString(Reference.BUNDLE_KEY_MESSAGE_TITLE, messageTitle);
-            bundle.putString(Reference.BUNDLE_KEY_MESSAGE_SENDER_NAME, messageSender);
-            bundle.putString(Reference.BUNDLE_KEY_MESSAGE_SEND_TIME, messageSendTime);
-            bundle.putBoolean(Reference.BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, true);
-            intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, bundle);
         }
-
+        intent.putExtra(Reference.BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, true);
+        intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, TINNHAN.toJson(tinNhan));
         pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Khoi tao thong bao
@@ -148,7 +141,8 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
 
     private void riseNotification(Notification notification) {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        int norificationId = Integer.parseInt(String.valueOf(new Date().getTime() / 1000));
+//        int norificationId = Integer.parseInt(String.valueOf(new Date().getTime() / 1000));
+        int norificationId = (int) SystemClock.uptimeMillis();
         notificationManager.notify(norificationId, notification);
     }
 
@@ -157,11 +151,14 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
         super.onNewToken(s);
         Log.d("DEBUG", "Gọi khi nhận token mới: " + s);
 
-        getSharedPreferences("FIREBASE", MODE_PRIVATE).edit().putString("TOKEN", s).apply();
+        getSharedPreferences(getString(R.string.share_pre_key_firebase), MODE_PRIVATE)
+                .edit()
+                .putString(getString(R.string.pre_key_token), s)
+                .apply();
     }
 
     public static String getToken(Context context) {
-        return context.getSharedPreferences("FIREBASE", MODE_PRIVATE)
-                .getString("TOKEN", "empty");
+        return context.getSharedPreferences(context.getString(R.string.share_pre_key_firebase), MODE_PRIVATE)
+                .getString(context.getString(R.string.pre_key_token), null);
     }
 }

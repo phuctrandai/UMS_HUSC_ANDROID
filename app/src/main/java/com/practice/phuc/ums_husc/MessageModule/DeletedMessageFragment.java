@@ -427,7 +427,7 @@ public class DeletedMessageFragment extends Fragment implements SwipeRefreshLayo
         SharedPreferences sp = mContext.getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
         String maSinhVien = sp.getString(getString(R.string.pre_key_student_id), null);
         String matKhau = sp.getString(getString(R.string.pre_key_password), null);
-        String url = Reference.getLoadTinNhanDenApiUrl(maSinhVien, matKhau, mCurrentPage, ITEM_PER_PAGE);
+        String url = Reference.getLoadTinNhanDaXoaApiUrl(maSinhVien, matKhau, mCurrentPage, ITEM_PER_PAGE);
 
         return NetworkUtil.makeRequest(url, false, null);
     }
