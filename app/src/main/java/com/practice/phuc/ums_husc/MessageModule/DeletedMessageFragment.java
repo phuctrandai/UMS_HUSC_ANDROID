@@ -87,7 +87,7 @@ public class DeletedMessageFragment extends Fragment implements SwipeRefreshLayo
         mStatus = STATUS_INIT;
         mMessageList = new ArrayList<>();
         mIsMessageListChanged = false;
-        mAdapter = new MessageRecyclerDataAdapter(mContext, mMessageList, false);
+        mAdapter = new MessageRecyclerDataAdapter(mContext, mMessageList);
         mIsScrolling = true;
         mDBHelper = new DBHelper(mContext);
         long countRow = mDBHelper.countRow(DBHelper.MESSAGE);

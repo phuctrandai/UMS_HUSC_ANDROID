@@ -8,6 +8,7 @@
     <dimen name="normal_margin">8dp</dimen>
     <dimen name="big_margin">14dp</dimen>
     <dimen name="extra_margin">16dp</dimen>
+    <dimen name="more_extra_margin">36dp</dimen>
     <dimen name="super_margin">48dp</dimen>
 
     <dimen name="tiny_padding">2dp</dimen>

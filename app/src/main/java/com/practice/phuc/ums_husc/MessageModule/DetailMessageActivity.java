@@ -22,6 +22,7 @@ import com.practice.phuc.ums_husc.Helper.JustifyTextInTextView;
 import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
+import com.practice.phuc.ums_husc.Helper.StringHelper;
 import com.practice.phuc.ums_husc.Model.TINNHAN;
 import com.practice.phuc.ums_husc.R;
 import com.squareup.moshi.JsonAdapter;
@@ -46,6 +47,7 @@ public class DetailMessageActivity extends AppCompatActivity {
     private TextView tvTieuDe;
     private TextView tvThoiDiemGui;
     private TextView tvNguoiGui;
+    private TextView tvNguoiGuiLabel;
     private TextView tvNguoiNhan;
     private WebView tvNoiDung;
 
@@ -64,6 +66,7 @@ public class DetailMessageActivity extends AppCompatActivity {
         tvTieuDe = findViewById(R.id.tv_tieuDe);
         tvThoiDiemGui = findViewById(R.id.tv_thoiDiemGui);
         tvNguoiGui = findViewById(R.id.tv_nguoiGui);
+        tvNguoiGuiLabel = findViewById(R.id.tv_nguoiGuiLabel);
         tvNguoiNhan = findViewById(R.id.tv_nguoiNhan);
         tvNoiDung = findViewById(R.id.tv_noiDung);
 
@@ -119,12 +122,14 @@ public class DetailMessageActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressLint("SetTextI18n")
     private void showData() {
         Bundle bundle = getIntent().getBundleExtra(Reference.BUNDLE_EXTRA_MESSAGE);
         boolean launchFromNotification = bundle.getBoolean(Reference.BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, false);
         tvTieuDe.setText(bundle.getString(Reference.BUNDLE_KEY_MESSAGE_TITLE));
         tvNguoiGui.setText(bundle.getString(Reference.BUNDLE_KEY_MESSAGE_SENDER_NAME));
         tvThoiDiemGui.setText(bundle.getString(Reference.BUNDLE_KEY_MESSAGE_SEND_TIME));
+        tvNguoiGuiLabel.setText(StringHelper.getFirstCharToCap(tvNguoiGui.getText().toString()));
         JustifyTextInTextView.justify(tvTieuDe);
 
         if (launchFromNotification) {

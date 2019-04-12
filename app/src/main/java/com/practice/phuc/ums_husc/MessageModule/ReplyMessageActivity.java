@@ -38,9 +38,9 @@ import okhttp3.Response;
 public class ReplyMessageActivity extends AppCompatActivity {
 
     private ViewGroup layoutRoot;
-    private EditText etTieuDe;
     private TextView tvNguoiNhan;
     private TextView tvNguoiGui;
+    private EditText etTieuDe;
     private EditText etNoiDung;
 
     @Override

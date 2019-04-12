@@ -8,4 +8,8 @@ public class StringHelper {
     public static String getValueOrEmpty(final String string) {
         return isNullOrEmpty(string) ? "..." : string;
     }
+
+    public static String getFirstCharToCap(final String string) {
+        return string.substring(0, 1).toUpperCase();
+    }
 }

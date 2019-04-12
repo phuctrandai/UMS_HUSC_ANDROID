@@ -87,7 +87,7 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
         mStatus = STATUS_INIT;
         mMessageList = new ArrayList<>();
         mIsMessageListChanged = false;
-        mAdapter = new MessageRecyclerDataAdapter(mContext, mMessageList, true);
+        mAdapter = new MessageRecyclerDataAdapter(mContext, mMessageList);
         mIsScrolling = true;
         mDBHelper = new DBHelper(mContext);
         long countRow = mDBHelper.countRow(DBHelper.MESSAGE);
