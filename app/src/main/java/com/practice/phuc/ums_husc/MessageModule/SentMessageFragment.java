@@ -229,7 +229,7 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
         if (show) {
             mStatus = STATUS_SHOW_ERROR;
             mErrorSnackbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mSwipeRefreshLayout
-                    , message
+                    , message, Snackbar.LENGTH_INDEFINITE
                     , new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -264,7 +264,7 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
         if (show) {
             mStatus = STATUS_NOT_NETWORK;
             mNotNetworkSnackbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mSwipeRefreshLayout
-                    , getString(R.string.network_not_available)
+                    , getString(R.string.network_not_available), Snackbar.LENGTH_INDEFINITE
                     , new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

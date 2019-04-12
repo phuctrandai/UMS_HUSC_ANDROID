@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -88,8 +89,10 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
         }
     }
 
-    protected static class DataViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private RelativeLayout mRootLayout;
+    public static class DataViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private FrameLayout mRootLayout;
+        RelativeLayout viewBackground;
+        public RelativeLayout viewForeground;
         private TextView tvTieuDe;
         private TextView tvThoiDiemGui;
         private TextView tvNguoiGui;
@@ -99,6 +102,8 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
         DataViewHolder(@NonNull View itemView) {
             super(itemView);
             mRootLayout = itemView.findViewById(R.id.message_item_layout);
+            viewBackground = itemView.findViewById(R.id.layout_background);
+            viewForeground = itemView.findViewById(R.id.layout_foreground);
             tvTieuDe = itemView.findViewById(R.id.tv_tieuDe);
             tvNguoiGui = itemView.findViewById(R.id.tv_nguoiGui);
             tvThoiDiemGui = itemView.findViewById(R.id.tv_thoiDiemGui);
@@ -124,5 +129,15 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
 
     private interface ItemClickListener {
         void onClick(View view, int position, boolean isLongClick);
+    }
+
+    public void removeItem(int position) {
+        mTinNhanList.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void restoreItem(TINNHAN item, int position) {
+        mTinNhanList.add(position, item);
+        notifyItemInserted(position);
     }
 }

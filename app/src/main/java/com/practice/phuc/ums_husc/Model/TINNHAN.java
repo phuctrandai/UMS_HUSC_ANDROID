@@ -6,6 +6,7 @@ import com.squareup.moshi.Types;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.List;
 
 public class TINNHAN {
     private NGUOINHAN[] NguoiNhans;
@@ -106,6 +107,19 @@ public class TINNHAN {
         Moshi mMoshi = new Moshi.Builder().build();
         Type mUsersType = Types.newParameterizedType(TINNHAN.class);
         JsonAdapter<TINNHAN> mJsonAdapter = mMoshi.adapter(mUsersType);
+        try {
+            return mJsonAdapter.fromJson(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static List<TINNHAN> fromJsonToList(String json) {
+        Moshi mMoshi = new Moshi.Builder().build();
+        Type mUsersType = Types.newParameterizedType(List.class, TINNHAN.class);
+        JsonAdapter<List<TINNHAN>> mJsonAdapter = mMoshi.adapter(mUsersType);
+
         try {
             return mJsonAdapter.fromJson(json);
         } catch (IOException e) {

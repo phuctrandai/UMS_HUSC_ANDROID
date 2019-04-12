@@ -208,7 +208,7 @@ public class DetailNewsActivity extends AppCompatActivity {
             if (mNotNetworkSnackbar != null && mNotNetworkSnackbar.isShown()) return;
 
             mNotNetworkSnackbar = CustomSnackbar.createTwoButtonSnackbar(this, rootLayout,
-                    getString(R.string.network_not_available),
+                    getString(R.string.network_not_available), Snackbar.LENGTH_INDEFINITE,
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -234,7 +234,7 @@ public class DetailNewsActivity extends AppCompatActivity {
 
         if (show) {
             mErrorSnackbar = CustomSnackbar.createTwoButtonSnackbar(this, rootLayout,
-                    message,
+                    message, Snackbar.LENGTH_INDEFINITE,
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

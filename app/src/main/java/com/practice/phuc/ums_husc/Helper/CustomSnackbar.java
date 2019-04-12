@@ -15,7 +15,8 @@ import android.widget.TextView;
 import com.practice.phuc.ums_husc.R;
 
 public class CustomSnackbar {
-    public static Snackbar createTwoButtonSnackbar(final Context context, final View rootLayout, String message
+    @SuppressLint("SetTextI18n")
+    public static Snackbar createTwoButtonSnackbar(final Context context, final View rootLayout, String message, final int duration
                             , View.OnClickListener negativeClickListener, View.OnClickListener positiveClickListener) {
         if (context == null || rootLayout == null)
             return null;
@@ -25,7 +26,7 @@ public class CustomSnackbar {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         final Snackbar snackbar;
 
-        snackbar = Snackbar.make(rootLayout, message, Snackbar.LENGTH_INDEFINITE);
+        snackbar = Snackbar.make(rootLayout, message, duration);
 
         // Get the Snackbar layout view
         Snackbar.SnackbarLayout layout = (Snackbar.SnackbarLayout) snackbar.getView();
@@ -67,7 +68,7 @@ public class CustomSnackbar {
         Button btnPositive = snackView.findViewById(R.id.btn_positive);
         if (positiveClickListener == null) btnPositive.setVisibility(View.GONE);
         else {
-            btnPositive.setText("Thử lại");
+            btnPositive.setText(message.equals("Đã xóa 1 mục") ? "Hoàn tác" : "Thử lại");
             btnPositive.setOnClickListener(positiveClickListener);
             btnPositive.setVisibility(View.VISIBLE);
         }

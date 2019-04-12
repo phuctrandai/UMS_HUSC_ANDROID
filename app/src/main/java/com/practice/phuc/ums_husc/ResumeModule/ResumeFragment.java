@@ -261,6 +261,7 @@ public class ResumeFragment extends Fragment {
             mStatus = STATUS_NOT_NETWORK;
             mNotNetworkSnackbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mRootLayout
                     , getString(R.string.network_not_available)
+                    , Snackbar.LENGTH_INDEFINITE
                     , null
                     , new View.OnClickListener() {
                         @Override
@@ -281,7 +282,7 @@ public class ResumeFragment extends Fragment {
         if (show) {
             mStatus = STATUS_SHOW_ERROR;
             mErrorSnackbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mRootLayout
-                    , message
+                    , message, Snackbar.LENGTH_INDEFINITE
                     , null
                     , new View.OnClickListener() {
                         @Override

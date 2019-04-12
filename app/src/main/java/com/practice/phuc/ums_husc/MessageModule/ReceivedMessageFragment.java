@@ -13,6 +13,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,16 +24,12 @@ import android.widget.LinearLayout;
 import com.practice.phuc.ums_husc.Adapter.MessageRecyclerDataAdapter;
 import com.practice.phuc.ums_husc.Helper.CustomSnackbar;
 import com.practice.phuc.ums_husc.Helper.DBHelper;
+import com.practice.phuc.ums_husc.Helper.MessageItemTouchHelper;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.Model.TINNHAN;
 import com.practice.phuc.ums_husc.R;
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +37,8 @@ import okhttp3.Response;
 
 import static android.content.Context.MODE_PRIVATE;
 
-public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class ReceivedMessageFragment extends Fragment
+        implements SwipeRefreshLayout.OnRefreshListener, MessageItemTouchHelper.MessageItemTouchHelperListener {
 
     public ReceivedMessageFragment() {
         // Required empty public constructor
@@ -61,10 +60,10 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
     private boolean mIsScrolling;
     private int mLastAction;
     private long mCurrentPage;
-    private boolean mIsMessageListChanged;
     private boolean mIsViewDestroyed;
     private Snackbar mNotNetworkSnackbar;
     private Snackbar mErrorSnackbar;
+    private Snackbar mUndoDeleteSnakbar;
     private DBHelper mDBHelper;
 
     private final int ITEM_PER_PAGE = 8;
@@ -85,11 +84,10 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
     public void onCreate(@Nullable Bundle savedInstanceState) {
         mLastAction = ACTION_INIT;
         mStatus = STATUS_INIT;
+        mDBHelper = new DBHelper(mContext);
         mMessageList = new ArrayList<>();
-        mIsMessageListChanged = false;
         mAdapter = new MessageRecyclerDataAdapter(mContext, mMessageList);
         mIsScrolling = true;
-        mDBHelper = new DBHelper(mContext);
         long countRow = mDBHelper.countRow(DBHelper.MESSAGE);
         if (countRow > 0) {
             mCurrentPage = countRow / ITEM_PER_PAGE + 1;
@@ -146,12 +144,8 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
 
     @Override
     public void onDestroy() {
-        mIsViewDestroyed = true;
         mMessageList.clear();
-        if (mLoadReceivedMessageTask != null) {
-            mLoadReceivedMessageTask.cancel(true);
-            mLoadReceivedMessageTask = null;
-        }
+        mLoadReceivedMessageTask = null;
         super.onDestroy();
     }
 
@@ -160,6 +154,7 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
         mLastAction = ACTION_REFRESH;
         showNetworkErrorSnackbar(false);
         showErrorSnackbar(false, "");
+
         if (NetworkUtil.getConnectivityStatus(mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
             mStatus = STATUS_NOT_NETWORK;
             new Handler().postDelayed(new Runnable() {
@@ -175,6 +170,24 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
             mAdapter.mLastPosition = -1;
             mCurrentPage = 1;
             attempGetData();
+        }
+    }
+
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
+        if (viewHolder instanceof MessageRecyclerDataAdapter.DataViewHolder) {
+
+            final TINNHAN deletedItem = mMessageList.get(viewHolder.getAdapterPosition());
+            final int deletedIndex = viewHolder.getAdapterPosition();
+
+            mAdapter.removeItem(viewHolder.getAdapterPosition());
+            showUndoSnackbar(true, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mAdapter.restoreItem(deletedItem, deletedIndex);
+                    mUndoDeleteSnakbar.dismiss();
+                }
+            });
         }
     }
 
@@ -214,82 +227,11 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
 
             if (mDBHelper.countRow(DBHelper.MESSAGE) > 0) {
                 List<TINNHAN> list = mDBHelper.getAllMessage();
-                mMessageList.addAll(list);
-                mAdapter.notifyDataSetChanged();
+                refreshData(list);
             }
         } else {
             mLoadReceivedMessageTask = new LoadReceivedMessageTask();
             mLoadReceivedMessageTask.execute((String) null);
-        }
-    }
-
-    private void showErrorSnackbar(boolean show, String message) {
-        if (mIsViewDestroyed) return;
-
-        if (show) {
-            mStatus = STATUS_SHOW_ERROR;
-            mErrorSnackbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mSwipeRefreshLayout
-                    , message
-                    , new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            mErrorSnackbar.dismiss();
-                        }
-                    }
-                    , new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            mErrorSnackbar.dismiss();
-                            if (mLastAction == ACTION_REFRESH) {
-                                mSwipeRefreshLayout.setRefreshing(true);
-                                onRefresh();
-                            } else if (mLastAction == ACTION_LOAD_MORE) {
-                                mLoadMoreLayout.setVisibility(View.VISIBLE);
-                                onLoadMore();
-                            } else if (mLastAction == ACTION_INIT) {
-                                mSwipeRefreshLayout.setRefreshing(true);
-                                attempGetData();
-                            }
-                        }
-                    });
-            mErrorSnackbar.show();
-        } else if (mErrorSnackbar != null) {
-            mErrorSnackbar.dismiss();
-        }
-    }
-
-    private void showNetworkErrorSnackbar(boolean show) {
-        if (mIsViewDestroyed) return;
-
-        if (show) {
-            mStatus = STATUS_NOT_NETWORK;
-            mNotNetworkSnackbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mSwipeRefreshLayout
-                    , getString(R.string.network_not_available)
-                    , new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            mNotNetworkSnackbar.dismiss();
-                        }
-                    }
-                    , new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            mNotNetworkSnackbar.dismiss();
-                            if (mLastAction == ACTION_REFRESH) {
-                                mSwipeRefreshLayout.setRefreshing(true);
-                                onRefresh();
-                            } else if (mLastAction == ACTION_LOAD_MORE) {
-                                mLoadMoreLayout.setVisibility(View.VISIBLE);
-                                onLoadMore();
-                            } else if (mLastAction == ACTION_INIT) {
-                                mSwipeRefreshLayout.setRefreshing(true);
-                                attempGetData();
-                            }
-                        }
-                    });
-            mNotNetworkSnackbar.show();
-        } else if (mNotNetworkSnackbar != null) {
-            mNotNetworkSnackbar.dismiss();
         }
     }
 
@@ -330,11 +272,16 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
                 }
             }
         });
+
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback =
+                new MessageItemTouchHelper(0, ItemTouchHelper.LEFT, this);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(mRvMessage);
     }
 
     @SuppressLint("StaticFieldLeak")
     private class LoadReceivedMessageTask extends AsyncTask<String, Void, Boolean> {
         private Response mResponse;
+        private String mJson;
 
         @Override
         protected Boolean doInBackground(String... strings) {
@@ -348,18 +295,20 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
 
                 } else {
                     if (mResponse.code() == NetworkUtil.OK) {
-                        String json = mResponse.body() != null ? mResponse.body().string() : "";
-                        setData(castData(json));
+                        mJson = mResponse.body() != null ? mResponse.body().string() : "";
+
                         return true;
 
                     } else if (mResponse.code() == NetworkUtil.BAD_REQUEST) {
                         mErrorMessage = mResponse.body() != null ? mResponse.body().string() : "";
+
                     } else {
                         mErrorMessage = getString(R.string.error_time_out);
                     }
                     return false;
                 }
             } catch (Exception e) {
+                Log.d("DEBUG", mErrorMessage);
                 e.printStackTrace();
                 return false;
             }
@@ -368,16 +317,16 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
         @Override
         protected void onPostExecute(Boolean success) {
             if (mLoadReceivedMessageTask == null) return;
+
             mSwipeRefreshLayout.setRefreshing(false);
+
             if (success) {
                 mStatus = STATUS_SHOW_DATA;
+                mLoadMoreLayout.setVisibility(View.GONE);
                 mCurrentPage += 1;
                 mIsScrolling = false;
-                if (mIsMessageListChanged) {
-                    mAdapter.notifyItemRangeInserted(mAdapter.getItemCount(), ITEM_PER_PAGE);
-                    mIsMessageListChanged = false;
-                }
-                mLoadMoreLayout.setVisibility(View.GONE);
+                refreshData(TINNHAN.fromJsonToList(mJson));
+
             } else {
                 showErrorSnackbar(true, mErrorMessage);
             }
@@ -390,28 +339,15 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
         }
     }
 
-    private List<TINNHAN> castData(String json) {
-        Moshi mMoshi = new Moshi.Builder().build();
-        Type mUsersType = Types.newParameterizedType(List.class, TINNHAN.class);
-        JsonAdapter<List<TINNHAN>> mJsonAdapter = mMoshi.adapter(mUsersType);
-
-        try {
-            return mJsonAdapter.fromJson(json);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private void setData(List<TINNHAN> list) {
+    private void refreshData(List<TINNHAN> list) {
         if (list != null && list.size() > 0) {
-//            if (mLastAction == ACTION_INIT)
-//                mDBHelper.deleteAllRecord(DBHelper.MESSAGE);
-            for (TINNHAN tinnhan : list) {
-                mMessageList.add(tinnhan);
-//                mDBHelper.insertMessage(tinnhan);
-            }
-            mIsMessageListChanged = true;
+            mMessageList.addAll(list);
+
+            if (mLastAction == ACTION_REFRESH || mLastAction == ACTION_INIT)
+                mAdapter.notifyDataSetChanged();
+
+            else if (mLastAction == ACTION_LOAD_MORE)
+                mAdapter.notifyItemRangeInserted(mAdapter.getItemCount(), ITEM_PER_PAGE);
         }
     }
 
@@ -425,4 +361,90 @@ public class ReceivedMessageFragment extends Fragment implements SwipeRefreshLay
 
         return NetworkUtil.makeRequest(url, false, null);
     }
+
+    private void showErrorSnackbar(boolean show, String message) {
+        if (mIsViewDestroyed) return;
+
+        if (show) {
+            mStatus = STATUS_SHOW_ERROR;
+            mErrorSnackbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mSwipeRefreshLayout
+                    , message, Snackbar.LENGTH_INDEFINITE
+                    , new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mErrorSnackbar.dismiss();
+                        }
+                    }
+                    , new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mErrorSnackbar.dismiss();
+                            if (mLastAction == ACTION_REFRESH) {
+                                mSwipeRefreshLayout.setRefreshing(true);
+                                onRefresh();
+                            } else if (mLastAction == ACTION_LOAD_MORE) {
+                                mLoadMoreLayout.setVisibility(View.VISIBLE);
+                                onLoadMore();
+                            } else if (mLastAction == ACTION_INIT) {
+                                mSwipeRefreshLayout.setRefreshing(true);
+                                attempGetData();
+                            }
+                        }
+                    });
+            mErrorSnackbar.show();
+        } else if (mErrorSnackbar != null) {
+            mErrorSnackbar.dismiss();
+        }
+    }
+
+    private void showNetworkErrorSnackbar(boolean show) {
+        if (mIsViewDestroyed) return;
+
+        if (show) {
+            mStatus = STATUS_NOT_NETWORK;
+            mNotNetworkSnackbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mSwipeRefreshLayout
+                    , getString(R.string.network_not_available), Snackbar.LENGTH_INDEFINITE
+                    , new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mNotNetworkSnackbar.dismiss();
+                        }
+                    }
+                    , new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mNotNetworkSnackbar.dismiss();
+                            if (mLastAction == ACTION_REFRESH) {
+                                mSwipeRefreshLayout.setRefreshing(true);
+                                onRefresh();
+                            } else if (mLastAction == ACTION_LOAD_MORE) {
+                                mLoadMoreLayout.setVisibility(View.VISIBLE);
+                                onLoadMore();
+                            } else if (mLastAction == ACTION_INIT) {
+                                mSwipeRefreshLayout.setRefreshing(true);
+                                attempGetData();
+                            }
+                        }
+                    });
+            mNotNetworkSnackbar.show();
+        } else if (mNotNetworkSnackbar != null) {
+            mNotNetworkSnackbar.dismiss();
+        }
+    }
+
+    private void showUndoSnackbar(Boolean show, View.OnClickListener action) {
+        if (mIsViewDestroyed) return;
+
+        if (show) {
+            mUndoDeleteSnakbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mSwipeRefreshLayout
+                    , "Đã xóa 1 mục"
+                    , Snackbar.LENGTH_LONG
+                    , null
+                    , action);
+            mUndoDeleteSnakbar.show();
+        } else if (mNotNetworkSnackbar != null) {
+            mNotNetworkSnackbar.dismiss();
+        }
+    }
+
 }
