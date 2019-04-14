@@ -61,7 +61,6 @@ public class ResumePagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        Log.d("DEBUG", "Get item " + position);
         switch (position) {
             case 0:
                 thongTinChungFragment.setThongTin(thongTinChung);

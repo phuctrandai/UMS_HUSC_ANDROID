@@ -86,6 +86,7 @@ public class ResumeFragment extends Fragment {
         mRootLayout = view.findViewById(R.id.layout_root_resume);
         mTabLayout = view.findViewById(R.id.tabs);
         mViewPager = view.findViewById(R.id.vp_resume);
+        mViewPager.setOffscreenPageLimit(mResumePagerAdapter.getCount());
         mIsViewDestroyed = false;
 
         return view;
@@ -169,7 +170,6 @@ public class ResumeFragment extends Fragment {
                                     lyLichCaNhan.getThuongTru(),
                                     lyLichCaNhan.getDacDiemBanThan(),
                                     lyLichCaNhan.getLichSuBanThan());
-                            Log.d("DEBUG", json);
 
                             return true;
 

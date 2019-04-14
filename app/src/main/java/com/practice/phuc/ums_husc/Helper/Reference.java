@@ -13,7 +13,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public final class Reference {
 
-    private static final String HOST = "http://192.168.1.106:8082/";
+    public static final String HOST = "http://192.168.1.106:8082/";
 
     private static final String LOGIN_API = "api/SinhVien/DangNhap/";
 

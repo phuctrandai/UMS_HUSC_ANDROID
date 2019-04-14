@@ -199,7 +199,7 @@
                 android:inputType="number"
                 android:maxLength="12"
                 android:textColor="@color/colorBlack"
-                android:textSize="@dimen/big_text"
+                android:textSize="@dimen/normal_text"
                 tools:ignore="Autofill,LabelFor" />
 
         </RelativeLayout>
@@ -267,7 +267,7 @@
                 android:layout_below="@id/tv_noiCapCMNDLb"
                 android:inputType="text"
                 android:textColor="@color/colorBlack"
-                android:textSize="@dimen/big_text"
+                android:textSize="@dimen/normal_text"
                 tools:ignore="Autofill,LabelFor" />
 
         </RelativeLayout>
