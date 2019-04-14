@@ -84,9 +84,9 @@ public class ReplyMessageActivity extends AppCompatActivity {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Thông báo");
-        builder.setMessage("Hủy tin nhắn đang soạn ?");
+        builder.setMessage("Hủy tin nhắn này ?");
         builder.setCancelable(false);
-        builder.setPositiveButton("Hủy", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 ReplyMessageActivity.super.onBackPressed();
@@ -146,13 +146,13 @@ public class ReplyMessageActivity extends AppCompatActivity {
         builder.setTitle("Thông báo");
         builder.setMessage("Gửi tin nhắn đến " + tvNguoiNhan.getText());
         builder.setCancelable(false);
-        builder.setPositiveButton("Gửi", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 sendMessage(etTieuDe.getText().toString(), etNoiDung.getText().toString());
             }
         });
-        builder.setNegativeButton("Chưa", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();

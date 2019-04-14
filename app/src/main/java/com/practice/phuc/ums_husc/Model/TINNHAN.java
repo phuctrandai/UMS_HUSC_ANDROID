@@ -76,6 +76,16 @@ public class TINNHAN {
     public TINNHAN() {
     }
 
+    /*##### Helper method #####*/
+
+    public NGUOINHAN getNguoiNhanTrongDanhSach(String maNguoiNhan) {
+        for (NGUOINHAN item : NguoiNhans) {
+            if (item.getMaNguoiNhan().equals(maNguoiNhan))
+                return item;
+        }
+        return null;
+    }
+
     public String[] getTenNguoiNhanArray() {
         int soNguoiNhan = this.NguoiNhans.length;
 

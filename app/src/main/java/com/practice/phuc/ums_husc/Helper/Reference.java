@@ -1,9 +1,15 @@
 package com.practice.phuc.ums_husc.Helper;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.practice.phuc.ums_husc.Model.THONGBAO;
+import com.practice.phuc.ums_husc.R;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public final class Reference {
 
@@ -26,6 +32,12 @@ public final class Reference {
     private static final String LOAD_TIN_NHAN_DA_XOA_API = "api/SinhVien/TinNhanDaXoa/";
 
     private static final String LOAD_NOI_DUNG_TIN_NHAN_API = "api/SinhVien/NoiDungTinNhan/";
+
+    private static final String UPDATE_THOI_DIEM_XEM_TIN_NHAN_API = "api/SinhVien/CapNhatThoiDiemXem";
+
+    private static final String ATTEMP_DELETE_TIN_NHAN_API = "api/SinhVien/XoaTamThoi";
+
+    private static final String FOREVER_DELETE_TIN_NHAN_API = "api/SinhVien/XoaVinhVien";
 
     private static final String REPLY_TIN_NHAN_API = "api/SinhVien/";
 
@@ -91,6 +103,27 @@ public final class Reference {
                 + "&id=" + id;
     }
 
+    public static String getUpdateThoiDiemXemTinNhanApiUrl(String maSinhVien, String matKhau, String id) {
+        return HOST + UPDATE_THOI_DIEM_XEM_TIN_NHAN_API +
+                "?masinhvien=" + maSinhVien +
+                "&matkhau=" + matKhau +
+                "&id=" + id;
+    }
+
+    public static String getAttempDeleteTinNhanApiUrl(String maSinhVien, String matKhau, String id) {
+        return HOST + ATTEMP_DELETE_TIN_NHAN_API +
+                "?masinhvien=" + maSinhVien +
+                "&matkhau=" + matKhau +
+                "&id=" + id;
+    }
+
+    public static String getForeverDeleteTinNhanApiUrl(String maSinhVien, String matKhau, String id) {
+        return HOST + FOREVER_DELETE_TIN_NHAN_API +
+                "?masinhvien=" + maSinhVien +
+                "&matkhau=" + matKhau +
+                "&id=" + id;
+    }
+
     public static String getReplyTinNhanApiUrl(String maSinhVien, String matKhau) {
         return HOST + REPLY_TIN_NHAN_API
                 + "?masinhvien=" + maSinhVien
@@ -130,21 +163,19 @@ public final class Reference {
     }
 
     public static String BUNDLE_EXTRA_NEWS = "news";
-    public static String BUNDLE_KEY_NEWS_TITLE = "news_title";
-    public static String BUNDLE_KEY_NEWS_BODY = "news_body";
-    public static String BUNDLE_KEY_NEWS_POST_TIME = "news_post_time";
-    public static String BUNDLE_KEY_NEWS_ID = "news_id";
     public static String BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI = "launch_from_noti";
 
     public static String BUNDLE_EXTRA_MESSAGE = "message";
-    public static String BUNDLE_KEY_MESSAGE_TITLE = "message_title";
-    public static String BUNDLE_KEY_MESSAGE_BODY = "message_body";
-    public static String BUNDLE_KEY_MESSAGE_SEND_TIME = "message_send_time";
-    public static String BUNDLE_KEY_MESSAGE_ID = "message_id";
-    public static String BUNDLE_KEY_MESSAGE_RECEIVERS = "message_receivers";
-    public static String BUNDLE_KEY_MESSAGE_RECEIVER_NAMES = "message_receiver_names";
-    public static String BUNDLE_KEY_MESSAGE_SENDER_NAME = "message_sender";
-    public static String BUNDLE_KEY_MESSAGE_SENDER_ID = "message_sender_id";
     public static String BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI = "launch_from_noti";
+
+    public static String getAccountId(Context context) {
+        SharedPreferences sp = context.getSharedPreferences(context.getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
+        return sp.getString(context.getString(R.string.pre_key_student_id), "");
+    }
+
+    public static String getAccountPassword(Context context) {
+        SharedPreferences sp = context.getSharedPreferences(context.getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
+        return sp.getString(context.getString(R.string.pre_key_password), "");
+    }
 
 }

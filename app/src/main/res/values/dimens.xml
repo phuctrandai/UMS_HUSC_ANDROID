@@ -22,7 +22,7 @@
     <dimen name="small_text">12sp</dimen>
     <dimen name="normal_text">14sp</dimen>
     <dimen name="big_text">18sp</dimen>
-    <dimen name="extra_text">20sp</dimen>
+    <dimen name="extra_text">22sp</dimen>
 
     <!-- Man hinh dang nhap -->
     <dimen name="logo_horizontal_padding">8dp</dimen>

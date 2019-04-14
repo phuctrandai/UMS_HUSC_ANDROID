@@ -67,7 +67,7 @@ public class ResumeFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        mResumePagerAdapter = new ResumePagerAdapter(getChildFragmentManager());
+        mResumePagerAdapter = new ResumePagerAdapter(getChildFragmentManager(), mContext);
         mIsViewDestroyed = false;
         mStatus = STATUS_INIT;
         Moshi mMoshi = new Moshi.Builder().build();

@@ -5,33 +5,26 @@
     android:id="@+id/news_item_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/small_margin"
-    android:layout_marginTop="@dimen/tiny_margin"
-    android:layout_marginEnd="@dimen/small_margin"
-    android:layout_marginBottom="@dimen/tiny_margin"
-    android:clickable="true"
-    android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    app:cardElevation="1dp"
-    app:cardCornerRadius="1dp">
+    app:cardElevation="0dp"
+    app:cardCornerRadius="0dp">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/white"
         android:paddingStart="@dimen/big_padding"
-        android:paddingTop="@dimen/big_padding"
+        android:paddingTop="@dimen/bigger_padding"
         android:paddingEnd="0dp"
-        android:paddingBottom="@dimen/big_padding">
+        android:paddingBottom="@dimen/bigger_padding">
 
         <TextView
             android:id="@+id/tv_tieuDe"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/extra_margin"
             android:text="Tiêu đề thông báo"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/normal_text"
+            android:textSize="@dimen/big_text"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="HardcodedText" />
@@ -43,7 +36,7 @@
             android:layout_marginStart="0dp"
             android:layout_marginTop="@dimen/small_margin"
             android:text="12/03/2019 08:05"
-            android:textSize="@dimen/small_text"
+            android:textSize="@dimen/normal_text"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_tieuDe"
             tools:ignore="HardcodedText" />

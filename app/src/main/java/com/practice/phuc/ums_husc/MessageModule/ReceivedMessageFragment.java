@@ -25,6 +25,7 @@ import com.practice.phuc.ums_husc.Adapter.MessageRecyclerDataAdapter;
 import com.practice.phuc.ums_husc.Helper.CustomSnackbar;
 import com.practice.phuc.ums_husc.Helper.DBHelper;
 import com.practice.phuc.ums_husc.Helper.MessageItemTouchHelper;
+import com.practice.phuc.ums_husc.Helper.MessageTaskHelper;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.Model.TINNHAN;
@@ -32,6 +33,7 @@ import com.practice.phuc.ums_husc.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.Response;
 
@@ -52,18 +54,13 @@ public class ReceivedMessageFragment extends Fragment
 
     private Context mContext;
     private LoadReceivedMessageTask mLoadReceivedMessageTask;
-    private List<TINNHAN> mMessageList;
     private MessageRecyclerDataAdapter mAdapter;
     private String mErrorMessage;
-    private int mStatus;
+    private int mStatus, mLastAction;
     private int mCurrentItems, mTotalItems, mScrollOutItems;
-    private boolean mIsScrolling;
-    private int mLastAction;
     private long mCurrentPage;
-    private boolean mIsViewDestroyed;
-    private Snackbar mNotNetworkSnackbar;
-    private Snackbar mErrorSnackbar;
-    private Snackbar mUndoDeleteSnakbar;
+    private boolean mIsScrolling, mIsViewDestroyed;
+    private Snackbar mNotNetworkSnackbar, mErrorSnackbar, mUndoDeleteSnakbar;
     private DBHelper mDBHelper;
 
     private final int ITEM_PER_PAGE = 8;
@@ -85,8 +82,7 @@ public class ReceivedMessageFragment extends Fragment
         mLastAction = ACTION_INIT;
         mStatus = STATUS_INIT;
         mDBHelper = new DBHelper(mContext);
-        mMessageList = new ArrayList<>();
-        mAdapter = new MessageRecyclerDataAdapter(mContext, mMessageList);
+        mAdapter = new MessageRecyclerDataAdapter(mContext, new ArrayList<TINNHAN>());
         mIsScrolling = true;
         long countRow = mDBHelper.countRow(DBHelper.MESSAGE);
         if (countRow > 0) {
@@ -138,13 +134,19 @@ public class ReceivedMessageFragment extends Fragment
     public void onPause() {
         showNetworkErrorSnackbar(false);
         showErrorSnackbar(false, mErrorMessage);
-        mIsViewDestroyed = true;
+        showUndoSnackbar(false, null);
         super.onPause();
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mIsViewDestroyed = true;
+    }
+
+    @Override
     public void onDestroy() {
-        mMessageList.clear();
+        mAdapter.clearDataSet();
         mLoadReceivedMessageTask = null;
         super.onDestroy();
     }
@@ -152,8 +154,10 @@ public class ReceivedMessageFragment extends Fragment
     @Override
     public void onRefresh() {
         mLastAction = ACTION_REFRESH;
+
         showNetworkErrorSnackbar(false);
-        showErrorSnackbar(false, "");
+        showErrorSnackbar(false, null);
+        showUndoSnackbar(false, null);
 
         if (NetworkUtil.getConnectivityStatus(mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
             mStatus = STATUS_NOT_NETWORK;
@@ -165,29 +169,9 @@ public class ReceivedMessageFragment extends Fragment
                 }
             }, 1000);
         } else {
-//            mDBHelper.deleteAllRecord(DBHelper.MESSAGE);
-            mMessageList.clear();
             mAdapter.mLastPosition = -1;
             mCurrentPage = 1;
             attempGetData();
-        }
-    }
-
-    @Override
-    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
-        if (viewHolder instanceof MessageRecyclerDataAdapter.DataViewHolder) {
-
-            final TINNHAN deletedItem = mMessageList.get(viewHolder.getAdapterPosition());
-            final int deletedIndex = viewHolder.getAdapterPosition();
-
-            mAdapter.removeItem(viewHolder.getAdapterPosition());
-            showUndoSnackbar(true, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mAdapter.restoreItem(deletedItem, deletedIndex);
-                    mUndoDeleteSnakbar.dismiss();
-                }
-            });
         }
     }
 
@@ -206,76 +190,50 @@ public class ReceivedMessageFragment extends Fragment
             }, 1000);
         } else {
             showNetworkErrorSnackbar(false);
-            showErrorSnackbar(false, "");
+            showErrorSnackbar(false, null);
             mIsScrolling = false;
             mLoadMoreLayout.setVisibility(View.VISIBLE);
             attempGetData();
         }
     }
 
-    private void attempGetData() {
-        if (NetworkUtil.getConnectivityStatus(this.mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
-            mStatus = STATUS_NOT_NETWORK;
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
+        if (viewHolder instanceof MessageRecyclerDataAdapter.DataViewHolder) {
+
+            final TINNHAN deletedItem = mAdapter.getDataSet().get(viewHolder.getAdapterPosition());
+            final int deletedIndex = viewHolder.getAdapterPosition();
+
+            mAdapter.removeItem(viewHolder.getAdapterPosition());
+            MessageTaskHelper.getInstance().insertAttempDeleteMessage(deletedItem);
+
+            MessageFragment parentFrag = (MessageFragment) ReceivedMessageFragment.this.getParentFragment();
+            final DeletedMessageFragment deletedMessageFragment = (DeletedMessageFragment) Objects.requireNonNull(parentFrag)
+                            .getChildFragment(DeletedMessageFragment.class.getName());
+            if (deletedMessageFragment != null) {
+                deletedMessageFragment.onInsertMessage(deletedItem, 0);
+            }
+
+            showUndoSnackbar(true, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mUndoDeleteSnakbar.dismiss();
+                    mAdapter.insertItem(deletedItem, deletedIndex);
+                    MessageTaskHelper.getInstance().removeAttempDeleteMessage(deletedItem);
+                    if (deletedMessageFragment != null)
+                        deletedMessageFragment.onRemoveMessage(deletedItem);
+                }
+            });
+
+            final String maSinhVien = Reference.getAccountId(mContext);
+            final String matKhau = Reference.getAccountPassword(mContext);
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    showNetworkErrorSnackbar(true);
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    mLoadMoreLayout.setVisibility(View.GONE);
+                    MessageTaskHelper.attempDelete(deletedItem.getMaTinNhan(), maSinhVien, matKhau);
                 }
-            }, 1000);
-
-            if (mDBHelper.countRow(DBHelper.MESSAGE) > 0) {
-                List<TINNHAN> list = mDBHelper.getAllMessage();
-                refreshData(list);
-            }
-        } else {
-            mLoadReceivedMessageTask = new LoadReceivedMessageTask();
-            mLoadReceivedMessageTask.execute((String) null);
+            }, 3500);
         }
-    }
-
-    private void setUpSwipeRefreshLayout(View view) {
-        mSwipeRefreshLayout = view.findViewById(R.id.layout_swipeRefresh);
-        mSwipeRefreshLayout.setOnRefreshListener(this);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
-                android.R.color.holo_green_dark,
-                android.R.color.holo_orange_dark,
-                android.R.color.holo_blue_dark);
-    }
-
-    private void setUpRecyclerView() {
-        final LinearLayoutManager manager = new LinearLayoutManager(mContext);
-        mRvMessage.setLayoutManager(manager);
-        mRvMessage.setHasFixedSize(true);
-        mRvMessage.setAdapter(mAdapter);
-        mRvMessage.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-                    mIsScrolling = true;
-                }
-            }
-
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                mCurrentItems = manager.getChildCount();
-                mTotalItems = manager.getItemCount();
-                mScrollOutItems = manager.findFirstVisibleItemPosition();
-
-                if (mIsScrolling && (mCurrentItems + mScrollOutItems == mTotalItems)) {
-                    mIsScrolling = false;
-                    mLoadMoreLayout.setVisibility(View.VISIBLE);
-                    onLoadMore();
-                }
-            }
-        });
-
-        ItemTouchHelper.SimpleCallback itemTouchHelperCallback =
-                new MessageItemTouchHelper(0, ItemTouchHelper.LEFT, this);
-        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(mRvMessage);
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -339,15 +297,25 @@ public class ReceivedMessageFragment extends Fragment
         }
     }
 
-    private void refreshData(List<TINNHAN> list) {
-        if (list != null && list.size() > 0) {
-            mMessageList.addAll(list);
+    private void attempGetData() {
+        if (NetworkUtil.getConnectivityStatus(this.mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
+            mStatus = STATUS_NOT_NETWORK;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    showNetworkErrorSnackbar(true);
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    mLoadMoreLayout.setVisibility(View.GONE);
+                }
+            }, 1000);
 
-            if (mLastAction == ACTION_REFRESH || mLastAction == ACTION_INIT)
-                mAdapter.notifyDataSetChanged();
-
-            else if (mLastAction == ACTION_LOAD_MORE)
-                mAdapter.notifyItemRangeInserted(mAdapter.getItemCount(), ITEM_PER_PAGE);
+            if (mDBHelper.countRow(DBHelper.MESSAGE) > 0) {
+                List<TINNHAN> list = mDBHelper.getAllMessage();
+                refreshData(list);
+            }
+        } else {
+            mLoadReceivedMessageTask = new LoadReceivedMessageTask();
+            mLoadReceivedMessageTask.execute((String) null);
         }
     }
 
@@ -360,6 +328,60 @@ public class ReceivedMessageFragment extends Fragment
         String url = Reference.getLoadTinNhanDenApiUrl(maSinhVien, matKhau, mCurrentPage, ITEM_PER_PAGE);
 
         return NetworkUtil.makeRequest(url, false, null);
+    }
+
+    private void refreshData(List<TINNHAN> list) {
+        if (list != null) {
+
+            if (mLastAction == ACTION_REFRESH || mLastAction == ACTION_INIT)
+                mAdapter.changeDataSet(list);
+
+            else if (mLastAction == ACTION_LOAD_MORE && list.size() > 0)
+                mAdapter.insertItemRange(list, mAdapter.getItemCount(), ITEM_PER_PAGE);
+        }
+    }
+
+    private void setUpRecyclerView() {
+        final LinearLayoutManager manager = new LinearLayoutManager(mContext);
+        mRvMessage.setLayoutManager(manager);
+        mRvMessage.setHasFixedSize(true);
+        mRvMessage.setAdapter(mAdapter);
+        mRvMessage.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    mIsScrolling = true;
+                }
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                mCurrentItems = manager.getChildCount();
+                mTotalItems = manager.getItemCount();
+                mScrollOutItems = manager.findFirstVisibleItemPosition();
+
+                if (mIsScrolling && (mCurrentItems + mScrollOutItems == mTotalItems)) {
+                    mIsScrolling = false;
+                    mLoadMoreLayout.setVisibility(View.VISIBLE);
+                    onLoadMore();
+                }
+            }
+        });
+
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback =
+                new MessageItemTouchHelper(0, ItemTouchHelper.LEFT, this);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(mRvMessage);
+    }
+
+    private void setUpSwipeRefreshLayout(View view) {
+        mSwipeRefreshLayout = view.findViewById(R.id.layout_swipeRefresh);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_orange_dark,
+                android.R.color.holo_blue_dark);
     }
 
     private void showErrorSnackbar(boolean show, String message) {
@@ -442,8 +464,9 @@ public class ReceivedMessageFragment extends Fragment
                     , null
                     , action);
             mUndoDeleteSnakbar.show();
-        } else if (mNotNetworkSnackbar != null) {
-            mNotNetworkSnackbar.dismiss();
+
+        } else if (mUndoDeleteSnakbar != null) {
+            mUndoDeleteSnakbar.dismiss();
         }
     }
 

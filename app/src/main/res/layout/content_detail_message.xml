@@ -25,7 +25,7 @@
             android:layout_marginBottom="@dimen/big_margin"
             android:text="Tiêu đề tin nhắn"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/big_text"
+            android:textSize="@dimen/extra_text"
             tools:ignore="HardcodedText" />
 
         <RelativeLayout
@@ -53,8 +53,9 @@
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@id/tv_nguoiGuiLabel"
                 android:text="Họ tên người gửi "
-                android:textColor="@color/colorDarkGrey"
+                android:textColor="@color/colorBlack"
                 android:textSize="@dimen/normal_text"
+                android:textStyle="bold"
                 tools:ignore="HardcodedText" />
 
             <RelativeLayout
@@ -111,7 +112,7 @@
             android:layout_height="1dp"
             android:layout_marginTop="@dimen/big_margin"
             android:layout_marginBottom="@dimen/big_margin"
-            android:background="@android:color/darker_gray" />
+            android:background="@color/colorGrey" />
 
         <WebView
             android:id="@+id/tv_noiDung"

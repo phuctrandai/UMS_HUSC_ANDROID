@@ -89,4 +89,8 @@ public class MessageFragment extends Fragment {
         }
         ft.commit();
     }
+
+    public Fragment getChildFragment(String fragmentTag) {
+        return getChildFragmentManager().findFragmentByTag(fragmentTag);
+    }
 }

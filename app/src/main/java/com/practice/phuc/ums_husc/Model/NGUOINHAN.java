@@ -30,12 +30,5 @@ public class NGUOINHAN {
     private String ThoiDiemXem;
 
     public NGUOINHAN() {
-
-    }
-
-    public NGUOINHAN(String maNguoiNhan, String hoTenNguoiNhan, String thoiDiemXem) {
-        MaNguoiNhan = maNguoiNhan;
-        HoTenNguoiNhan = hoTenNguoiNhan;
-        ThoiDiemXem = thoiDiemXem;
     }
 }
