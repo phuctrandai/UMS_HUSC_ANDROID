@@ -14,6 +14,11 @@ public class TonGiao {
     public int MaTonGiao;
     public String TenTonGiao;
 
+    public TonGiao(int maTonGiao, String tenTonGiao) {
+        MaTonGiao = maTonGiao;
+        TenTonGiao = tenTonGiao;
+    }
+
     @NonNull
     @Override
     public String toString() {

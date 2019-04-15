@@ -5,12 +5,14 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
@@ -24,11 +26,13 @@ import com.practice.phuc.ums_husc.ViewModel.DanToc;
 import com.practice.phuc.ums_husc.ViewModel.QuocGia;
 import com.practice.phuc.ums_husc.ViewModel.ThanhPho;
 import com.practice.phuc.ums_husc.ViewModel.TonGiao;
+import com.practice.phuc.ums_husc.ViewModel.VNoiSinh;
 import com.practice.phuc.ums_husc.ViewModel.VThongTinChung;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -38,6 +42,7 @@ import static com.practice.phuc.ums_husc.Helper.StringHelper.isNullOrEmpty;
 
 public class ThongTinChungFragment extends Fragment {
     private Context mContext;
+    private boolean mIsCreated;
 
     public ThongTinChungFragment() {
     }
@@ -70,7 +75,88 @@ public class ThongTinChungFragment extends Fragment {
     private EditText etSoCMND;
     private Spinner spNgayCapCMND, spThangCapCMND, spNamCapCMND;
     private EditText etNoiCapCMND;
+    private ImageButton mOpenSlidePanel, mCloseSlidePanel;
+    private Button mBtnSave;
 
+    ArrayAdapter<String> mNgaySinhAdapter;
+    ArrayAdapter<String> mThangSinhAdapter;
+    ArrayAdapter<String> mNamSinhAdapter;
+    ArrayAdapter<String> mNgayCapCMNDAdapter;
+    ArrayAdapter<String> mThangCapCMNDAdapter;
+    ArrayAdapter<String> mNamCapCMNDAdapter;
+    ArrayAdapter<QuocGia> mQuocGiaAdapter;
+    ArrayAdapter<QuocGia> mQuocTichAdapter;
+    ArrayAdapter<ThanhPho> mTinhThanhAdapter;
+    ArrayAdapter<DanToc> mDanTocAdapter;
+    ArrayAdapter<TonGiao> mTonGiaoAdapter;
+
+    private List<String> mNgaySinhDs;
+    private List<String> mNgayCapCMNDDs;
+    private List<QuocGia> mQuocGiaDs;
+    private List<ThanhPho> mTinhThanhDs;
+    private List<DanToc> mDanTocDs;
+    private List<TonGiao> mTonGiaoDs;
+
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mIsCreated = false;
+
+        List<String> mNamDs = new ArrayList<>();
+        List<String> mThangDs = new ArrayList<>();
+        mNgaySinhDs = new ArrayList<>();
+        mNgayCapCMNDDs = new ArrayList<>();
+        mQuocGiaDs = new ArrayList<>();
+        mTinhThanhDs = new ArrayList<>();
+        mDanTocDs = new ArrayList<>();
+        mTonGiaoDs = new ArrayList<>();
+
+        for (int i = 0; i <= 31; i++) {
+            mNgaySinhDs.add(i + "");
+            mNgayCapCMNDDs.add(i + "");
+
+            if (i <= 12) mThangDs.add(i + "");
+        }
+        mNamDs.add("0");
+        int year = DateHelper.getCalendar().get(Calendar.YEAR);
+        for (int i = 1990; i <= year; i++) {
+            mNamDs.add(i + "");
+        }
+
+        mNgaySinhAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mNgaySinhDs);
+        mNgaySinhAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
+
+        mThangSinhAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mThangDs);
+        mThangSinhAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
+
+        mNamSinhAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mNamDs);
+        mNamSinhAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
+
+        mNgayCapCMNDAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mNgayCapCMNDDs);
+        mNgayCapCMNDAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
+
+        mThangCapCMNDAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mThangDs);
+        mThangCapCMNDAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
+
+        mNamCapCMNDAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mNamDs);
+        mNamCapCMNDAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
+
+        mQuocGiaAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mQuocGiaDs);
+        mQuocGiaAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
+
+        mTinhThanhAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mTinhThanhDs);
+        mTinhThanhAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
+
+        mQuocTichAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mQuocGiaDs);
+        mQuocTichAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
+
+        mDanTocAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mDanTocDs);
+        mDanTocAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
+
+        mTonGiaoAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mTonGiaoDs);
+        mTonGiaoAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -78,73 +164,79 @@ public class ThongTinChungFragment extends Fragment {
         bindUI(view);
         setUpEvent();
 
-        setUpSpNgay();
-        setUpSpThang();
-        setUpSpNam();
-
         setUpMainPanel(thongTinChung);
 
-        new Task().execute("quocgia");
-        new Task().execute("dantoc");
-        new Task().execute("tongiao");
+        if (!mIsCreated) {
+            mIsCreated = true;
+            new Task().execute("quocgia");
+            new Task().execute("dantoc");
+            new Task().execute("tongiao");
+        }
 
         return view;
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        mSlidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mIsCreated = false;
+        mNgaySinhDs.clear();
+        mNgayCapCMNDDs.clear();
+        mQuocGiaDs.clear();
+        mTinhThanhDs.clear();
+        mDanTocDs.clear();
+        mTonGiaoDs.clear();
+    }
+
     /*###### EVENTS #####*/
     private void setUpEvent() {
-        spNgaySinh.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        mOpenSlidePanel.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
+            public void onClick(View v) {
+                mSlidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+                mSlidingUpPanelLayout.setTouchEnabled(false);
+                setUpSlidePanel(thongTinChung);
             }
-
+        });
+        mCloseSlidePanel.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
+            public void onClick(View v) {
+                mSlidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
             }
         });
 
         spThangSinh.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                updateNamNhuan(ngaySinhData, adapterNgaySinh, position, spNamSinh);
+                updateNamNhuan(mNgaySinhDs, mNgaySinhAdapter, position, spNamSinh);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
 
         spNamSinh.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                updateNamNhuan(ngaySinhData, adapterNgaySinh, spThangSinh.getSelectedItemPosition(), spNamSinh);
+                updateNamNhuan(mNgaySinhDs, mNgaySinhAdapter, spThangSinh.getSelectedItemPosition(), spNamSinh);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        spNgayCapCMND.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
 
         spThangCapCMND.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                updateNamNhuan(ngayCapCMNDData, adapterNgayCap, position, spNamCapCMND);
+                updateNamNhuan(mNgayCapCMNDDs, mNgayCapCMNDAdapter, position, spNamCapCMND);
             }
 
             @Override
@@ -155,7 +247,7 @@ public class ThongTinChungFragment extends Fragment {
         spNamCapCMND.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                updateNamNhuan(ngayCapCMNDData, adapterNgayCap, spThangCapCMND.getSelectedItemPosition(), spNamCapCMND);
+                updateNamNhuan(mNgayCapCMNDDs, mNgayCapCMNDAdapter, spThangCapCMND.getSelectedItemPosition(), spNamCapCMND);
             }
 
             @Override
@@ -177,26 +269,43 @@ public class ThongTinChungFragment extends Fragment {
 
             }
         });
+
+        mBtnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int ngaySinh = Integer.parseInt(spNgaySinh.getSelectedItem().toString());
+                int thangSinh = Integer.parseInt(spThangSinh.getSelectedItem().toString());
+                int namSinh = Integer.parseInt(spNamSinh.getSelectedItem().toString());
+                int quocGiaSinh = ((QuocGia) spQuocGiaSinh.getSelectedItem()).MaQuocGia;
+                int tinhThanhSinh = ((ThanhPho) spTinhThanhSinh.getSelectedItem()).MaThanhPho;
+                int quocTich = ((QuocGia) spQuocTich.getSelectedItem()).MaQuocGia;
+                int tonGiao = ((TonGiao) spTonGiao.getSelectedItem()).MaTonGiao;
+                int danToc = ((DanToc) spDanToc.getSelectedItem()).MaDanToc;
+                String soCMND = etSoCMND.getText().toString();
+                int ngayCapCMND = Integer.parseInt(spNgayCapCMND.getSelectedItem().toString());
+                int thangCapCMND = Integer.parseInt(spThangCapCMND.getSelectedItem().toString());
+                int namCapCMND = Integer.parseInt(spNamCapCMND.getSelectedItem().toString());
+                String noiCapCMND = etNoiCapCMND.getText().toString();
+
+                VThongTinChung newThongTin = new VThongTinChung();
+                newThongTin.NoiSinh = new VNoiSinh();
+                newThongTin.NgaySinh = ngaySinh + "/" + thangSinh + "/" + namSinh;
+                newThongTin.NoiSinh.QuocGia = quocGiaSinh + "";
+                newThongTin.NoiSinh.ThanhPho = tinhThanhSinh + "";
+                newThongTin.QuocTich = quocTich + "";
+                newThongTin.TonGiao = tonGiao + "";
+                newThongTin.DanToc = danToc + "";
+                newThongTin.SoCMND = soCMND;
+                newThongTin.NgayCap = ngayCapCMND + "/" + thangCapCMND + "/" + namCapCMND;
+                newThongTin.NoiCap = noiCapCMND;
+
+
+            }
+        });
     }
 
-    View.OnClickListener onModify = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mSlidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
-            mSlidingUpPanelLayout.setTouchEnabled(false);
-            setUpSlidePanel(thongTinChung);
-        }
-    };
-
-    View.OnClickListener onClose = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mSlidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-        }
-    };
-
     /*##### DATA #####*/
-    private void setUpMainPanel(VThongTinChung thongTinChung){
+    private void setUpMainPanel(VThongTinChung thongTinChung) {
         if (thongTinChung != null) {
             String gioiTinh = thongTinChung.GioiTinh ? "Nam" : "Nữ";
             mGioiTinh.setText(gioiTinh);
@@ -236,41 +345,49 @@ public class ThongTinChungFragment extends Fragment {
 
     private void setUpSlidePanel(VThongTinChung thongTinChung) {
         // Ngay sinh
-        String ngaySinh = "...";
+        String ngaySinh;
+        int indexNgay = 0, indexThang = 0, indexNam = 0;
         if (!isNullOrEmpty(thongTinChung.NgaySinh)) {
             ngaySinh = DateHelper.formatYMDToDMY(thongTinChung.NgaySinh.substring(0, 10));
             Date d = DateHelper.stringToDate(ngaySinh, "dd/MM/yyyy");
-            spNgaySinh.setSelection(DateHelper.getDayOfMonth(d) - 1);
-            spThangSinh.setSelection(DateHelper.getMonth(d) - 1);
-            spNamSinh.setSelection(DateHelper.getYear(d) - 1990);
+            indexNgay = DateHelper.getDayOfMonth(d);
+            indexThang = DateHelper.getMonth(d);
+            indexNam = DateHelper.getYear(d) - 1989;
         }
+        spNgaySinh.setSelection(indexNgay);
+        spThangSinh.setSelection(indexThang);
+        spNamSinh.setSelection(indexNam);
         // Noi sinh
-        setUpSpQuocGiaSinh(quocGiaData);
-        setUpSpTinhThanhSinh(tinhThanhSinhData);
+        updateSpQuocGiaSinh(mQuocGiaDs);
+        updateSpTinhThanhSinh(mTinhThanhDs);
         // So CMND
-        String soCMND = !isNullOrEmpty(thongTinChung.SoCMND) ? thongTinChung.SoCMND : "...";
+        String soCMND = !isNullOrEmpty(thongTinChung.SoCMND) ? thongTinChung.SoCMND : "";
         etSoCMND.setText(soCMND);
         // Ngay cap CMND
-        String ngayCapCMND = "...";
+        String ngayCapCMND;
+        indexNgay = 0; indexThang = 0; indexNam = 0;
         if (!isNullOrEmpty(thongTinChung.NgaySinh)) {
             ngayCapCMND = DateHelper.formatYMDToDMY(thongTinChung.NgayCap.substring(0, 10));
             Date d = DateHelper.stringToDate(ngayCapCMND, "dd/MM/yyyy");
-            spNgayCapCMND.setSelection(DateHelper.getDayOfMonth(d) - 1);
-            spThangCapCMND.setSelection(DateHelper.getMonth(d) - 1);
-            spNamCapCMND.setSelection(DateHelper.getYear(d) - 1990);
+            indexNgay = DateHelper.getDayOfMonth(d);
+            indexThang = DateHelper.getMonth(d);
+            indexNam = DateHelper.getYear(d) - 1989;
         }
+        spNgayCapCMND.setSelection(indexNgay);
+        spThangCapCMND.setSelection(indexThang);
+        spNamCapCMND.setSelection(indexNam);
         // Noi cap CMND
-        String noiCapCMND = !isNullOrEmpty(thongTinChung.NoiCap) ? thongTinChung.NoiCap : "...";
+        String noiCapCMND = !isNullOrEmpty(thongTinChung.NoiCap) ? thongTinChung.NoiCap : "";
         etNoiCapCMND.setText(noiCapCMND);
         // Quoc tich
-        setUpSpQuocTich(quocGiaData);
+        updateSpQuocTich(mQuocGiaDs);
         // Dan toc
-        setUpSpDanToc(danTocData);
+        updateSpDanToc(mDanTocDs);
         // Ton giao
-        setUpSpTonGiao(tonGiaoData);
+        updateSpTonGiao(mTonGiaoDs);
     }
 
-    /*####################*/
+    /*##### UPDATE DATA ON VIEW #####*/
 
     private void bindUI(View view) {
         mSlidingUpPanelLayout = view.findViewById(R.id.sliding_layout);
@@ -283,10 +400,9 @@ public class ThongTinChungFragment extends Fragment {
         mSoCMND = view.findViewById(R.id.tv_soCMND);
         mNgayCapCMND = view.findViewById(R.id.tv_ngayCapCMND);
         mNoiCapCMND = view.findViewById(R.id.tv_noiCapCMND);
-        ImageButton mChinhSua = view.findViewById(R.id.btn_suaThongTinChung);
-        ImageButton mCloseSlidePanel = view.findViewById(R.id.btn_closeSlidePanel);
-        mChinhSua.setOnClickListener(onModify);
-        mCloseSlidePanel.setOnClickListener(onClose);
+        mOpenSlidePanel = view.findViewById(R.id.btn_suaThongTinChung);
+        mCloseSlidePanel = view.findViewById(R.id.btn_closeSlidePanel);
+        mBtnSave = view.findViewById(R.id.btn_luuThongTinChung);
 
         spNgaySinh = view.findViewById(R.id.sp_ngaySinh);
         spThangSinh = view.findViewById(R.id.sp_thangSinh);
@@ -301,67 +417,27 @@ public class ThongTinChungFragment extends Fragment {
         spThangCapCMND = view.findViewById(R.id.sp_thangCap);
         spNamCapCMND = view.findViewById(R.id.sp_namCap);
         etNoiCapCMND = view.findViewById(R.id.et_noiCapCMND);
+
+        spNgaySinh.setAdapter(mNgaySinhAdapter);
+        spThangSinh.setAdapter(mThangSinhAdapter);
+        spNamSinh.setAdapter(mNamSinhAdapter);
+        spNgayCapCMND.setAdapter(mNgayCapCMNDAdapter);
+        spThangCapCMND.setAdapter(mThangCapCMNDAdapter);
+        spNamCapCMND.setAdapter(mNamCapCMNDAdapter);
+        spQuocGiaSinh.setAdapter(mQuocGiaAdapter);
+        spQuocTich.setAdapter(mQuocTichAdapter);
+        spTinhThanhSinh.setAdapter(mTinhThanhAdapter);
+        spTonGiao.setAdapter(mTonGiaoAdapter);
+        spDanToc.setAdapter(mDanTocAdapter);
     }
 
-    ArrayAdapter<String> adapterNgaySinh;
-    ArrayAdapter<String> adapterNgayCap;
-    private List<String> ngaySinhData;
-    private List<String> ngayCapCMNDData;
-    private List<QuocGia> quocGiaData;
-    private List<ThanhPho> tinhThanhSinhData;
-    private List<DanToc> danTocData;
-    private List<TonGiao> tonGiaoData;
-
-    private void setUpSpNgay() {
-        ngaySinhData = new ArrayList<>();
-        ngayCapCMNDData = new ArrayList<>();
-
-        for (int i = 1; i <= 31; i++) {
-            ngaySinhData.add(i + "");
-            ngayCapCMNDData.add(i + "");
-        }
-
-        adapterNgaySinh = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, ngaySinhData);
-        adapterNgaySinh.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
-        spNgaySinh.setAdapter(adapterNgaySinh);
-
-        adapterNgayCap = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, ngayCapCMNDData);
-        adapterNgayCap.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
-        spNgayCapCMND.setAdapter(adapterNgayCap);
-    }
-
-    private void setUpSpThang() {
-        List<String> months = new ArrayList<>();
-        for (int i = 1; i <= 12; i++) {
-            months.add(i + "");
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, months);
-        adapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
-        spThangSinh.setAdapter(adapter);
-        spThangCapCMND.setAdapter(adapter);
-    }
-
-    private void setUpSpNam() {
-        List<String> years = new ArrayList<>();
-        for (int i = 1990; i <= 2019; i++) {
-            years.add(i + "");
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, years);
-        adapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
-        spNamSinh.setAdapter(adapter);
-        spNamCapCMND.setAdapter(adapter);
-    }
-
-    private void setUpSpQuocGiaSinh(List<QuocGia> quocGias) {
+    private void updateSpQuocGiaSinh(List<QuocGia> quocGias) {
         if (quocGias == null) {
             return;
         }
+        int index = 0;
 
-        ArrayAdapter<QuocGia> adapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, quocGias);
-        adapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
-        spQuocGiaSinh.setAdapter(adapter);
         if (quocGias.size() > 0 && thongTinChung.NoiSinh != null && thongTinChung.NoiSinh.QuocGia != null) {
-            int index = 0;
             try {
                 int maHienTai = Integer.parseInt(thongTinChung.NoiSinh.QuocGia);
                 for (int i = 0; i < quocGias.size(); i++) {
@@ -373,20 +449,15 @@ public class ThongTinChungFragment extends Fragment {
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
-            finally {
-                spQuocGiaSinh.setSelection(index);
-            }
         }
+        spQuocGiaSinh.setSelection(index);
     }
 
-    private void setUpSpQuocTich(List<QuocGia> quocgias) {
+    private void updateSpQuocTich(List<QuocGia> quocgias) {
         if (quocgias == null) return;
 
-        ArrayAdapter<QuocGia> adapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, quocgias);
-        adapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
-        spQuocTich.setAdapter(adapter);
+        int index = 0;
         if (quocgias.size() > 0 && thongTinChung.QuocTich != null) {
-            int index = 0;
             try {
                 int maHienTai = Integer.parseInt(thongTinChung.QuocTich);
                 for (int i = 0; i < quocgias.size(); i++) {
@@ -398,20 +469,15 @@ public class ThongTinChungFragment extends Fragment {
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
-            finally {
-                spQuocTich.setSelection(index);
-            }
         }
+        spQuocTich.setSelection(index);
     }
 
-    private void setUpSpTinhThanhSinh(List<ThanhPho> thanhPhos) {
+    private void updateSpTinhThanhSinh(List<ThanhPho> thanhPhos) {
         if (thanhPhos == null) return;
 
-        ArrayAdapter<ThanhPho> adapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, thanhPhos);
-        adapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
-        spTinhThanhSinh.setAdapter(adapter);
+        int index = 0;
         if (thanhPhos.size() > 0 && thongTinChung.NoiSinh != null && thongTinChung.NoiSinh.ThanhPho != null) {
-            int index = 0;
             try {
                 int maHienTai = Integer.parseInt(thongTinChung.NoiSinh.ThanhPho);
                 for (int i = 0; i < thanhPhos.size(); i++) {
@@ -423,20 +489,15 @@ public class ThongTinChungFragment extends Fragment {
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
-            finally {
-                spTinhThanhSinh.setSelection(index);
-            }
         }
+        spTinhThanhSinh.setSelection(index);
     }
 
-    private void setUpSpTonGiao(List<TonGiao> tongiaos) {
-        if (tongiaos == null) return;;
+    private void updateSpTonGiao(List<TonGiao> tongiaos) {
+        if (tongiaos == null) return;
 
-        ArrayAdapter<TonGiao> adapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, tongiaos);
-        adapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
-        spTonGiao.setAdapter(adapter);
+        int index = 0;
         if (tongiaos.size() > 0 && thongTinChung.TonGiao != null) {
-            int index = 0;
             try {
                 int maHienTai = Integer.parseInt(thongTinChung.TonGiao);
                 for (int i = 0; i < tongiaos.size(); i++) {
@@ -448,20 +509,15 @@ public class ThongTinChungFragment extends Fragment {
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
-            finally {
-                spTonGiao.setSelection(index);
-            }
         }
+        spTonGiao.setSelection(index);
     }
 
-    private void setUpSpDanToc(List<DanToc> danTocs) {
-        if (danTocs ==null) return;
+    private void updateSpDanToc(List<DanToc> danTocs) {
+        if (danTocs == null) return;
 
-        ArrayAdapter<DanToc> adapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, danTocs);
-        adapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
-        spDanToc.setAdapter(adapter);
+        int index = 0;
         if (danTocs.size() > 0 && thongTinChung.TonGiao != null) {
-            int index = 0;
             try {
                 int maHienTai = Integer.parseInt(thongTinChung.DanToc);
                 for (int i = 0; i < danTocs.size(); i++) {
@@ -473,70 +529,8 @@ public class ThongTinChungFragment extends Fragment {
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
-            finally {
-                spDanToc.setSelection(index);
-            }
         }
-    }
-
-    private void updateNamNhuan(List<String> data, ArrayAdapter adapter, int position, Spinner spNam) {
-        switch (position) {
-            case 1: // Thang 2
-                int namSinh = Integer.valueOf(spNam.getSelectedItem().toString());
-
-                if ((namSinh % 400 == 0) || ((namSinh % 100 != 0) && (namSinh % 4 == 0))) {// nam nhuan
-                    if (data.size() == 31) { // Hien co 31 ngay
-                        data.remove(30); // remove 31
-                        data.remove(29); // remove 30
-                    } else if (data.size() == 30) {
-                        data.remove(29); // remove 30
-                    } else if (data.size() == 28) {
-                        data.add(28, "29");
-                    }
-
-                } else { // Nam khong nhuan
-                    if (data.size() == 31) {
-                        data.remove(30);
-                        data.remove(29);
-                        data.remove(28);
-                    } else if (data.size() == 30) {
-                        data.remove(29);
-                        data.remove(28);
-                    } else if (data.size() == 29) {
-                        data.remove(28);
-                    }
-                }
-                break;
-            case 0:
-            case 2:
-            case 4:
-            case 6:
-            case 7:
-            case 9:
-            case 11: // Nhung thang 31 ngay
-                if (data.size() == 30)
-                    data.add(30, "31");
-                else if (data.size() == 29) { // Hien co 29 ngay
-                    data.add(29, "30");
-                    data.add(30, "31");
-                } else if (data.size() == 28) { // Hien co 28 ngay
-                    data.add(28, "29");
-                    data.add(29, "30");
-                    data.add(30, "31");
-                }
-                break;
-            default: // Nhung thang co 30 ngay
-                if (data.size() == 31)
-                    data.remove(30);
-                else if (data.size() == 28) {
-                    data.add(28, "29");
-                    data.add(29, "30");
-                } else if (data.size() == 29) {
-                    data.add(29, "30");
-                }
-                break;
-        }
-        adapter.notifyDataSetChanged();
+        spDanToc.setSelection(index);
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -583,24 +577,49 @@ public class ThongTinChungFragment extends Fragment {
                     String json = mResponse.body() != null ? mResponse.body().string() : "";
                     switch (type) {
                         case 1:
-                            quocGiaData = QuocGia.fromJson(json);
-                            setUpSpQuocGiaSinh(quocGiaData);
-                            setUpSpQuocTich(quocGiaData);
+                            List<QuocGia> quocGias = QuocGia.fromJson(json);
+                            if (quocGias != null) {
+                                mQuocGiaDs.clear();
+                                mQuocGiaDs.add(new QuocGia(0, "----"));
+                                mQuocGiaDs.addAll(quocGias);
+                                mQuocGiaAdapter.notifyDataSetChanged();
+                                mQuocTichAdapter.notifyDataSetChanged();
+                                updateSpQuocGiaSinh(mQuocGiaDs);
+                                updateSpQuocTich(mQuocGiaDs);
+                            }
                             break;
 
                         case 2:
-                            tinhThanhSinhData = ThanhPho.fromJson(json);
-                            setUpSpTinhThanhSinh(tinhThanhSinhData);
+                            List<ThanhPho> thanhPhos = ThanhPho.fromJson(json);
+                            if (thanhPhos != null) {
+                                mTinhThanhDs.clear();
+                                mTinhThanhDs.add(new ThanhPho(0, "----"));
+                                mTinhThanhDs.addAll(thanhPhos);
+                                mTinhThanhAdapter.notifyDataSetChanged();
+                                updateSpTinhThanhSinh(mTinhThanhDs);
+                            }
                             break;
 
                         case 3:
-                            tonGiaoData = TonGiao.fromJson(json);
-                            setUpSpTonGiao(tonGiaoData);
+                            List<TonGiao> tonGiaos = TonGiao.fromJson(json);
+                            if (tonGiaos != null) {
+                                mTonGiaoDs.clear();
+                                mTonGiaoDs.add(new TonGiao(0, "----"));
+                                mTonGiaoDs.addAll(tonGiaos);
+                                mTonGiaoAdapter.notifyDataSetChanged();
+                                updateSpTonGiao(mTonGiaoDs);
+                            }
                             break;
 
                         case 4:
-                            danTocData = DanToc.fromJson(json);
-                            setUpSpDanToc(danTocData);
+                            List<DanToc> danTocs = DanToc.fromJson(json);
+                            if (danTocs != null) {
+                                mDanTocDs.clear();
+                                mDanTocDs.add(new DanToc(0, "----"));
+                                mDanTocDs.addAll(danTocs);
+                                mDanTocAdapter.notifyDataSetChanged();
+                                updateSpDanToc(mDanTocDs);
+                            }
                             break;
                     }
                 } catch (IOException e) {
@@ -608,5 +627,65 @@ public class ThongTinChungFragment extends Fragment {
                 }
             }
         }
+    }
+
+    private void updateNamNhuan(List<String> data, ArrayAdapter adapter, int position, Spinner spNam) {
+        switch (position) {
+            case 2: // Thang 2
+                int namSinh = Integer.valueOf(spNam.getSelectedItem().toString());
+
+                if ((namSinh % 400 == 0) || ((namSinh % 100 != 0) && (namSinh % 4 == 0))) {// nam nhuan
+                    if (data.size() == 32) { // Hien co 31 ngay
+                        data.remove(31); // remove 31
+                        data.remove(30); // remove 30
+                    } else if (data.size() == 31) { // Hien co 30 ngay
+                        data.remove(30); // remove 30
+                    } else if (data.size() == 29) { // Hien co 28 ngay
+                        data.add(29, "29");
+                    }
+
+                } else { // Nam khong nhuan
+                    if (data.size() == 32) { // Hien co 31 ngay
+                        data.remove(31);
+                        data.remove(30);
+                        data.remove(29);
+                    } else if (data.size() == 31) { // Hien co 30 ngay
+                        data.remove(30);
+                        data.remove(29);
+                    } else if (data.size() == 30) { // Hien co 29 ngay
+                        data.remove(29);
+                    }
+                }
+                break;
+            case 1:
+            case 3:
+            case 5:
+            case 7:
+            case 8:
+            case 10:
+            case 12: // Nhung thang 31 ngay
+                if (data.size() == 31) // Hien co 30 ngay
+                    data.add(31, "31");
+                else if (data.size() == 30) { // Hien co 29 ngay
+                    data.add(30, "30");
+                    data.add(31, "31");
+                } else if (data.size() == 29) { // Hien co 28 ngay
+                    data.add(29, "29");
+                    data.add(30, "30");
+                    data.add(31, "31");
+                }
+                break;
+            default: // Nhung thang co 30 ngay
+                if (data.size() == 32) // Hien co 31 ngay
+                    data.remove(31);
+                else if (data.size() == 29) { // Hien co 28 ngay
+                    data.add(29, "29");
+                    data.add(30, "30");
+                } else if (data.size() == 30) { // Hien co 29 ngay
+                    data.add(30, "30");
+                }
+                break;
+        }
+        adapter.notifyDataSetChanged();
     }
 }

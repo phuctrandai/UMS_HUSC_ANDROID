@@ -2,7 +2,6 @@ package com.practice.phuc.ums_husc.ViewModel;
 
 import android.support.annotation.NonNull;
 
-import com.practice.phuc.ums_husc.Helper.DateHelper;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
@@ -14,6 +13,11 @@ import java.util.List;
 public class DanToc {
     public int MaDanToc;
     public String TenDanToc;
+
+    public DanToc(int maDanToc, String tenDanToc) {
+        MaDanToc = maDanToc;
+        TenDanToc = tenDanToc;
+    }
 
     @NonNull
     @Override

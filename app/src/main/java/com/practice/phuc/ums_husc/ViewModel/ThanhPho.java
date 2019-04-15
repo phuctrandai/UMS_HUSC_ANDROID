@@ -14,6 +14,11 @@ public class ThanhPho {
     public int MaThanhPho;
     public String TenThanhPho;
 
+    public ThanhPho(int maThanhPho, String tenThanhPho) {
+        MaThanhPho = maThanhPho;
+        TenThanhPho = tenThanhPho;
+    }
+
     @NonNull
     @Override
     public String toString() {

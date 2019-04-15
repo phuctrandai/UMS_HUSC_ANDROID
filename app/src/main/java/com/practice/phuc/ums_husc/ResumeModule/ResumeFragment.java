@@ -11,7 +11,6 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,7 +85,7 @@ public class ResumeFragment extends Fragment {
         mRootLayout = view.findViewById(R.id.layout_root_resume);
         mTabLayout = view.findViewById(R.id.tabs);
         mViewPager = view.findViewById(R.id.vp_resume);
-        mViewPager.setOffscreenPageLimit(mResumePagerAdapter.getCount());
+//        mViewPager.setOffscreenPageLimit(mResumePagerAdapter.getCount());
         mIsViewDestroyed = false;
 
         return view;

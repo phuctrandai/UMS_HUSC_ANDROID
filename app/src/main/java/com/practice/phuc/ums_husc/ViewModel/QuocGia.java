@@ -14,6 +14,11 @@ public class QuocGia {
     public int MaQuocGia;
     public String TenQuocGia;
 
+    public QuocGia(int maQuocGia, String tenQuocGia) {
+        MaQuocGia = maQuocGia;
+        TenQuocGia = tenQuocGia;
+    }
+
     @NonNull
     @Override
     public String toString() {
