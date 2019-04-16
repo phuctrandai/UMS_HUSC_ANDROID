@@ -392,8 +392,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void deleteTokenForAccount() {
-        String maSinhVien = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE)
-                .getString(getString(R.string.pre_key_student_id), null);
+        String maSinhVien = Reference.getAccountId(this);
         String token = getSharedPreferences(getString(R.string.share_pre_key_firebase), MODE_PRIVATE)
                 .getString(getString(R.string.pre_key_token), null);
         FireBaseIDTask.deleteTokenFromAccount(maSinhVien, token);

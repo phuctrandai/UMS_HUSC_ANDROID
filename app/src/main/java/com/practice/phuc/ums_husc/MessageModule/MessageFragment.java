@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
@@ -13,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.practice.phuc.ums_husc.Helper.BottomNavigationBehavior;
 import com.practice.phuc.ums_husc.R;
 
 public class MessageFragment extends Fragment {
@@ -55,8 +53,6 @@ public class MessageFragment extends Fragment {
     private void bindUI(View view) {
         BottomNavigationView navigation = view.findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) navigation.getLayoutParams();
-        layoutParams.setBehavior(new BottomNavigationBehavior());
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -92,5 +88,9 @@ public class MessageFragment extends Fragment {
             ft.addToBackStack(fragmentTag);
         }
         ft.commit();
+    }
+
+    public Fragment getChildFragment(String fragmentTag) {
+        return getChildFragmentManager().findFragmentByTag(fragmentTag);
     }
 }

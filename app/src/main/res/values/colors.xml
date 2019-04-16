@@ -4,9 +4,9 @@
     <color name="colorPrimaryDark">#3949AB</color>
     <color name="colorAccent">#304FFE</color>
     <color name="colorWhite">#FFFFFF</color>
-    <color name="colorGrey">#80BEBEBE</color>
+    <color name="colorWhite50">#BFFFFFFF</color>
+    <color name="colorBlack">#000000</color>
     <color name="colorDarkGrey">#B3000000</color>
-
-    <!-- Man hinh dang nhap -->
-    <color name="colorButtonLogin">@color/colorPrimary</color>
+    <color name="colorDarkerGrey">#8D8D8D</color>
+    <color name="colorGrey">#80BEBEBE</color>
 </resources>

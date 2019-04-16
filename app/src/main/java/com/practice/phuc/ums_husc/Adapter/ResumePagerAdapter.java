@@ -1,5 +1,6 @@
 package com.practice.phuc.ums_husc.Adapter;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -18,6 +19,7 @@ import com.practice.phuc.ums_husc.ViewModel.VThongTinLienHe;
 import com.practice.phuc.ums_husc.ViewModel.VThuongTru;
 
 public class ResumePagerAdapter extends FragmentPagerAdapter {
+    private Context mContext;
 
     private VThongTinChung thongTinChung;
     private VThongTinLienHe thongTinLienHe;
@@ -31,9 +33,10 @@ public class ResumePagerAdapter extends FragmentPagerAdapter {
     private DacDiemBanThanFragment dacDiemBanThanFragment;
     private LichSuBanThanFragment lichSuBanThanFragment;
 
-    public ResumePagerAdapter(FragmentManager fm) {
+    public ResumePagerAdapter(FragmentManager fm, Context context) {
         super(fm);
-        thongTinChungFragment = ThongTinChungFragment.newInstance(thongTinChung);
+        mContext = context;
+        thongTinChungFragment = ThongTinChungFragment.newInstance(mContext, thongTinChung);
         lienHeCuTruFragment = LienHeCuTruFragment.newInstance(thongTinLienHe, thuongTru, queQuan);
         dacDiemBanThanFragment = DacDiemBanThanFragment.newInstance(dacDiemBanThan);
         lichSuBanThanFragment = LichSuBanThanFragment.newInstance(lichSuBanThan);
@@ -58,7 +61,6 @@ public class ResumePagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        Log.d("DEBUG", "Get item " + position);
         switch (position) {
             case 0:
                 thongTinChungFragment.setThongTin(thongTinChung);

@@ -6,6 +6,7 @@ import com.squareup.moshi.Types;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.List;
 
 public class THONGBAO {
     private int MaThongBao;
@@ -59,6 +60,19 @@ public class THONGBAO {
         Moshi mMoshi = new Moshi.Builder().build();
         Type mUsersType = Types.newParameterizedType(THONGBAO.class);
         JsonAdapter<THONGBAO> mJsonAdapter = mMoshi.adapter(mUsersType);
+        try {
+            return mJsonAdapter.fromJson(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static List<THONGBAO> fromJsonToList(String json) {
+        Moshi mMoshi = new Moshi.Builder().build();
+        Type mUsersType = Types.newParameterizedType(List.class, THONGBAO.class);
+        JsonAdapter<List<THONGBAO>> mJsonAdapter = mMoshi.adapter(mUsersType);
+
         try {
             return mJsonAdapter.fromJson(json);
         } catch (IOException e) {

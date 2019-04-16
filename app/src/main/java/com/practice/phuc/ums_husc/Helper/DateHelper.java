@@ -102,6 +102,10 @@ public class DateHelper {
         return DateHelper.getDayOfMonth(date) + "/" + DateHelper.getMonth(date) + "/" + DateHelper.getYear(date);
     }
 
+    public static String toDateTimeString(Date date) {
+        return toShortDateString(date) + " " + getCalendar().get(Calendar.HOUR_OF_DAY) + ":" + getCalendar().get(Calendar.MINUTE);
+    }
+
     public static Date plusDay(Date date, int days) {
         Calendar calendar = Calendar.getInstance(new Locale("vie", "VN"));
         calendar.setTime(date);

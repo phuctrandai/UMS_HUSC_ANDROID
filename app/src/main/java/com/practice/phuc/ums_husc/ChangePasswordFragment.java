@@ -156,8 +156,8 @@ public class ChangePasswordFragment extends Fragment {
             if (validData && !mIsDestroyView) {
                 if (NetworkUtil.getConnectivityStatus(mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
 
-                    Snackbar.make(mRootLayout, getString(R.string.network_not_available), Snackbar.LENGTH_SHORT)
-                            .setAction(getString(R.string.try_again), new View.OnClickListener() {
+                    Snackbar.make(mRootLayout, getString(R.string.error_network_disconected), Snackbar.LENGTH_SHORT)
+                            .setAction("Thử lại", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     changePass();

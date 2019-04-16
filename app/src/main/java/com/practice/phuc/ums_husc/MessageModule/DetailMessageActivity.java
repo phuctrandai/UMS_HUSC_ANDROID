@@ -2,7 +2,6 @@ package com.practice.phuc.ums_husc.MessageModule;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -70,16 +69,17 @@ public class DetailMessageActivity extends AppCompatActivity {
 
         String json = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_MESSAGE);
         mTinNhan = TINNHAN.fromJson(json);
+        Log.d("DEBUG", "Xem chi tiet tin nhan: " + json);
         showData(mTinNhan);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
         setIntent(intent);
         String json = intent.getStringExtra(Reference.BUNDLE_EXTRA_MESSAGE);
         TINNHAN tinNhan = TINNHAN.fromJson(json);
         showData(tinNhan);
-        super.onNewIntent(intent);
     }
 
     @Override
@@ -147,6 +147,7 @@ public class DetailMessageActivity extends AppCompatActivity {
             mProgressBar.setVisibility(View.GONE);
 
         } else {
+            Log.d("DEBUG", tinNhan.getMaTinNhan() + "");
             mLoadTask = new LoadMessageContentTask(tinNhan.getMaTinNhan() + "");
             mLoadTask.execute((String) null);
         }
@@ -205,9 +206,9 @@ public class DetailMessageActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean success) {
             if (mLoadTask != null) {
                 if (success) {
-
-                    TINNHAN tinNhan = TINNHAN.fromJson(json);
-                    showMessageBody(Objects.requireNonNull(tinNhan));
+                    Log.d("DEBUG", "Lay tin nhan theo id: " + json);
+                    mTinNhan = TINNHAN.fromJson(json);
+                    showMessageBody(Objects.requireNonNull(mTinNhan));
 
                     mProgressBar.setVisibility(View.GONE);
 
@@ -229,9 +230,8 @@ public class DetailMessageActivity extends AppCompatActivity {
     }
 
     private Response fetchData(String messageId) {
-        SharedPreferences sp = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
-        String maSinhVien = sp.getString(getString(R.string.pre_key_student_id), null);
-        String matKhau = sp.getString(getString(R.string.pre_key_password), null);
+        String maSinhVien = Reference.getAccountId(this);
+        String matKhau = Reference.getAccountPassword(this);
         String url = Reference.getLoadNoiDungTinNhanApiUrl(maSinhVien, matKhau, messageId);
 
         return NetworkUtil.makeRequest(url, false, null);
@@ -277,7 +277,7 @@ public class DetailMessageActivity extends AppCompatActivity {
             if (mNotNetworkSnackbar != null && mNotNetworkSnackbar.isShown()) return;
 
             mNotNetworkSnackbar = CustomSnackbar.createTwoButtonSnackbar(this, rootLayout,
-                    getString(R.string.network_not_available),
+                    getString(R.string.error_network_disconected), Snackbar.LENGTH_INDEFINITE,
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -302,8 +302,8 @@ public class DetailMessageActivity extends AppCompatActivity {
         if (mIsViewDestroyed) return;
 
         if (show) {
-            mErrorSnackbar = CustomSnackbar.createTwoButtonSnackbar(this, rootLayout,
-                    message,
+            mErrorSnackbar = CustomSnackbar.createTwoButtonSnackbar(getApplicationContext(), rootLayout,
+                    message, Snackbar.LENGTH_INDEFINITE,
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

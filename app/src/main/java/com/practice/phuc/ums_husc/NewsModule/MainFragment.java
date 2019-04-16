@@ -26,48 +26,13 @@ import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.Model.THONGBAO;
 import com.practice.phuc.ums_husc.R;
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Response;
 
 public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-    private boolean mIsViewDestroyed;
-    private DBHelper mDBHelper;
-    private LoadNewsTask mLoadNewsTask;
-    private Context mContext;
-    private List<THONGBAO> mThongBaoList;
-    private boolean mIsThongBaoListChange;
-    private int mStatus;
-    private String mErrorMessage;
-    private NewsRecyclerDataAdapter mAdapter;
-    private int currentItems, totalItems, scrollOutItems;
-    private boolean mIsScrolling;
-    private int mLastAction;
-    private Snackbar mNotNetworkSnackbar;
-    private Snackbar mErrorSnackbar;
-    private long mCurrentPage;
-    private final int ITEM_PER_PAGE = 15;
-
-    private final int STATUS_INIT = 0;
-    private final int STATUS_SHOW_ERROR = 1;
-    private final int STATUS_SHOW_DATA = 2;
-    private final int STATUS_NOT_NETWORK = 3;
-    private final int STATUS_LOAD_MORE = 4;
-    private final int ACTION_INIT = 0;
-    private final int ACTION_REFRESH = 1;
-    private final int ACTION_LOAD_MORE = 2;
-
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-    private RecyclerView rvItems;
-    private LinearLayout mLoadMoreLayout;
-
     public MainFragment() {
     }
 
@@ -77,15 +42,37 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         return mainFragment;
     }
 
+    private Context mContext;
+    private DBHelper mDBHelper;
+    private LoadNewsTask mLoadNewsTask;
+    private NewsRecyclerDataAdapter mAdapter;
+    private String mErrorMessage;
+    private int mStatus, mLastAction;
+    private int currentItems, totalItems, scrollOutItems;
+    private long mCurrentPage;
+    private boolean mIsScrolling, mIsViewDestroyed;
+    private Snackbar mNotNetworkSnackbar, mErrorSnackbar;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private RecyclerView rvItems;
+    private LinearLayout mLoadMoreLayout;
+
+    private final int ITEM_PER_PAGE = 15;
+    private final int STATUS_INIT = 0;
+    private final int STATUS_SHOW_ERROR = 1;
+    private final int STATUS_SHOW_DATA = 2;
+    private final int STATUS_NOT_NETWORK = 3;
+    private final int STATUS_LOAD_MORE = 4;
+    private final int ACTION_INIT = 0;
+    private final int ACTION_REFRESH = 1;
+    private final int ACTION_LOAD_MORE = 2;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        mStatus = STATUS_INIT;
-        mThongBaoList = new ArrayList<>();
-        mIsThongBaoListChange = false;
-        mAdapter = new NewsRecyclerDataAdapter(mThongBaoList, mContext);
-        mIsScrolling = false;
         mLastAction = ACTION_INIT;
+        mStatus = STATUS_INIT;
+        mAdapter = new NewsRecyclerDataAdapter(mContext, new ArrayList<THONGBAO>());
         mDBHelper = new DBHelper(mContext);
+        mIsScrolling = true;
         long countRow = mDBHelper.countRow(DBHelper.NEWS);
         if (countRow > 0) {
             mCurrentPage = countRow / ITEM_PER_PAGE + 1;
@@ -139,7 +126,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onPause() {
         showNetworkErrorSnackbar(false);
         showErrorSnackbar(false, mErrorMessage);
-        mIsViewDestroyed = true;
         super.onPause();
     }
 
@@ -152,32 +138,34 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onHasNewNews() {
         if (Reference.mHasNewNews) {
             Reference.mHasNewNews = false;
-            if (Reference.getmListNewThongBao().size() > 0) {
-                for (THONGBAO t : Reference.getmListNewThongBao()) {
-                    mThongBaoList.add(0, t);
-                    mAdapter.notifyItemInserted(0);
-                }
-                Reference.getmListNewThongBao().clear();
+            List<THONGBAO> newItems = Reference.getmListNewThongBao();
+            for (int i=0; i < newItems.size(); i++) {
+                mAdapter.insertItem(newItems.get(i), 0);
             }
+            Reference.getmListNewThongBao().clear();
         }
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroyView() {
+        super.onDestroyView();
         mIsViewDestroyed = true;
-        mThongBaoList.clear();
-        if (mLoadNewsTask != null) {
-            mLoadNewsTask.cancel(true);
-            mLoadNewsTask = null;
-        }
+    }
+
+    @Override
+    public void onDestroy() {
+        mAdapter.clearDataSet();
+        mLoadNewsTask = null;
         super.onDestroy();
     }
 
     @Override
     public void onRefresh() {
         mLastAction = ACTION_REFRESH;
+
         showNetworkErrorSnackbar(false);
-        showErrorSnackbar(false, "");
+        showErrorSnackbar(false, null);
+
         if (NetworkUtil.getConnectivityStatus(mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
             mStatus = STATUS_NOT_NETWORK;
             new Handler().postDelayed(new Runnable() {
@@ -189,7 +177,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             }, 1000);
         } else {
             mDBHelper.deleteAllRecord(DBHelper.NEWS);
-            mThongBaoList.clear();
             mAdapter.lastPosition = -1;
             mCurrentPage = 1;
             attempGetData();
@@ -215,6 +202,112 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             mIsScrolling = false;
             mLoadMoreLayout.setVisibility(View.VISIBLE);
             attempGetData();
+        }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private class LoadNewsTask extends AsyncTask<String, Void, Boolean> {
+        private Response mResponse;
+        private String mJson;
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            if (mLoadNewsTask == null) return false;
+
+            try {
+                mResponse = fetchData();
+                if (mResponse == null) {
+                    mErrorMessage = getString(R.string.error_server_not_response);
+                    return false;
+
+                } else {
+                    if (mResponse.code() == NetworkUtil.OK) {
+                        mJson = mResponse.body() != null ? mResponse.body().string() : "";
+
+                        return true;
+
+                    } else if (mResponse.code() == NetworkUtil.BAD_REQUEST) {
+                        mErrorMessage = mResponse.body() != null ? mResponse.body().string() : "";
+
+                    } else {
+                        mErrorMessage = getString(R.string.error_server_not_response);
+                    }
+                    return false;
+                }
+            } catch (Exception e) {
+                Log.d("DEBUG", mErrorMessage);
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (mLoadNewsTask == null) return;
+
+            mSwipeRefreshLayout.setRefreshing(false);
+
+            if (success) {
+                mStatus = STATUS_SHOW_DATA;
+                mLoadMoreLayout.setVisibility(View.GONE);
+                mCurrentPage += 1;
+                mIsScrolling = false;
+                refreshData(THONGBAO.fromJsonToList(mJson));
+
+            } else {
+                showErrorSnackbar(true, mErrorMessage);
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mLoadNewsTask = null;
+            super.onCancelled();
+        }
+    }
+
+    private void attempGetData() {
+        if (NetworkUtil.getConnectivityStatus(this.mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
+            mStatus = STATUS_NOT_NETWORK;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    showNetworkErrorSnackbar(true);
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    mLoadMoreLayout.setVisibility(View.GONE);
+                }
+            }, 1000);
+
+            if (mDBHelper.countRow(DBHelper.NEWS) > 0) {
+                List<THONGBAO> list = mDBHelper.getAllNews();
+                refreshData(list);
+            }
+        } else {
+            mLoadNewsTask = new LoadNewsTask();
+            mLoadNewsTask.execute((String) null);
+        }
+    }
+
+    private Response fetchData() {
+        if (mLastAction == ACTION_INIT) mCurrentPage = 1;
+
+        String maSinhVien = mContext.getSharedPreferences(getString(R.string.share_pre_key_account_info), Context.MODE_PRIVATE)
+                .getString(getString(R.string.pre_key_student_id), null);
+        String matKhau = mContext.getSharedPreferences(getString(R.string.share_pre_key_account_info), Context.MODE_PRIVATE)
+                .getString(getString(R.string.pre_key_password), null);
+        String url = Reference.getLoadThongBaoApiUrl(maSinhVien, matKhau, mCurrentPage, ITEM_PER_PAGE);
+
+        return NetworkUtil.makeRequest(url, false, null);
+    }
+
+    private void refreshData(List<THONGBAO> list) {
+        if (list != null) {
+            mStatus = STATUS_SHOW_DATA;
+            if (mLastAction == ACTION_REFRESH || mLastAction == ACTION_INIT)
+                mAdapter.changeDataSet(list);
+
+            else if (mLastAction == ACTION_LOAD_MORE && list.size() > 0)
+                mAdapter.insertItemRange(list, mAdapter.getItemCount(), ITEM_PER_PAGE);
         }
     }
 
@@ -277,170 +370,12 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         });
     }
 
-    private void attempGetData() {
-        if (NetworkUtil.getConnectivityStatus(this.mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
-            mStatus = STATUS_NOT_NETWORK;
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    showNetworkErrorSnackbar(true);
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    mLoadMoreLayout.setVisibility(View.GONE);
-                }
-            }, 1000);
-
-            if (mDBHelper.countRow(DBHelper.NEWS) > 0) {
-                List<THONGBAO> list = mDBHelper.getAllNews();
-                mThongBaoList.addAll(list);
-                mAdapter.notifyItemRangeInserted(mAdapter.getItemCount(), ITEM_PER_PAGE);
-            }
-        } else {
-            mLoadNewsTask = new LoadNewsTask();
-            mLoadNewsTask.execute((String) null);
-        }
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    private class LoadNewsTask extends AsyncTask<String, Void, Boolean> {
-        private Response mResponse;
-
-        @Override
-        protected Boolean doInBackground(String... strings) {
-            if (mLoadNewsTask == null) return false;
-
-            try {
-                mResponse = fetchData();
-                if (mResponse == null) {
-                    Log.d("DEBUG", "Get thong bao Response null");
-                    mErrorMessage = getString(R.string.error_time_out);
-                    return false;
-
-                } else {
-                    Log.d("DEBUG", "Get thong bao Response code: " + mResponse.code());
-                    if (mResponse.code() == NetworkUtil.OK) {
-                        String json = mResponse.body() != null ? mResponse.body().string() : "";
-                        setData(castData(json));
-                        return true;
-
-                    } else if (mResponse.code() == NetworkUtil.BAD_REQUEST) {
-                        mErrorMessage = mResponse.body() != null ? mResponse.body().string() : "";
-                    } else {
-                        mErrorMessage = getString(R.string.error_server_not_response);
-                    }
-                    return false;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Boolean success) {
-            if (mLoadNewsTask == null) return;
-            mSwipeRefreshLayout.setRefreshing(false);
-            if (success) {
-                mStatus = STATUS_SHOW_DATA;
-                mCurrentPage += 1;
-                mIsScrolling = false;
-                if (mIsThongBaoListChange) {
-                    mAdapter.notifyItemRangeInserted(mAdapter.getItemCount(), ITEM_PER_PAGE);
-                    mIsThongBaoListChange = false;
-                }
-                mLoadMoreLayout.setVisibility(View.GONE);
-            } else {
-                showErrorSnackbar(true, mErrorMessage);
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mLoadNewsTask = null;
-            super.onCancelled();
-        }
-    }
-
-    private Response fetchData() {
-        if (mLastAction == ACTION_INIT) mCurrentPage = 1;
-
-        String maSinhVien = mContext.getSharedPreferences(getString(R.string.share_pre_key_account_info), Context.MODE_PRIVATE)
-                .getString(getString(R.string.pre_key_student_id), null);
-        String matKhau = mContext.getSharedPreferences(getString(R.string.share_pre_key_account_info), Context.MODE_PRIVATE)
-                .getString(getString(R.string.pre_key_password), null);
-        String url = Reference.getLoadThongBaoApiUrl(maSinhVien, matKhau, mCurrentPage, ITEM_PER_PAGE);
-
-        return NetworkUtil.makeRequest(url, false, null);
-    }
-
-    private void setData(List<THONGBAO> list) {
-        if (list != null && list.size() > 0) {
-            if (mLastAction == ACTION_INIT)
-                mDBHelper.deleteAllRecord(DBHelper.NEWS);
-            for (THONGBAO thongbao : list) {
-                mThongBaoList.add(thongbao);
-                mDBHelper.insertNews(thongbao);
-            }
-            mIsThongBaoListChange = true;
-        }
-    }
-
-    private List<THONGBAO> castData(String json) {
-        Moshi moshi = new Moshi.Builder().build();
-        Type usersType = Types.newParameterizedType(List.class, THONGBAO.class);
-        JsonAdapter<List<THONGBAO>> jsonAdapter = moshi.adapter(usersType);
-        try {
-            return jsonAdapter.fromJson(json);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private void showNetworkErrorSnackbar(boolean show) {
-        if (mIsViewDestroyed) return;
-        if (show) {
-            mStatus = STATUS_NOT_NETWORK;
-            if (mNotNetworkSnackbar != null && mNotNetworkSnackbar.isShown()) return;
-
-            mNotNetworkSnackbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mSwipeRefreshLayout,
-                    getString(R.string.network_not_available),
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            mNotNetworkSnackbar.dismiss();
-                        }
-                    },
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (mLastAction == ACTION_REFRESH) {
-                                mSwipeRefreshLayout.setRefreshing(true);
-                                onRefresh();
-                            } else if (mLastAction == ACTION_LOAD_MORE) {
-                                mLoadMoreLayout.setVisibility(View.VISIBLE);
-                                onLoadMore();
-                            } else if (mLastAction == ACTION_INIT) {
-                                mSwipeRefreshLayout.setRefreshing(true);
-                                attempGetData();
-                            }
-                            mNotNetworkSnackbar.dismiss();
-                        }
-                    });
-            if (mNotNetworkSnackbar != null)
-                mNotNetworkSnackbar.show();
-
-        } else if (mNotNetworkSnackbar != null) {
-            mNotNetworkSnackbar.dismiss();
-        }
-    }
-
     private void showErrorSnackbar(boolean show, String message) {
         if (mIsViewDestroyed) return;
         if (show) {
             mStatus = STATUS_SHOW_ERROR;
             mErrorSnackbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mSwipeRefreshLayout,
-                    message,
+                    message, Snackbar.LENGTH_INDEFINITE,
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -471,12 +406,50 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         }
     }
 
-    public int findFirstVisibleItemPosition() {
-        LinearLayoutManager manager = (LinearLayoutManager) rvItems.getLayoutManager();
-        return manager == null ? -1 : manager.findFirstVisibleItemPosition();
+    private void showNetworkErrorSnackbar(boolean show) {
+        if (mIsViewDestroyed) return;
+        if (show) {
+            mStatus = STATUS_NOT_NETWORK;
+            if (mNotNetworkSnackbar != null && mNotNetworkSnackbar.isShown()) return;
+
+            mNotNetworkSnackbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mSwipeRefreshLayout,
+                    getString(R.string.error_network_disconected), Snackbar.LENGTH_INDEFINITE,
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mNotNetworkSnackbar.dismiss();
+                        }
+                    },
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (mLastAction == ACTION_REFRESH) {
+                                mSwipeRefreshLayout.setRefreshing(true);
+                                onRefresh();
+                            } else if (mLastAction == ACTION_LOAD_MORE) {
+                                mLoadMoreLayout.setVisibility(View.VISIBLE);
+                                onLoadMore();
+                            } else if (mLastAction == ACTION_INIT) {
+                                mSwipeRefreshLayout.setRefreshing(true);
+                                attempGetData();
+                            }
+                            mNotNetworkSnackbar.dismiss();
+                        }
+                    });
+            if (mNotNetworkSnackbar != null)
+                mNotNetworkSnackbar.show();
+
+        } else if (mNotNetworkSnackbar != null) {
+            mNotNetworkSnackbar.dismiss();
+        }
     }
 
     public void smoothScrollToTop() {
         rvItems.smoothScrollToPosition(0);
+    }
+
+    public int findFirstVisibleItemPosition() {
+        LinearLayoutManager manager = (LinearLayoutManager) rvItems.getLayoutManager();
+        return manager == null ? -1 : manager.findFirstVisibleItemPosition();
     }
 }

@@ -5,13 +5,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,7 +67,7 @@ public class ResumeFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        mResumePagerAdapter = new ResumePagerAdapter(getChildFragmentManager());
+        mResumePagerAdapter = new ResumePagerAdapter(getChildFragmentManager(), mContext);
         mIsViewDestroyed = false;
         mStatus = STATUS_INIT;
         Moshi mMoshi = new Moshi.Builder().build();
@@ -86,6 +86,7 @@ public class ResumeFragment extends Fragment {
         mRootLayout = view.findViewById(R.id.layout_root_resume);
         mTabLayout = view.findViewById(R.id.tabs);
         mViewPager = view.findViewById(R.id.vp_resume);
+        mViewPager.setOffscreenPageLimit(mResumePagerAdapter.getCount());
         mIsViewDestroyed = false;
 
         return view;
@@ -169,7 +170,6 @@ public class ResumeFragment extends Fragment {
                                     lyLichCaNhan.getThuongTru(),
                                     lyLichCaNhan.getDacDiemBanThan(),
                                     lyLichCaNhan.getLichSuBanThan());
-                            Log.d("DEBUG", json);
 
                             return true;
 
@@ -208,7 +208,12 @@ public class ResumeFragment extends Fragment {
 
     private void attempGetData() {
         if (NetworkUtil.getConnectivityStatus(mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
-            showNetworkErrorSnackbar(true);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    showNetworkErrorSnackbar(true);
+                }
+            }, 1000);
         } else {
             mLoadResumeTask = new LoadResumeTask();
             mLoadResumeTask.execute((String) null);
@@ -260,7 +265,8 @@ public class ResumeFragment extends Fragment {
         if (show) {
             mStatus = STATUS_NOT_NETWORK;
             mNotNetworkSnackbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mRootLayout
-                    , getString(R.string.network_not_available)
+                    , getString(R.string.error_network_disconected)
+                    , Snackbar.LENGTH_INDEFINITE
                     , null
                     , new View.OnClickListener() {
                         @Override
@@ -281,7 +287,7 @@ public class ResumeFragment extends Fragment {
         if (show) {
             mStatus = STATUS_SHOW_ERROR;
             mErrorSnackbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mRootLayout
-                    , message
+                    , message, Snackbar.LENGTH_INDEFINITE
                     , null
                     , new View.OnClickListener() {
                         @Override
