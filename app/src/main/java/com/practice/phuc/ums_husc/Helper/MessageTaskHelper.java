@@ -43,15 +43,14 @@ public class MessageTaskHelper {
         }
     }
 
-    public static void updateSeenTime(int messageId, String maSinhVien, String matKhau) {
+    public void updateSeenTime(int messageId, String maSinhVien, String matKhau) {
         String url = Reference.getUpdateThoiDiemXemTinNhanApiUrl(maSinhVien, matKhau, String.valueOf(messageId));
 
         new Task().execute(url);
     }
 
-    public static void attempDelete(int messageId, String maSinhVien, String matKhau) {
+    public void attempDelete(int messageId, String maSinhVien, String matKhau) {
         int count = MessageTaskHelper.getInstance().mAttempDeleteMessage.size();
-        Log.d("DEBUG", "Number of attemp message: " + count);
         if (count > 0) {
             String url = Reference.getAttempDeleteTinNhanApiUrl(maSinhVien, matKhau, String.valueOf(messageId));
             Log.d("DEBUG", "Request to server: " + url);
@@ -61,8 +60,9 @@ public class MessageTaskHelper {
         }
     }
 
-    public static void foreverDelete(int messageId, String maSinhVien, String matKhau) {
+    public void foreverDelete(int messageId, String maSinhVien, String matKhau) {
         String url = Reference.getForeverDeleteTinNhanApiUrl(maSinhVien, matKhau, String.valueOf(messageId));
+        Log.d("DEBUG", "Request to server: " + url);
 
         new Task().execute(url);
     }
@@ -90,7 +90,8 @@ public class MessageTaskHelper {
                     return false;
 
                 } else {
-                    Log.d("DEBUG", "Không tìm thấy máy chủ");
+                    Log.d("DEBUG", "Không tìm thấy máy chủ: "
+                    + (response.body() != null ? response.body().string() : ""));
                     return false;
                 }
             } catch (Exception ex) {

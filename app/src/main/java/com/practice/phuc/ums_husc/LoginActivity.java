@@ -99,7 +99,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (NetworkUtil.getConnectivityStatus(LoginActivity.this) == NetworkUtil.TYPE_NOT_CONNECTED && !mIsViewDestroyed) {
                     Snackbar snackbar = Snackbar.make(mRootLayout,
-                            getString(R.string.network_not_available), Snackbar.LENGTH_LONG);
+                            getString(R.string.error_network_disconected), Snackbar.LENGTH_LONG);
                     snackbar.show();
                 } else {
                     attemptLogin();

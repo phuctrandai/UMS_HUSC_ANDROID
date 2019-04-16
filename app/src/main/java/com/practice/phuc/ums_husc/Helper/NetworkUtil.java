@@ -39,25 +39,12 @@ public class NetworkUtil {
         return TYPE_NOT_CONNECTED;
     }
 
-    public static String getConnectivityStatusString(Context context) {
-        int conn = NetworkUtil.getConnectivityStatus(context);
-        String status = null;
-        if (conn == NetworkUtil.TYPE_WIFI) {
-            status = "Wifi enabled";
-        } else if (conn == NetworkUtil.TYPE_MOBILE) {
-            status = "Mobile data enabled";
-        } else if (conn == NetworkUtil.TYPE_NOT_CONNECTED) {
-            status = "Not connected to Internet";
-        }
-        return status;
-    }
-
     public static Response makeRequest(String url, boolean isPostMethod, RequestBody requestBody) {
         final OkHttpClient okHttpClient = new OkHttpClient();
-        Request request = null;
+        Request request;
         if (requestBody == null)
             requestBody = RequestBody.create(
-                MediaType.parse("application/xml; charset=utf-8"), ""
+                MediaType.parse("application/json; charset=utf-8"), ""
             );
         try {
             if (isPostMethod) {

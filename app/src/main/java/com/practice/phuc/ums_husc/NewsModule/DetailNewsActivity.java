@@ -15,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.Helper.CustomSnackbar;
+import com.practice.phuc.ums_husc.Helper.DateHelper;
 import com.practice.phuc.ums_husc.Helper.JustifyTextInTextView;
 import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
@@ -34,8 +35,8 @@ public class DetailNewsActivity extends AppCompatActivity {
     private WebView tvNoiDung;
     private ProgressBar progressBar;
 
-    private LoadNewsContentTask mLoadTask;
     private boolean mIsViewDestroyed;
+    private LoadNewsContentTask mLoadTask;
     private Snackbar mNotNetworkSnackbar;
     private Snackbar mErrorSnackbar;
     private THONGBAO mThongBao;
@@ -68,7 +69,9 @@ public class DetailNewsActivity extends AppCompatActivity {
         setIntent(intent);
         String json = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_NEWS);
         mThongBao = THONGBAO.fromJson(json);
-        showData(mThongBao);
+        if (mThongBao != null) {
+            showData(mThongBao);
+        }
     }
 
     @Override
@@ -95,20 +98,22 @@ public class DetailNewsActivity extends AppCompatActivity {
 
     private void showData(THONGBAO thongBao) {
         boolean launchFromNotification = getIntent().getBooleanExtra(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, false);
-        tvThoiGianDang.setText(thongBao.getThoiGianDang());
+        String thoiGianDang = thongBao.getThoiGianDang();
+        String ngayDang = DateHelper.formatYMDToDMY(thoiGianDang.substring(0, 10));
+        String gioDang = thoiGianDang.substring(11, 16);
+        String thoiGianDangStr = ngayDang + " " + gioDang;
+
+        tvThoiGianDang.setText(thoiGianDangStr);
         tvTieuDe.setText(thongBao.getTieuDe());
         JustifyTextInTextView.justify(tvTieuDe);
 
         if (launchFromNotification) {
-            Reference.mHasNewNews = true;
             mLoadTask = new LoadNewsContentTask(thongBao.getMaThongBao() + "");
             mLoadTask.execute((String) null);
 
         } else {
             progressBar.setVisibility(View.GONE);
-            String content = thongBao.getNoiDung();
-            String htmlContent = "<div style='text-align: justify'>" + content + "</div>";
-            tvNoiDung.loadData(htmlContent, "text/html; charset=UTF-8", null);
+            showBodyNews(thongBao);
         }
     }
 
@@ -125,6 +130,7 @@ public class DetailNewsActivity extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
+            progressBar.setVisibility(View.VISIBLE);
             if (NetworkUtil.getConnectivityStatus(DetailNewsActivity.this) == NetworkUtil.TYPE_NOT_CONNECTED) {
                 showNetworkErrorSnackbar(true);
                 mLoadTask.cancel(true);
@@ -164,7 +170,12 @@ public class DetailNewsActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean success) {
             if (mLoadTask != null) {
                 if (success) {
-                    showBodyNews(Objects.requireNonNull(THONGBAO.fromJson(json)));
+                    mThongBao = THONGBAO.fromJson(json);
+                    showBodyNews(Objects.requireNonNull(mThongBao));
+
+                    // Luu lai cac thong bao moi, de them vao o Main fragment
+                    Reference.mHasNewNews = true;
+                    Reference.getmListNewThongBao().add(mThongBao);
 
                     progressBar.setVisibility(View.GONE);
                     showNetworkErrorSnackbar(false);
@@ -194,11 +205,9 @@ public class DetailNewsActivity extends AppCompatActivity {
     }
 
     private void showBodyNews(THONGBAO thongBao) {
-        String htmlContent = "<div style='text-align: justify'>" + thongBao.getNoiDung() + "</div>";
+        String htmlContent = "<div style='text-align: justify'> " + thongBao.getNoiDung() + " </div>";
         tvNoiDung.loadData(htmlContent, "text/html; charset=UTF-8", null);
-
-        // Luu lai cac thong bao moi, de them vao o Main fragment
-        Reference.getmListNewThongBao().add(thongBao);
+        tvNoiDung.refreshDrawableState();
     }
 
     private void showNetworkErrorSnackbar(final boolean show) {
@@ -208,7 +217,7 @@ public class DetailNewsActivity extends AppCompatActivity {
             if (mNotNetworkSnackbar != null && mNotNetworkSnackbar.isShown()) return;
 
             mNotNetworkSnackbar = CustomSnackbar.createTwoButtonSnackbar(this, rootLayout,
-                    getString(R.string.network_not_available), Snackbar.LENGTH_INDEFINITE,
+                    getString(R.string.error_network_disconected), Snackbar.LENGTH_INDEFINITE,
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

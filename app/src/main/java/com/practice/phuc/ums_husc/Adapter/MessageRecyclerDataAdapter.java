@@ -25,6 +25,8 @@ import com.practice.phuc.ums_husc.R;
 
 import java.util.List;
 
+import static com.practice.phuc.ums_husc.Helper.StringHelper.isNullOrEmpty;
+
 public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecyclerDataAdapter.DataViewHolder> {
 
     private Context mContext;
@@ -53,7 +55,7 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
         String tieuDe = tinnhan.getTieuDe();
         String thoiDiemGui = tinnhan.getThoiDiemGui();
         String hoTenNguoiGui = tinnhan.getHoTenNguoiGui();
-        final String ngayDang = DateHelper.formatYMDToDMY(thoiDiemGui.substring(0, 10));
+        String ngayDang = DateHelper.formatYMDToDMY(thoiDiemGui.substring(0, 10));
         String gioDang = thoiDiemGui.substring(11, 16);
         String thoiGianDangStr = ngayDang + " " + gioDang;
         String tenNguoiNhanCollapse = tinnhan.getTenNguoiNhanCollapse();
@@ -66,26 +68,29 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
 
         String maSinhVien = Reference.getAccountId(mContext);
         final NGUOINHAN nguoiNhan = tinnhan.getNguoiNhanTrongDanhSach(maSinhVien);
-        if (nguoiNhan != null && nguoiNhan.getThoiDiemXem() == null) {
-            viewHolder.tvTieuDe.setTypeface(null, Typeface.BOLD);
-            viewHolder.tvNguoiGui.setTypeface(null, Typeface.BOLD);
-            viewHolder.tvThoiDiemGui.setTypeface(null, Typeface.BOLD);
-            viewHolder.tvThoiDiemGui.setTextColor(mContext.getResources().getColor(R.color.colorBlack));
+
+        if (nguoiNhan != null && isNullOrEmpty(nguoiNhan.getThoiDiemXem())) {
+//            Log.d("DEBUG", "TN: " + tinnhan.getTieuDe() + " Thoi diem xem: " + nguoiNhan.getThoiDiemXem());
+//            viewHolder.tvTieuDe.setTypeface(null, Typeface.BOLD);
+//            viewHolder.tvNguoiGui.setTypeface(null, Typeface.BOLD);
+//            viewHolder.tvThoiDiemGui.setTypeface(null, Typeface.BOLD);
+//            viewHolder.tvThoiDiemGui.setTextColor(mContext.getResources().getColor(R.color.colorBlack));
         }
 
         viewHolder.setItemClickListener(new ItemClickListener() {
             @Override
             public void onClick(View view, int position, boolean isLongClick) {
-                if (nguoiNhan != null) {
-                    nguoiNhan.setThoiDiemXem(DateHelper.toShortDateString(DateHelper.getCalendar().getTime()));
+                Intent intent = new Intent(mContext, DetailMessageActivity.class);
+                intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, TINNHAN.toJson(tinnhan));
+                mContext.startActivity(intent);
+
+                if (nguoiNhan != null && isNullOrEmpty(nguoiNhan.getThoiDiemXem())) {
+                    nguoiNhan.setThoiDiemXem(DateHelper.toDateTimeString(DateHelper.getCalendar().getTime()));
                     viewHolder.tvTieuDe.setTypeface(null, Typeface.NORMAL);
                     viewHolder.tvNguoiGui.setTypeface(null, Typeface.NORMAL);
                     viewHolder.tvThoiDiemGui.setTypeface(null, Typeface.NORMAL);
                     viewHolder.tvThoiDiemGui.setTextColor(mContext.getResources().getColor(R.color.colorDarkerGrey));
                 }
-                Intent intent = new Intent(mContext, DetailMessageActivity.class);
-                intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, TINNHAN.toJson(tinnhan));
-                mContext.startActivity(intent);
             }
         });
     }

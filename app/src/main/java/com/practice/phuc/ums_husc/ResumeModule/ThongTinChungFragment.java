@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +16,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.practice.phuc.ums_husc.Helper.DateHelper;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
@@ -36,6 +39,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static com.practice.phuc.ums_husc.Helper.StringHelper.isNullOrEmpty;
@@ -44,21 +49,27 @@ public class ThongTinChungFragment extends Fragment {
     private Context mContext;
     private boolean mIsCreated;
 
+    private final String GET_NATIONS = "nations";
+    private final String GET_CITIES_BY_NATION = "cites";
+    private final String GET_PEOPLE = "people";
+    private final String GET_RELIGION = "religion";
+    private final String DO_UPDATE = "update";
+
     public ThongTinChungFragment() {
     }
 
     public static ThongTinChungFragment newInstance(Context context, VThongTinChung thongTinChung) {
         ThongTinChungFragment f = new ThongTinChungFragment();
         f.mContext = context;
-        f.thongTinChung = thongTinChung;
+        f.mThongTinChung = thongTinChung;
         return f;
     }
 
     public void setThongTin(VThongTinChung thongTinChung) {
-        this.thongTinChung = thongTinChung;
+        this.mThongTinChung = thongTinChung;
     }
 
-    private VThongTinChung thongTinChung;
+    private VThongTinChung mThongTinChung;
     private TextView mGioiTinh;
     private TextView mNgaySinh;
     private TextView mNoiSinh;
@@ -76,7 +87,8 @@ public class ThongTinChungFragment extends Fragment {
     private Spinner spNgayCapCMND, spThangCapCMND, spNamCapCMND;
     private EditText etNoiCapCMND;
     private ImageButton mOpenSlidePanel, mCloseSlidePanel;
-    private Button mBtnSave;
+    private Button mBtnSave, mCloseLidePanelBtm;
+    private ProgressBar pbUpdateLoading;
 
     ArrayAdapter<String> mNgaySinhAdapter;
     ArrayAdapter<String> mThangSinhAdapter;
@@ -162,15 +174,16 @@ public class ThongTinChungFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_thong_tin_chung, container, false);
         bindUI(view);
-        setUpEvent();
 
-        setUpMainPanel(thongTinChung);
+        setUpMainPanel(mThongTinChung);
+
+        setUpEvent();
 
         if (!mIsCreated) {
             mIsCreated = true;
-            new Task().execute("quocgia");
-            new Task().execute("dantoc");
-            new Task().execute("tongiao");
+            new Task().execute(GET_NATIONS);
+            new Task().execute(GET_PEOPLE);
+            new Task().execute(GET_RELIGION);
         }
 
         return view;
@@ -201,10 +214,16 @@ public class ThongTinChungFragment extends Fragment {
             public void onClick(View v) {
                 mSlidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
                 mSlidingUpPanelLayout.setTouchEnabled(false);
-                setUpSlidePanel(thongTinChung);
+                setUpSlidePanel(mThongTinChung);
             }
         });
         mCloseSlidePanel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mSlidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            }
+        });
+        mCloseLidePanelBtm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mSlidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
@@ -261,7 +280,7 @@ public class ThongTinChungFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 QuocGia quocGia = (QuocGia) spQuocGiaSinh.getSelectedItem();
                 int maQuocGia = quocGia.MaQuocGia;
-                new Task().execute("thanhpho", maQuocGia + "");
+                new Task().execute(GET_CITIES_BY_NATION, maQuocGia + "");
             }
 
             @Override
@@ -289,17 +308,24 @@ public class ThongTinChungFragment extends Fragment {
 
                 VThongTinChung newThongTin = new VThongTinChung();
                 newThongTin.NoiSinh = new VNoiSinh();
-                newThongTin.NgaySinh = ngaySinh + "/" + thangSinh + "/" + namSinh;
+                newThongTin.NgaySinh = thangSinh + "/" + ngaySinh + "/" + namSinh;
                 newThongTin.NoiSinh.QuocGia = quocGiaSinh + "";
                 newThongTin.NoiSinh.ThanhPho = tinhThanhSinh + "";
                 newThongTin.QuocTich = quocTich + "";
                 newThongTin.TonGiao = tonGiao + "";
                 newThongTin.DanToc = danToc + "";
                 newThongTin.SoCMND = soCMND;
-                newThongTin.NgayCap = ngayCapCMND + "/" + thangCapCMND + "/" + namCapCMND;
+                newThongTin.NgayCap = thangCapCMND + "/" + ngayCapCMND + "/" + namCapCMND;
                 newThongTin.NoiCap = noiCapCMND;
+                newThongTin.MaSinhVien = Reference.getAccountId(mContext);
+                newThongTin.TenDanToc = "";
+                newThongTin.TenQuocGia = "";
+                newThongTin.TenTonGiao = "";
+                newThongTin.AnhDaiDien = "";
+                newThongTin.HoTen = "";
+                newThongTin.GioiTinh = false;
 
-
+                attempUpdate(newThongTin);
             }
         });
     }
@@ -365,7 +391,9 @@ public class ThongTinChungFragment extends Fragment {
         etSoCMND.setText(soCMND);
         // Ngay cap CMND
         String ngayCapCMND;
-        indexNgay = 0; indexThang = 0; indexNam = 0;
+        indexNgay = 0;
+        indexThang = 0;
+        indexNam = 0;
         if (!isNullOrEmpty(thongTinChung.NgaySinh)) {
             ngayCapCMND = DateHelper.formatYMDToDMY(thongTinChung.NgayCap.substring(0, 10));
             Date d = DateHelper.stringToDate(ngayCapCMND, "dd/MM/yyyy");
@@ -387,6 +415,147 @@ public class ThongTinChungFragment extends Fragment {
         updateSpTonGiao(mTonGiaoDs);
     }
 
+    private void attempUpdate(VThongTinChung thongTinChung) {
+        if (NetworkUtil.getConnectivityStatus(mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
+            Toast.makeText(mContext, getString(R.string.error_network_disconected), Toast.LENGTH_LONG).show();
+
+        } else {
+            String json = VThongTinChung.toJson(thongTinChung);
+            new Task().execute(DO_UPDATE, json);
+            pbUpdateLoading.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    public class Task extends AsyncTask<String, Void, Boolean> {
+        Response mResponse;
+        String ORDER = "";
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            String order = strings[0];
+            switch (order) {
+                case GET_NATIONS:
+                    String url = Reference.HOST + "api/DungChung/Get/QuocGia/";
+                    mResponse = NetworkUtil.makeRequest(url, false, null);
+                    ORDER = GET_NATIONS;
+                    return true;
+
+                case GET_CITIES_BY_NATION:
+                    url = Reference.HOST + "api/DungChung/Get/ThanhPho/?refId=" + strings[1];
+                    mResponse = NetworkUtil.makeRequest(url, false, null);
+                    ORDER = GET_CITIES_BY_NATION;
+                    return true;
+
+                case GET_RELIGION:
+                    url = Reference.HOST + "api/DungChung/Get/TonGiao/";
+                    mResponse = NetworkUtil.makeRequest(url, false, null);
+                    ORDER = GET_RELIGION;
+                    return true;
+
+                case GET_PEOPLE:
+                    url = Reference.HOST + "api/DungChung/Get/DanToc";
+                    mResponse = NetworkUtil.makeRequest(url, false, null);
+                    ORDER = GET_PEOPLE;
+                    return true;
+
+                case DO_UPDATE:
+                    url = Reference.HOST + "api/SinhVien/UpdateThongTinChung/" +
+                            "?masinhvien=" + Reference.getAccountId(mContext) +
+                            "&matkhau=" + Reference.getAccountPassword(mContext);
+                    String data = strings[1];
+
+                    RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), data);
+                    mResponse = NetworkUtil.makeRequest(url, true, body);
+                    ORDER = DO_UPDATE;
+                    return true;
+            }
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            if (aBoolean) {
+                if (mResponse == null)
+                    Toast.makeText(mContext, getString(R.string.error_server_not_response), Toast.LENGTH_LONG).show();
+
+                if (mResponse.code() == NetworkUtil.OK) {
+                    try {
+                        String json = mResponse.body() != null ? mResponse.body().string() : "";
+                        Log.d("DEBUG", "RESPONSE: " + json);
+                        switch (ORDER) {
+                            case GET_NATIONS:
+                                List<QuocGia> quocGias = QuocGia.fromJson(json);
+                                if (quocGias != null) {
+                                    mQuocGiaDs.clear();
+                                    mQuocGiaDs.add(new QuocGia(0, "----"));
+                                    mQuocGiaDs.addAll(quocGias);
+                                    mQuocGiaAdapter.notifyDataSetChanged();
+                                    mQuocTichAdapter.notifyDataSetChanged();
+                                    updateSpQuocGiaSinh(mQuocGiaDs);
+                                    updateSpQuocTich(mQuocGiaDs);
+                                }
+                                break;
+
+                            case GET_CITIES_BY_NATION:
+                                List<ThanhPho> thanhPhos = ThanhPho.fromJson(json);
+                                if (thanhPhos != null) {
+                                    mTinhThanhDs.clear();
+                                    mTinhThanhDs.add(new ThanhPho(0, "----"));
+                                    mTinhThanhDs.addAll(thanhPhos);
+                                    mTinhThanhAdapter.notifyDataSetChanged();
+                                    updateSpTinhThanhSinh(mTinhThanhDs);
+                                }
+                                break;
+
+                            case GET_RELIGION:
+                                List<TonGiao> tonGiaos = TonGiao.fromJson(json);
+                                if (tonGiaos != null) {
+                                    mTonGiaoDs.clear();
+                                    mTonGiaoDs.add(new TonGiao(0, "----"));
+                                    mTonGiaoDs.addAll(tonGiaos);
+                                    mTonGiaoAdapter.notifyDataSetChanged();
+                                    updateSpTonGiao(mTonGiaoDs);
+                                }
+                                break;
+
+                            case GET_PEOPLE:
+                                List<DanToc> danTocs = DanToc.fromJson(json);
+                                if (danTocs != null) {
+                                    mDanTocDs.clear();
+                                    mDanTocDs.add(new DanToc(0, "----"));
+                                    mDanTocDs.addAll(danTocs);
+                                    mDanTocAdapter.notifyDataSetChanged();
+                                    updateSpDanToc(mDanTocDs);
+                                }
+                                break;
+
+                            case DO_UPDATE:
+                                pbUpdateLoading.setVisibility(View.GONE);
+                                VThongTinChung thongTinChung = VThongTinChung.fromJson(json);
+                                if (thongTinChung != null) {
+                                    mThongTinChung = thongTinChung;
+                                    setUpSlidePanel(thongTinChung);
+                                    setUpMainPanel(thongTinChung);
+                                    Toast.makeText(mContext, "Đã cập nhật !", Toast.LENGTH_LONG).show();
+                                }
+                                break;
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    try {
+                        Log.d("DEBUG", mResponse.body() != null ? mResponse.body().string() : "NULL");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
     /*##### UPDATE DATA ON VIEW #####*/
 
     private void bindUI(View view) {
@@ -403,6 +572,8 @@ public class ThongTinChungFragment extends Fragment {
         mOpenSlidePanel = view.findViewById(R.id.btn_suaThongTinChung);
         mCloseSlidePanel = view.findViewById(R.id.btn_closeSlidePanel);
         mBtnSave = view.findViewById(R.id.btn_luuThongTinChung);
+        mCloseLidePanelBtm = view.findViewById(R.id.btn_closeSlidePanelBtm);
+        pbUpdateLoading = view.findViewById(R.id.pb_updateLoading);
 
         spNgaySinh = view.findViewById(R.id.sp_ngaySinh);
         spThangSinh = view.findViewById(R.id.sp_thangSinh);
@@ -437,9 +608,9 @@ public class ThongTinChungFragment extends Fragment {
         }
         int index = 0;
 
-        if (quocGias.size() > 0 && thongTinChung.NoiSinh != null && thongTinChung.NoiSinh.QuocGia != null) {
+        if (quocGias.size() > 0 && mThongTinChung.NoiSinh != null && mThongTinChung.NoiSinh.QuocGia != null) {
             try {
-                int maHienTai = Integer.parseInt(thongTinChung.NoiSinh.QuocGia);
+                int maHienTai = Integer.parseInt(mThongTinChung.NoiSinh.QuocGia);
                 for (int i = 0; i < quocGias.size(); i++) {
                     if (quocGias.get(i).MaQuocGia == maHienTai) {
                         index = i;
@@ -457,9 +628,9 @@ public class ThongTinChungFragment extends Fragment {
         if (quocgias == null) return;
 
         int index = 0;
-        if (quocgias.size() > 0 && thongTinChung.QuocTich != null) {
+        if (quocgias.size() > 0 && mThongTinChung.QuocTich != null) {
             try {
-                int maHienTai = Integer.parseInt(thongTinChung.QuocTich);
+                int maHienTai = Integer.parseInt(mThongTinChung.QuocTich);
                 for (int i = 0; i < quocgias.size(); i++) {
                     if (quocgias.get(i).MaQuocGia == maHienTai) {
                         index = i;
@@ -477,9 +648,9 @@ public class ThongTinChungFragment extends Fragment {
         if (thanhPhos == null) return;
 
         int index = 0;
-        if (thanhPhos.size() > 0 && thongTinChung.NoiSinh != null && thongTinChung.NoiSinh.ThanhPho != null) {
+        if (thanhPhos.size() > 0 && mThongTinChung.NoiSinh != null && mThongTinChung.NoiSinh.ThanhPho != null) {
             try {
-                int maHienTai = Integer.parseInt(thongTinChung.NoiSinh.ThanhPho);
+                int maHienTai = Integer.parseInt(mThongTinChung.NoiSinh.ThanhPho);
                 for (int i = 0; i < thanhPhos.size(); i++) {
                     if (thanhPhos.get(i).MaThanhPho == maHienTai) {
                         index = i;
@@ -497,9 +668,9 @@ public class ThongTinChungFragment extends Fragment {
         if (tongiaos == null) return;
 
         int index = 0;
-        if (tongiaos.size() > 0 && thongTinChung.TonGiao != null) {
+        if (tongiaos.size() > 0 && mThongTinChung.TonGiao != null) {
             try {
-                int maHienTai = Integer.parseInt(thongTinChung.TonGiao);
+                int maHienTai = Integer.parseInt(mThongTinChung.TonGiao);
                 for (int i = 0; i < tongiaos.size(); i++) {
                     if (tongiaos.get(i).MaTonGiao == maHienTai) {
                         index = i;
@@ -517,9 +688,9 @@ public class ThongTinChungFragment extends Fragment {
         if (danTocs == null) return;
 
         int index = 0;
-        if (danTocs.size() > 0 && thongTinChung.TonGiao != null) {
+        if (danTocs.size() > 0 && mThongTinChung.TonGiao != null) {
             try {
-                int maHienTai = Integer.parseInt(thongTinChung.DanToc);
+                int maHienTai = Integer.parseInt(mThongTinChung.DanToc);
                 for (int i = 0; i < danTocs.size(); i++) {
                     if (danTocs.get(i).MaDanToc == maHienTai) {
                         index = i;
@@ -531,102 +702,6 @@ public class ThongTinChungFragment extends Fragment {
             }
         }
         spDanToc.setSelection(index);
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    public class Task extends AsyncTask<String, Void, Boolean> {
-        Response mResponse;
-        int type = 0;
-
-        @Override
-        protected Boolean doInBackground(String... strings) {
-            String order = strings[0];
-            switch (order) {
-                case "quocgia":
-                    String url = Reference.HOST + "api/dungchung/quocgia";
-                    mResponse = NetworkUtil.makeRequest(url, false, null);
-                    type = 1;
-                    return true;
-
-                case "thanhpho":
-                    url = Reference.HOST + "api/dungchung/thanhpho?refId=" + strings[1];
-                    mResponse = NetworkUtil.makeRequest(url, false, null);
-                    type = 2;
-                    return true;
-
-                case "tongiao":
-                    url = Reference.HOST + "api/dungchung/tongiao";
-                    mResponse = NetworkUtil.makeRequest(url, false, null);
-                    type = 3;
-                    return true;
-
-                case "dantoc":
-                    url = Reference.HOST + "api/dungchung/dantoc";
-                    mResponse = NetworkUtil.makeRequest(url, false, null);
-                    type = 4;
-                    return true;
-            }
-            return false;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            super.onPostExecute(aBoolean);
-            if (aBoolean) {
-                try {
-                    String json = mResponse.body() != null ? mResponse.body().string() : "";
-                    switch (type) {
-                        case 1:
-                            List<QuocGia> quocGias = QuocGia.fromJson(json);
-                            if (quocGias != null) {
-                                mQuocGiaDs.clear();
-                                mQuocGiaDs.add(new QuocGia(0, "----"));
-                                mQuocGiaDs.addAll(quocGias);
-                                mQuocGiaAdapter.notifyDataSetChanged();
-                                mQuocTichAdapter.notifyDataSetChanged();
-                                updateSpQuocGiaSinh(mQuocGiaDs);
-                                updateSpQuocTich(mQuocGiaDs);
-                            }
-                            break;
-
-                        case 2:
-                            List<ThanhPho> thanhPhos = ThanhPho.fromJson(json);
-                            if (thanhPhos != null) {
-                                mTinhThanhDs.clear();
-                                mTinhThanhDs.add(new ThanhPho(0, "----"));
-                                mTinhThanhDs.addAll(thanhPhos);
-                                mTinhThanhAdapter.notifyDataSetChanged();
-                                updateSpTinhThanhSinh(mTinhThanhDs);
-                            }
-                            break;
-
-                        case 3:
-                            List<TonGiao> tonGiaos = TonGiao.fromJson(json);
-                            if (tonGiaos != null) {
-                                mTonGiaoDs.clear();
-                                mTonGiaoDs.add(new TonGiao(0, "----"));
-                                mTonGiaoDs.addAll(tonGiaos);
-                                mTonGiaoAdapter.notifyDataSetChanged();
-                                updateSpTonGiao(mTonGiaoDs);
-                            }
-                            break;
-
-                        case 4:
-                            List<DanToc> danTocs = DanToc.fromJson(json);
-                            if (danTocs != null) {
-                                mDanTocDs.clear();
-                                mDanTocDs.add(new DanToc(0, "----"));
-                                mDanTocDs.addAll(danTocs);
-                                mDanTocAdapter.notifyDataSetChanged();
-                                updateSpDanToc(mDanTocDs);
-                            }
-                            break;
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 
     private void updateNamNhuan(List<String> data, ArrayAdapter adapter, int position, Spinner spNam) {

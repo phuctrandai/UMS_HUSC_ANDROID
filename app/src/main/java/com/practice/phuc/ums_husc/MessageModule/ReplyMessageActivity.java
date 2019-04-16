@@ -65,6 +65,7 @@ public class ReplyMessageActivity extends AppCompatActivity {
 
         String json = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_MESSAGE);
         mTinNhan = TINNHAN.fromJson(json);
+        Log.d("DEBUG", "Reply tin nhan: " + json);
 
         setUpData(mTinNhan);
     }
@@ -102,15 +103,13 @@ public class ReplyMessageActivity extends AppCompatActivity {
     }
 
     private void setUpData(TINNHAN tinNhan) {
-        SharedPreferences sp = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
-
         if (tinNhan == null) return;
 
         String tieuDe = tinNhan.getTieuDe();
         String hoTenNguoiNhan = tinNhan.getHoTenNguoiGui();
-        String hoTenNguoiGui = sp.getString(getString(R.string.pre_key_student_name), null);
+        String hoTenNguoiGui = Reference.getAccountName(this);
 
-        String tieuDeReply = "Re: " + tieuDe;
+        String tieuDeReply = tieuDe.contains("Re: ") ? tieuDe : "Re: " + tieuDe;
         etTieuDe.setText(tieuDeReply);
         tvNguoiNhan.setText(hoTenNguoiNhan);
         tvNguoiGui.setText(hoTenNguoiGui);
@@ -137,7 +136,7 @@ public class ReplyMessageActivity extends AppCompatActivity {
         }
 
         if (NetworkUtil.getConnectivityStatus(this) == NetworkUtil.TYPE_NOT_CONNECTED) {
-            Snackbar.make(layoutRoot, getString(R.string.network_not_available), Snackbar.LENGTH_LONG)
+            Snackbar.make(layoutRoot, getString(R.string.error_network_disconected), Snackbar.LENGTH_LONG)
                     .show();
             return;
         }
@@ -162,11 +161,10 @@ public class ReplyMessageActivity extends AppCompatActivity {
     }
 
     private void sendMessage(String title, String content) {
-        SharedPreferences sp = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
-        String maNguoiGui = sp.getString(getString(R.string.pre_key_student_id), "");
+        String maNguoiGui = Reference.getAccountId(this);
+        String hoTenNguoiGui = Reference.getAccountName(this);
         String maNguoiNhan = mTinNhan.getMaNguoiGui();
         String hoTenNguoiNhan = mTinNhan.getHoTenNguoiGui();
-        String hoTenNguoiGui = sp.getString(getString(R.string.pre_key_student_name), "");
 
         NGUOINHAN nguoiNhan = new NGUOINHAN();
         nguoiNhan.setMaNguoiNhan(maNguoiNhan);
@@ -197,12 +195,12 @@ public class ReplyMessageActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(String... strings) {
-            SharedPreferences sp = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
-            String maSinhVien = sp.getString(getString(R.string.pre_key_student_id), "");
-            String matKhau = sp.getString(getString(R.string.pre_key_password), "");
+            String maSinhVien = Reference.getAccountId(ReplyMessageActivity.this);
+            String matKhau = Reference.getAccountPassword(ReplyMessageActivity.this);
             String url = Reference.getReplyTinNhanApiUrl(maSinhVien, matKhau);
 
             String json = TINNHAN.toJson(tinNhan);
+            Log.d("DEBUG", "Tin nhan gui di: " + json);
 
             RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json);
 

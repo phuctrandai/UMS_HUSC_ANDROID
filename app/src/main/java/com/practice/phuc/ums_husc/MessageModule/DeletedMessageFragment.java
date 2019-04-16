@@ -53,7 +53,6 @@ public class DeletedMessageFragment extends Fragment
     private Context mContext;
     private LoadDeletedMessageTask mLoadDeletedMessageTask;
     private MessageRecyclerDataAdapter mAdapter;
-    //    private List<TINNHAN> mMessageList;
     private String mErrorMessage;
     private int mCurrentItems, mTotalItems, mScrollOutItems;
     private int mStatus, mLastAction;
@@ -217,11 +216,23 @@ public class DeletedMessageFragment extends Fragment
 
             mAdapter.removeItem(viewHolder.getAdapterPosition());
 
+            final Handler handler = new Handler();
+            final Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    MessageTaskHelper.getInstance().foreverDelete(deletedItem.getMaTinNhan(),
+                            Reference.getAccountId(mContext), Reference.getAccountPassword(mContext));
+                    Log.d("DEBUG", "DO DELETE");
+                }
+            };
+            handler.postDelayed(runnable, 3500);
+
             showUndoSnackbar(true, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     mUndoDeleteSnakbar.dismiss();
                     mAdapter.insertItem(deletedItem, deletedIndex);
+                    handler.removeCallbacks(runnable);
                 }
             });
         }
@@ -330,8 +341,8 @@ public class DeletedMessageFragment extends Fragment
                     for (TINNHAN item : MessageTaskHelper.getInstance().getAttempDeletemessage()) {
                         if (!list.contains(item)) list.add(item);
                     }
-
                 mAdapter.changeDataSet(list);
+
             } else if (mLastAction == ACTION_LOAD_MORE && list.size() > 0)
                 mAdapter.insertItemRange(list, mAdapter.getItemCount(), ITEM_PER_PAGE);
         }
@@ -421,7 +432,7 @@ public class DeletedMessageFragment extends Fragment
         if (show) {
             mStatus = STATUS_NOT_NETWORK;
             mNotNetworkSnackbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mSwipeRefreshLayout
-                    , getString(R.string.network_not_available), Snackbar.LENGTH_INDEFINITE
+                    , getString(R.string.error_network_disconected), Snackbar.LENGTH_INDEFINITE
                     , new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

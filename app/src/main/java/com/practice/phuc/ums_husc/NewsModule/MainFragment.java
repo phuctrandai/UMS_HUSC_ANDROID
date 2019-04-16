@@ -138,10 +138,11 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onHasNewNews() {
         if (Reference.mHasNewNews) {
             Reference.mHasNewNews = false;
-            if (Reference.getmListNewThongBao().size() > 0) {
-                mAdapter.insertItemRange(Reference.getmListNewThongBao(), mAdapter.getItemCount(), Reference.getmListNewThongBao().size());
-                Reference.getmListNewThongBao().clear();
+            List<THONGBAO> newItems = Reference.getmListNewThongBao();
+            for (int i=0; i < newItems.size(); i++) {
+                mAdapter.insertItem(newItems.get(i), 0);
             }
+            Reference.getmListNewThongBao().clear();
         }
     }
 
@@ -412,7 +413,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             if (mNotNetworkSnackbar != null && mNotNetworkSnackbar.isShown()) return;
 
             mNotNetworkSnackbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mSwipeRefreshLayout,
-                    getString(R.string.network_not_available), Snackbar.LENGTH_INDEFINITE,
+                    getString(R.string.error_network_disconected), Snackbar.LENGTH_INDEFINITE,
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

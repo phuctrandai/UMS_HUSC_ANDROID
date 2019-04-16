@@ -214,25 +214,29 @@ public class ReceivedMessageFragment extends Fragment
                 deletedMessageFragment.onInsertMessage(deletedItem, 0);
             }
 
+            final Handler handler = new Handler();
+            final Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    MessageTaskHelper.getInstance().attempDelete(deletedItem.getMaTinNhan(),
+                            Reference.getAccountId(mContext), Reference.getAccountPassword(mContext));
+                    Log.d("DEBUG", "Attemp Delete");
+                }
+            };
+            handler.postDelayed(runnable, 3500);
+
             showUndoSnackbar(true, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     mUndoDeleteSnakbar.dismiss();
                     mAdapter.insertItem(deletedItem, deletedIndex);
+                    handler.removeCallbacks(runnable);
                     MessageTaskHelper.getInstance().removeAttempDeleteMessage(deletedItem);
-                    if (deletedMessageFragment != null)
+                    if (deletedMessageFragment != null) {
                         deletedMessageFragment.onRemoveMessage(deletedItem);
+                    }
                 }
             });
-
-            final String maSinhVien = Reference.getAccountId(mContext);
-            final String matKhau = Reference.getAccountPassword(mContext);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    MessageTaskHelper.attempDelete(deletedItem.getMaTinNhan(), maSinhVien, matKhau);
-                }
-            }, 3500);
         }
     }
 
@@ -425,7 +429,7 @@ public class ReceivedMessageFragment extends Fragment
         if (show) {
             mStatus = STATUS_NOT_NETWORK;
             mNotNetworkSnackbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mSwipeRefreshLayout
-                    , getString(R.string.network_not_available), Snackbar.LENGTH_INDEFINITE
+                    , getString(R.string.error_network_disconected), Snackbar.LENGTH_INDEFINITE
                     , new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

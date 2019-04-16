@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".MainActivity">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <FrameLayout
         android:id="@+id/frame_message_container"
@@ -19,11 +18,11 @@
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:layout_gravity="bottom"
-        android:background="?android:attr/windowBackground"
+        android:background="@android:color/transparent"
         android:elevation="0dp"
         android:foreground="?attr/selectableItemBackground"
         app:elevation="0dp"
-        app:itemBackground="@color/colorWhite"
+        app:itemBackground="@color/colorWhite50"
         app:itemIconTint="@color/bnv_tab_item_foreground"
         app:itemTextColor="@color/bnv_tab_item_foreground"
         app:menu="@menu/bottom_message_navigation" />

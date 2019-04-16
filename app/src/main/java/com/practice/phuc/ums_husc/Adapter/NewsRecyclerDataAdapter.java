@@ -51,6 +51,7 @@ public class NewsRecyclerDataAdapter extends RecyclerView.Adapter<NewsRecyclerDa
             @Override
             public void onClick(View view, int position, boolean isLongClick) {
                 Intent intent = new Intent(context, DetailNewsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 intent.putExtra(Reference.BUNDLE_EXTRA_NEWS, THONGBAO.toJson(thongBaoList.get(position)));
                 context.startActivity(intent);
             }
@@ -112,10 +113,6 @@ public class NewsRecyclerDataAdapter extends RecyclerView.Adapter<NewsRecyclerDa
         void onClick(View view, int position, boolean isLongClick);
     }
 
-    public List<THONGBAO> getDataSet() {
-        return thongBaoList;
-    }
-
     public void changeDataSet(List<THONGBAO> messageList) {
         thongBaoList.clear();
         thongBaoList.addAll(messageList);
@@ -134,7 +131,6 @@ public class NewsRecyclerDataAdapter extends RecyclerView.Adapter<NewsRecyclerDa
 
     public void clearDataSet() {
         thongBaoList.clear();
-//        notifyDataSetChanged();
     }
 
 }

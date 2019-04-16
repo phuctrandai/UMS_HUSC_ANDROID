@@ -2,10 +2,9 @@
     <string name="app_name">UMS HUSC</string>
 
     <!-- Strings for networking -->
-    <string name="network_not_available">Không có kết nối Internet</string>
+    <string name="error_network_disconected">Không có kết nối Internet</string>
     <string name="error_server_not_response">Máy chủ không phản hồi</string>
     <string name="error_time_out">Quá thời gian kết nối đến máy chủ</string>
-    <string name="try_again">Thử lại</string>
 
     <!-- Strings related to login -->
     <string name="prompt_ma_sinh_vien">Mã sinh viên</string>
@@ -25,7 +24,6 @@
     <!-- Main activity -->
     <string name="navigation_drawer_open">Mở menu</string>
     <string name="navigation_drawer_close">Đóng menu</string>
-    <string name="avatar">Hình đại diện</string>
     <string name="action_goToToday">Đến ngày hiện tại</string>
     <string name="action_selectSemester">Chọn học kì và ngành học tác nghiệp</string>
 
