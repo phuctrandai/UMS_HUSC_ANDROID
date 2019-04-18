@@ -204,7 +204,7 @@ public class ReceivedMessageFragment extends Fragment
             final TINNHAN deletedItem = mAdapter.getDataSet().get(viewHolder.getAdapterPosition());
             final int deletedIndex = viewHolder.getAdapterPosition();
 
-            mAdapter.removeItem(viewHolder.getAdapterPosition());
+            mAdapter.removeItem(deletedIndex);
             MessageTaskHelper.getInstance().insertAttempDeleteMessage(deletedItem);
 
             MessageFragment parentFrag = (MessageFragment) ReceivedMessageFragment.this.getParentFragment();
@@ -218,9 +218,9 @@ public class ReceivedMessageFragment extends Fragment
             final Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    MessageTaskHelper.getInstance().attempDelete(deletedItem.getMaTinNhan(),
-                            Reference.getAccountId(mContext), Reference.getAccountPassword(mContext));
-                    Log.d("DEBUG", "Attemp Delete");
+                    MessageTaskHelper.getInstance().attempDelete(deletedItem.MaTinNhan,
+                            Reference.getStudentId(mContext), Reference.getAccountPassword(mContext));
+                    Log.e("DEBUG", "Attemp Delete");
                 }
             };
             handler.postDelayed(runnable, 3500);
@@ -270,7 +270,7 @@ public class ReceivedMessageFragment extends Fragment
                     return false;
                 }
             } catch (Exception e) {
-                Log.d("DEBUG", mErrorMessage);
+                Log.e("DEBUG", mErrorMessage);
                 e.printStackTrace();
                 return false;
             }
@@ -458,7 +458,7 @@ public class ReceivedMessageFragment extends Fragment
         }
     }
 
-    private void showUndoSnackbar(Boolean show, View.OnClickListener action) {
+    private void showUndoSnackbar(boolean show, View.OnClickListener action) {
         if (mIsViewDestroyed) return;
 
         if (show) {

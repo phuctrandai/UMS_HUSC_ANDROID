@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -10,6 +9,7 @@
         android:id="@+id/frame_message_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="55dp"
         android:background="@color/colorWhite"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
@@ -20,11 +20,12 @@
         android:layout_gravity="bottom"
         android:background="@android:color/transparent"
         android:elevation="0dp"
-        android:foreground="?attr/selectableItemBackground"
+        android:theme="@style/Widget.BottomNavigationView"
         app:elevation="0dp"
         app:itemBackground="@color/colorWhite50"
         app:itemIconTint="@color/bnv_tab_item_foreground"
         app:itemTextColor="@color/bnv_tab_item_foreground"
+        app:labelVisibilityMode="selected"
         app:menu="@menu/bottom_message_navigation" />
 
 </android.support.design.widget.CoordinatorLayout>

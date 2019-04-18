@@ -118,6 +118,7 @@
 
     <!-- Account info -->
     <string name="share_pre_key_account_info">student</string>
+    <string name="pre_key_account_id">account_id</string>
     <string name="pre_key_student_id">student_id</string>
     <string name="pre_key_password">password</string>
     <string name="pre_key_student_name">name</string>

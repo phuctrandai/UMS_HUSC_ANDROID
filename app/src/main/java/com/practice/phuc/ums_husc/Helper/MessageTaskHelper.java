@@ -36,7 +36,7 @@ public class MessageTaskHelper {
 
     public void removeAttempDeleteMessage(TINNHAN message) {
         for (int i = 0; i < mAttempDeleteMessage.size(); i++) {
-            if (mAttempDeleteMessage.get(i).getMaTinNhan() == message.getMaTinNhan()) {
+            if (mAttempDeleteMessage.get(i).MaTinNhan.equals(message.MaTinNhan)) {
                 mAttempDeleteMessage.remove(i);
                 break;
             }
@@ -49,20 +49,20 @@ public class MessageTaskHelper {
         new Task().execute(url);
     }
 
-    public void attempDelete(int messageId, String maSinhVien, String matKhau) {
+    public void attempDelete(String messageId, String maSinhVien, String matKhau) {
         int count = MessageTaskHelper.getInstance().mAttempDeleteMessage.size();
         if (count > 0) {
-            String url = Reference.getAttempDeleteTinNhanApiUrl(maSinhVien, matKhau, String.valueOf(messageId));
-            Log.d("DEBUG", "Request to server: " + url);
+            String url = Reference.getAttempDeleteTinNhanApiUrl(maSinhVien, matKhau, messageId);
+            Log.e("DEBUG", "Request to server: " + url);
             new Task().execute(url);
         } else {
-            Log.d("DEBUG", "Nothing to request");
+            Log.e("DEBUG", "Nothing to request");
         }
     }
 
-    public void foreverDelete(int messageId, String maSinhVien, String matKhau) {
-        String url = Reference.getForeverDeleteTinNhanApiUrl(maSinhVien, matKhau, String.valueOf(messageId));
-        Log.d("DEBUG", "Request to server: " + url);
+    public void foreverDelete(String messageId, String maSinhVien, String matKhau) {
+        String url = Reference.getForeverDeleteTinNhanApiUrl(maSinhVien, matKhau, messageId);
+        Log.e("DEBUG", "Request to server: " + url);
 
         new Task().execute(url);
     }
@@ -76,21 +76,21 @@ public class MessageTaskHelper {
                 Response response = NetworkUtil.makeRequest(url, false, null);
 
                 if (response == null) {
-                    Log.d("DEBUG", "Máy chủ không phản hồi");
+                    Log.e("DEBUG", "Máy chủ không phản hồi");
                     return false;
                 }
 
                 if (response.code() == NetworkUtil.OK) {
-                    Log.d("DEBUG", "Progress Ok !!!");
+                    Log.e("DEBUG", "Progress Ok !!!");
                     return true;
 
                 } else if (response.code() == NetworkUtil.BAD_REQUEST) {
-                    Log.d("DEBUG", "Progress Not Ok: " +
+                    Log.e("DEBUG", "Progress Not Ok: " +
                             (response.body() != null ? response.body().string() : ""));
                     return false;
 
                 } else {
-                    Log.d("DEBUG", "Không tìm thấy máy chủ: "
+                    Log.e("DEBUG", "Không tìm thấy máy chủ: "
                     + (response.body() != null ? response.body().string() : ""));
                     return false;
                 }

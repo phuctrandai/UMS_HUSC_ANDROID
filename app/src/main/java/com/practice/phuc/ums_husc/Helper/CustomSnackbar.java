@@ -18,8 +18,6 @@ public class CustomSnackbar {
     @SuppressLint("SetTextI18n")
     public static Snackbar createTwoButtonSnackbar(final Context context, final View rootLayout, String message, final int duration
                             , View.OnClickListener negativeClickListener, View.OnClickListener positiveClickListener) {
-//        if (context == null || rootLayout == null)
-//            return null;
 
         // Create the Snackbar
         LinearLayout.LayoutParams objLayoutParams = new LinearLayout.LayoutParams(

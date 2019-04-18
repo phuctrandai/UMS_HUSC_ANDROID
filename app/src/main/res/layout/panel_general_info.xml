@@ -33,7 +33,7 @@
                 android:layout_alignParentEnd="true"
                 android:background="@drawable/radius_white_background"
                 android:src="@android:drawable/arrow_down_float"
-                android:tint="@color/colorDarkerGrey"
+                android:tint="@color/colorBlack"
                 tools:ignore="ContentDescription" />
         </RelativeLayout>
 
@@ -97,7 +97,8 @@
                 android:id="@+id/sp_quocGiaSinh"
                 android:layout_width="190dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tv_noiSinhLb" />
+                android:layout_below="@id/tv_noiSinhLb"
+                android:layout_alignParentStart="true" />
 
             <Spinner
                 android:id="@+id/sp_tinhThanhSinh"
@@ -283,10 +284,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
-                android:background="@drawable/radius_white_background"
+                android:background="@android:color/transparent"
                 android:elevation="0dp"
-                android:fadingEdge="none"
-                android:fadingEdgeLength="0dp"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:text="Đóng"
                 android:textColor="@color/colorDarkerGrey"

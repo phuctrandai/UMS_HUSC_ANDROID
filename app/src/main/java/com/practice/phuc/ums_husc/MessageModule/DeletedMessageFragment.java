@@ -76,12 +76,12 @@ public class DeletedMessageFragment extends Fragment
     private LinearLayout mLoadMoreLayout;
 
     public void onInsertMessage(TINNHAN tinNhan, int position) {
-        Log.d("DEBUG", "INSERT TIN NHAN");
+        Log.e("DEBUG", "INSERT TIN NHAN");
         mAdapter.insertItem(tinNhan, position);
     }
 
     public void onRemoveMessage(TINNHAN tinNhan) {
-        Log.d("DEBUG", "REMOVE TIN NHAN");
+        Log.e("DEBUG", "REMOVE TIN NHAN");
         mAdapter.removeItem(tinNhan);
     }
 
@@ -220,9 +220,9 @@ public class DeletedMessageFragment extends Fragment
             final Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    MessageTaskHelper.getInstance().foreverDelete(deletedItem.getMaTinNhan(),
-                            Reference.getAccountId(mContext), Reference.getAccountPassword(mContext));
-                    Log.d("DEBUG", "DO DELETE");
+                    MessageTaskHelper.getInstance().foreverDelete(deletedItem.MaTinNhan,
+                            Reference.getStudentId(mContext), Reference.getAccountPassword(mContext));
+                    Log.e("DEBUG", "DO DELETE");
                 }
             };
             handler.postDelayed(runnable, 3500);
@@ -268,7 +268,7 @@ public class DeletedMessageFragment extends Fragment
                     return false;
                 }
             } catch (Exception e) {
-                Log.d("DEBUG", mErrorMessage);
+                Log.e("DEBUG", mErrorMessage);
                 e.printStackTrace();
                 return false;
             }

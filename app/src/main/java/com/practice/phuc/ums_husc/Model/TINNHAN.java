@@ -9,69 +9,13 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 public class TINNHAN {
-    private NGUOINHAN[] NguoiNhans;
-    private int MaTinNhan;
-    private String TieuDe;
-    private String NoiDung;
-    private String HoTenNguoiGui;
-    private String MaNguoiGui;
-    private String ThoiDiemGui;
-
-    public int getMaTinNhan() {
-        return MaTinNhan;
-    }
-
-    public void setMaTinNhan(int maTinNhan) {
-        MaTinNhan = maTinNhan;
-    }
-
-    public String getTieuDe() {
-        return TieuDe;
-    }
-
-    public void setTieuDe(String tieuDe) {
-        TieuDe = tieuDe;
-    }
-
-    public String getNoiDung() {
-        return NoiDung;
-    }
-
-    public void setNoiDung(String noiDung) {
-        NoiDung = noiDung;
-    }
-
-    public String getHoTenNguoiGui() {
-        return HoTenNguoiGui;
-    }
-
-    public void setHoTenNguoiGui(String hoTenNguoiGui) {
-        HoTenNguoiGui = hoTenNguoiGui;
-    }
-
-    public String getMaNguoiGui() {
-        return MaNguoiGui;
-    }
-
-    public void setMaNguoiGui(String maNguoiGui) {
-        MaNguoiGui = maNguoiGui;
-    }
-
-    public String getThoiDiemGui() {
-        return ThoiDiemGui;
-    }
-
-    public void setThoiDiemGui(String thoiDiemGui) {
-        ThoiDiemGui = thoiDiemGui;
-    }
-
-    public NGUOINHAN[] getNGUOINHANs() {
-        return NguoiNhans;
-    }
-
-    public void setNGUOINHANs(NGUOINHAN[] NGUOINHANs) {
-        this.NguoiNhans = NGUOINHANs;
-    }
+    public NGUOINHAN[] NguoiNhans;
+    public String MaTinNhan;
+    public String TieuDe;
+    public String NoiDung;
+    public String HoTenNguoiGui;
+    public String MaNguoiGui;
+    public String ThoiDiemGui;
 
     public TINNHAN() {
     }
@@ -80,7 +24,7 @@ public class TINNHAN {
 
     public NGUOINHAN getNguoiNhanTrongDanhSach(String maNguoiNhan) {
         for (NGUOINHAN item : NguoiNhans) {
-            if (item.getMaNguoiNhan().equals(maNguoiNhan))
+            if (item.MaNguoiNhan.equals(maNguoiNhan))
                 return item;
         }
         return null;
@@ -91,7 +35,7 @@ public class TINNHAN {
 
         String[] ds = new String[soNguoiNhan];
         for (int j = 0; j < soNguoiNhan; j++) {
-            ds[j] = NguoiNhans[j].getHoTenNguoiNhan();
+            ds[j] = NguoiNhans[j].HoTenNguoiNhan;
         }
         return ds;
     }
@@ -100,7 +44,7 @@ public class TINNHAN {
         int soNguoiNhan = this.NguoiNhans.length;
         String temp = "";
         if (soNguoiNhan > 0)
-            temp = NguoiNhans[(0)].getHoTenNguoiNhan();
+            temp = NguoiNhans[(0)].HoTenNguoiNhan;
         if (soNguoiNhan > 1)
             temp += " và " + (soNguoiNhan - 1) + " người khác";
         return temp;

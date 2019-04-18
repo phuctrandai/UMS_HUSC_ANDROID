@@ -246,17 +246,17 @@ public class LoginActivity extends AppCompatActivity {
         if (maSinhVien.contains("t"))
             maSinhVien = maSinhVien.replace('t', 'T');
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putString(getString(R.string.pre_key_student_name), vThongTinCaNhan.getHoTen());
-        editor.putString(getString(R.string.pre_key_majors), vThongTinCaNhan.getTenNganh());
-        editor.putString(getString(R.string.pre_key_course), vThongTinCaNhan.getKhoaHoc());
+        editor.putString(getString(R.string.pre_key_account_id), vThongTinCaNhan.MaTaiKhoan);
+        editor.putString(getString(R.string.pre_key_student_name), vThongTinCaNhan.HoTen);
+        editor.putString(getString(R.string.pre_key_majors), vThongTinCaNhan.TenNganh);
+        editor.putString(getString(R.string.pre_key_course), vThongTinCaNhan.KhoaHoc);
         editor.putString(getString(R.string.pre_key_student_id), maSinhVien);
         editor.putString(getString(R.string.pre_key_password), matKhau);
         editor.apply();
     }
 
     private void saveTokenForAccount() {
-        final String maSinhVien = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE)
-                .getString(getString(R.string.pre_key_student_id), null);
+        final String maSinhVien = Reference.getStudentId(this);
         String token = MyFireBaseMessagingService.getToken(this);
         FireBaseIDTask.saveTokenForAccount(maSinhVien, token);
     }

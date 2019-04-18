@@ -69,7 +69,7 @@ public class DetailMessageActivity extends AppCompatActivity {
 
         String json = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_MESSAGE);
         mTinNhan = TINNHAN.fromJson(json);
-        Log.d("DEBUG", "Xem chi tiet tin nhan: " + json);
+        Log.e("DEBUG", "Xem chi tiet tin nhan: " + json);
         showData(mTinNhan);
     }
 
@@ -132,14 +132,14 @@ public class DetailMessageActivity extends AppCompatActivity {
 
         if (tinNhan == null) return;
 
-        String ngayDang = DateHelper.formatYMDToDMY(tinNhan.getThoiDiemGui().substring(0, 10));
-        String gioDang = tinNhan.getThoiDiemGui().substring(11, 16);
+        String ngayDang = DateHelper.formatYMDToDMY(tinNhan.ThoiDiemGui.substring(0, 10));
+        String gioDang = tinNhan.ThoiDiemGui.substring(11, 16);
         final String thoiDiemGui = ngayDang + " " + gioDang;
 
-        tvTieuDe.setText(tinNhan.getTieuDe());
-        tvNguoiGui.setText(tinNhan.getHoTenNguoiGui());
+        tvTieuDe.setText(tinNhan.TieuDe);
+        tvNguoiGui.setText(tinNhan.HoTenNguoiGui);
         tvThoiDiemGui.setText(thoiDiemGui);
-        tvNguoiGuiLabel.setText(StringHelper.getFirstCharToCap(tinNhan.getHoTenNguoiGui()));
+        tvNguoiGuiLabel.setText(StringHelper.getFirstCharToCap(tinNhan.HoTenNguoiGui));
         JustifyTextInTextView.justify(tvTieuDe);
 
         if (!launchFromNotification) {
@@ -147,8 +147,8 @@ public class DetailMessageActivity extends AppCompatActivity {
             mProgressBar.setVisibility(View.GONE);
 
         } else {
-            Log.d("DEBUG", tinNhan.getMaTinNhan() + "");
-            mLoadTask = new LoadMessageContentTask(tinNhan.getMaTinNhan() + "");
+            Log.e("DEBUG", tinNhan.MaTinNhan);
+            mLoadTask = new LoadMessageContentTask(tinNhan.MaTinNhan);
             mLoadTask.execute((String) null);
         }
     }
@@ -206,7 +206,7 @@ public class DetailMessageActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean success) {
             if (mLoadTask != null) {
                 if (success) {
-                    Log.d("DEBUG", "Lay tin nhan theo id: " + json);
+                    Log.e("DEBUG", "Lay tin nhan theo id: " + json);
                     mTinNhan = TINNHAN.fromJson(json);
                     showMessageBody(Objects.requireNonNull(mTinNhan));
 
@@ -215,7 +215,7 @@ public class DetailMessageActivity extends AppCompatActivity {
                     showErrorSnackbar(false, "");
                     showNetworkErrorSnackbar(false);
                 } else {
-                    Log.d("DEBUG", mErrorMessage);
+                    Log.e("DEBUG", mErrorMessage);
                     showErrorSnackbar(true, mErrorMessage);
                 }
             }
@@ -230,7 +230,7 @@ public class DetailMessageActivity extends AppCompatActivity {
     }
 
     private Response fetchData(String messageId) {
-        String maSinhVien = Reference.getAccountId(this);
+        String maSinhVien = Reference.getStudentId(this);
         String matKhau = Reference.getAccountPassword(this);
         String url = Reference.getLoadNoiDungTinNhanApiUrl(maSinhVien, matKhau, messageId);
 
@@ -239,7 +239,7 @@ public class DetailMessageActivity extends AppCompatActivity {
 
     private void showMessageBody(final TINNHAN tinNhan) {
 
-        String htmlContent = "<div style='text-align: justify'>" + tinNhan.getNoiDung() + "</div>";
+        String htmlContent = "<div style='text-align: justify'>" + tinNhan.NoiDung + "</div>";
         tvNoiDung.loadData(htmlContent, "text/html; charset=UTF-8", null);
 
         String temp = tinNhan.getTenNguoiNhanCollapse();
@@ -287,7 +287,7 @@ public class DetailMessageActivity extends AppCompatActivity {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            mLoadTask = new LoadMessageContentTask(mTinNhan.getMaTinNhan() + "");
+                            mLoadTask = new LoadMessageContentTask(mTinNhan.MaTinNhan);
                             mLoadTask.execute((String) null);
                             mNotNetworkSnackbar.dismiss();
                         }
@@ -314,7 +314,7 @@ public class DetailMessageActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             mErrorSnackbar.dismiss();
-                            mLoadTask = new LoadMessageContentTask(mTinNhan.getMaTinNhan() + "");
+                            mLoadTask = new LoadMessageContentTask(mTinNhan.MaTinNhan);
                             mLoadTask.execute((String) null);
                         }
                     });

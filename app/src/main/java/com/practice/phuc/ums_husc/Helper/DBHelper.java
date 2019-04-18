@@ -100,7 +100,7 @@ public class DBHelper extends SQLiteOpenHelper {
      */
     private void createMessageTable(SQLiteDatabase db) {
         String CREATE_MESSAGE_TABLE = "CREATE TABLE IF NOT EXISTS " + MESSAGE + "("
-                + MESSAGE_ID + " INTERGER,"
+                + MESSAGE_ID + " TEXT,"
                 + MESSAGE_TITLE + " TEXT,"
                 + MESSAGE_BODY + " TEXT,"
                 + MESSAGE_SENDER + " TEXT,"
@@ -119,12 +119,12 @@ public class DBHelper extends SQLiteOpenHelper {
                 + " ORDER BY datetime(" + MESSAGE_SEND_TIME + ") DESC", null);
         while (cursor.moveToNext()) {
             tinnhan = new TINNHAN();
-            tinnhan.setMaTinNhan(cursor.getInt(cursor.getColumnIndex(MESSAGE_ID)));
-            tinnhan.setTieuDe(cursor.getString(cursor.getColumnIndex(MESSAGE_TITLE)));
-            tinnhan.setNoiDung(cursor.getString(cursor.getColumnIndex(MESSAGE_BODY)));
-            tinnhan.setHoTenNguoiGui(cursor.getString(cursor.getColumnIndex(MESSAGE_SENDER)));
+            tinnhan.MaTinNhan = cursor.getString(cursor.getColumnIndex(MESSAGE_ID));
+            tinnhan.TieuDe = cursor.getString(cursor.getColumnIndex(MESSAGE_TITLE));
+            tinnhan.NoiDung = cursor.getString(cursor.getColumnIndex(MESSAGE_BODY));
+            tinnhan.HoTenNguoiGui = cursor.getString(cursor.getColumnIndex(MESSAGE_SENDER));
 //            tinnhan.setMaNguoiGui(cursor.getString(cursor.getColumnIndex(MESSAGE_RECEIVER)));
-            tinnhan.setThoiDiemGui(cursor.getString(cursor.getColumnIndex(MESSAGE_SEND_TIME)));
+            tinnhan.ThoiDiemGui = cursor.getString(cursor.getColumnIndex(MESSAGE_SEND_TIME));
 //            tinnhan.setThoiDiemGui(cursor.getString(cursor.getColumnIndex(MESSAGE_SEEN_TIME)));
             list.add(tinnhan);
         }
@@ -136,12 +136,12 @@ public class DBHelper extends SQLiteOpenHelper {
     public void insertMessage(TINNHAN tinnhan) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(MESSAGE_ID, tinnhan.getMaTinNhan());
-        contentValues.put(MESSAGE_TITLE, tinnhan.getTieuDe());
-        contentValues.put(MESSAGE_BODY, tinnhan.getNoiDung());
+        contentValues.put(MESSAGE_ID, tinnhan.MaTinNhan);
+        contentValues.put(MESSAGE_TITLE, tinnhan.TieuDe);
+        contentValues.put(MESSAGE_BODY, tinnhan.NoiDung);
 //        contentValues.put(MESSAGE_SENDER, tinnhan.getNguoiGui());
 //        contentValues.put(MESSAGE_RECEIVER, tinnhan.getNguoiNhan());
-        contentValues.put(MESSAGE_SEND_TIME, tinnhan.getThoiDiemGui());
+        contentValues.put(MESSAGE_SEND_TIME, tinnhan.ThoiDiemGui);
 //        contentValues.put(MESSAGE_SEEN_TIME, tinnhan.getThoiDiemXem());
         db.insert(MESSAGE, null, contentValues);
         db.close();

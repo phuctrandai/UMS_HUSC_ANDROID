@@ -342,9 +342,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private boolean localLogin() {
-        SharedPreferences sp = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
-        String maSinhVien = sp.getString(getString(R.string.pre_key_student_id), null);
-        String matKhau = sp.getString(getString(R.string.pre_key_password), null);
+        String maSinhVien = Reference.getStudentId(this);
+        String matKhau = Reference.getAccountPassword(this);
 
         return (maSinhVien != null) && (matKhau != null);
     }
@@ -363,6 +362,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 clearAllNotification();
 
                 SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE).edit();
+                editor.remove(getString(R.string.pre_key_account_id));
                 editor.remove(getString(R.string.pre_key_student_id));
                 editor.remove(getString(R.string.pre_key_password));
                 editor.remove(getString(R.string.pre_key_student_name));
@@ -392,7 +392,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void deleteTokenForAccount() {
-        String maSinhVien = Reference.getAccountId(this);
+        String maSinhVien = Reference.getStudentId(this);
         String token = getSharedPreferences(getString(R.string.share_pre_key_firebase), MODE_PRIVATE)
                 .getString(getString(R.string.pre_key_token), null);
         FireBaseIDTask.deleteTokenFromAccount(maSinhVien, token);

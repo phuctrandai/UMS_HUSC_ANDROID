@@ -168,12 +168,12 @@ public final class Reference {
     public static String BUNDLE_EXTRA_MESSAGE = "message";
     public static String BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI = "launch_from_noti";
 
-    public static String getAccountId(Context context) {
+    public static String getStudentId(Context context) {
         SharedPreferences sp = context.getSharedPreferences(context.getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
         return sp.getString(context.getString(R.string.pre_key_student_id), "");
     }
 
-    public static String getAccountName(Context context) {
+    public static String getStudentName(Context context) {
         SharedPreferences sp = context.getSharedPreferences(context.getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
         return sp.getString(context.getString(R.string.pre_key_student_name), "");
     }
@@ -181,5 +181,10 @@ public final class Reference {
     public static String getAccountPassword(Context context) {
         SharedPreferences sp = context.getSharedPreferences(context.getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
         return sp.getString(context.getString(R.string.pre_key_password), "");
+    }
+
+    public static String getAccountId(Context context) {
+        SharedPreferences sp = context.getSharedPreferences(context.getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
+        return sp.getString(context.getString(R.string.pre_key_account_id), "");
     }
 }

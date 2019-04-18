@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dragView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/layout_thongTinLienHeCuTru"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        android:padding="@dimen/normal_padding">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chỉnh sửa thông tin liên hệ, địa chỉ cư trú"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="HardcodedText" />
+
+            <ImageButton
+                android:id="@+id/btn_closeSlidePanel"
+                android:layout_width="48dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/radius_white_background"
+                android:src="@android:drawable/arrow_down_float"
+                android:tint="@color/colorBlack"
+                tools:ignore="ContentDescription" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_diDong"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/normal_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/normal_margin"
+                android:drawableStart="@drawable/ic_phone_android_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="Di động"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <EditText
+                android:id="@+id/et_diDong"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number|phone"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="Autofill,HardcodedText,LabelFor" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_coDinh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/normal_margin"
+                android:drawableStart="@drawable/ic_local_phone_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="Cố định"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <EditText
+                android:id="@+id/et_coDinh"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number|phone"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="Autofill,LabelFor" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_email"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/normal_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/normal_margin"
+                android:drawableStart="@drawable/ic_email_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="Email"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <EditText
+                android:id="@+id/et_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="Autofill,LabelFor" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_hinhThucCuTru"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/normal_margin"
+                android:drawableStart="@drawable/ic_home_grey_12dp"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="Hình thức cư trú"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <Spinner
+                android:id="@+id/sp_hinhThucCuTru"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/normal_text" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_ngayBatDauCuTru"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/normal_margin"
+                android:drawableStart="@drawable/ic_date_range_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="Ngày bắt đầu cư trú"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Spinner
+                    android:id="@+id/sp_ngayBdCuTru"
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true" />
+
+                <Spinner
+                    android:id="@+id/sp_thangBdCuTru"
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true" />
+
+                <Spinner
+                    android:id="@+id/sp_namBdCuTru"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_diaChiCuTru"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/normal_margin"
+                android:drawableStart="@drawable/ic_location_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="Địa chỉ cư trú tại"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <EditText
+                android:id="@+id/et_diaChiCuTru"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="Autofill,LabelFor" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/normal_margin">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chỉnh sửa thông tin về quê quán, hộ khẩu thường trú"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="HardcodedText" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_queQuan"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/normal_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_queQuanLb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/normal_margin"
+                android:drawableStart="@drawable/ic_home_grey_12dp"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="Quê quán"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <Spinner
+                android:id="@+id/sp_quocGiaQQ"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_queQuanLb"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="@dimen/normal_margin" />
+
+            <Spinner
+                android:id="@+id/sp_tinhThanhQQ"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_queQuanLb"
+                android:layout_alignParentEnd="true"
+                android:layout_marginBottom="@dimen/normal_margin" />
+
+            <Spinner
+                android:id="@+id/sp_quanHuyenQQ"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/sp_quocGiaQQ"
+                android:layout_alignParentStart="true" />
+
+            <Spinner
+                android:id="@+id/sp_phuongXaQQ"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/sp_tinhThanhQQ"
+                android:layout_alignParentEnd="true" />
+
+            <EditText
+                android:id="@+id/et_diaChiQQ"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/sp_phuongXaQQ"
+                android:layout_marginTop="@dimen/normal_margin"
+                android:hint="Địa chỉ cụ thể"
+                android:inputType="text"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="Autofill,HardcodedText,LabelFor" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_hoKhau"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin">
+
+            <TextView
+                android:id="@+id/tv_hoKhauLB"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/normal_margin"
+                android:drawableStart="@drawable/ic_location_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="Hộ khẩu thường trú"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <Spinner
+                android:id="@+id/sp_quocGiaTR"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_hoKhauLB"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="@dimen/normal_margin" />
+
+            <Spinner
+                android:id="@+id/sp_tinhThanhTR"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_hoKhauLB"
+                android:layout_alignParentEnd="true"
+                android:layout_marginBottom="@dimen/normal_margin" />
+
+            <Spinner
+                android:id="@+id/sp_quanHuyenTR"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/sp_quocGiaTR"
+                android:layout_alignParentStart="true" />
+
+            <Spinner
+                android:id="@+id/sp_phuongXaTR"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/sp_tinhThanhTR"
+                android:layout_alignParentEnd="true" />
+
+            <EditText
+                android:id="@+id/et_diaChiTR"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/sp_phuongXaTR"
+                android:layout_marginTop="@dimen/normal_margin"
+                android:hint="Địa chỉ cụ thể"
+                android:inputType="text"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="Autofill,HardcodedText,LabelFor" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin">
+
+            <Button
+                android:id="@+id/btn_closeSlidePanelBtm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:background="@android:color/transparent"
+                android:elevation="0dp"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:text="Đóng"
+                android:textColor="@color/colorDarkerGrey"
+                android:textStyle="bold"
+                tools:ignore="HardcodedText,UnusedAttribute" />
+
+            <Button
+                android:id="@+id/btn_save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/radius_5dp_primary_background"
+                android:elevation="0dp"
+                android:fadingEdge="none"
+                android:fadingEdgeLength="0dp"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:text="Lưu"
+                android:textColor="@color/colorWhite"
+                android:textStyle="bold"
+                tools:ignore="HardcodedText,UnusedAttribute" />
+
+            <ProgressBar
+                android:id="@+id/pb_updateLoading"
+                style="@android:style/Widget.DeviceDefault.ProgressBar.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/normal_margin"
+                android:layout_toStartOf="@id/btn_luuThongTinChung"
+                android:visibility="gone" />
+        </RelativeLayout>
+    </LinearLayout>
+</ScrollView>

@@ -45,7 +45,7 @@ import okhttp3.Response;
 
 import static com.practice.phuc.ums_husc.Helper.StringHelper.isNullOrEmpty;
 
-public class ThongTinChungFragment extends Fragment {
+public class GeneralInfoFragment extends Fragment {
     private Context mContext;
     private boolean mIsCreated;
 
@@ -55,11 +55,11 @@ public class ThongTinChungFragment extends Fragment {
     private final String GET_RELIGION = "religion";
     private final String DO_UPDATE = "update";
 
-    public ThongTinChungFragment() {
+    public GeneralInfoFragment() {
     }
 
-    public static ThongTinChungFragment newInstance(Context context, VThongTinChung thongTinChung) {
-        ThongTinChungFragment f = new ThongTinChungFragment();
+    public static GeneralInfoFragment newInstance(Context context, VThongTinChung thongTinChung) {
+        GeneralInfoFragment f = new GeneralInfoFragment();
         f.mContext = context;
         f.mThongTinChung = thongTinChung;
         return f;
@@ -172,7 +172,7 @@ public class ThongTinChungFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_thong_tin_chung, container, false);
+        View view = inflater.inflate(R.layout.fragment_general_info, container, false);
         bindUI(view);
 
         setUpMainPanel(mThongTinChung);
@@ -317,7 +317,7 @@ public class ThongTinChungFragment extends Fragment {
                 newThongTin.SoCMND = soCMND;
                 newThongTin.NgayCap = thangCapCMND + "/" + ngayCapCMND + "/" + namCapCMND;
                 newThongTin.NoiCap = noiCapCMND;
-                newThongTin.MaSinhVien = Reference.getAccountId(mContext);
+                newThongTin.MaSinhVien = Reference.getStudentId(mContext);
                 newThongTin.TenDanToc = "";
                 newThongTin.TenQuocGia = "";
                 newThongTin.TenTonGiao = "";
@@ -369,7 +369,7 @@ public class ThongTinChungFragment extends Fragment {
         }
     }
 
-    private void setUpSlidePanel(VThongTinChung thongTinChung) {
+    private void setUpSlidePanel(@NonNull VThongTinChung thongTinChung) {
         // Ngay sinh
         String ngaySinh;
         int indexNgay = 0, indexThang = 0, indexNam = 0;
@@ -461,7 +461,7 @@ public class ThongTinChungFragment extends Fragment {
 
                 case DO_UPDATE:
                     url = Reference.HOST + "api/SinhVien/UpdateThongTinChung/" +
-                            "?masinhvien=" + Reference.getAccountId(mContext) +
+                            "?masinhvien=" + Reference.getStudentId(mContext) +
                             "&matkhau=" + Reference.getAccountPassword(mContext);
                     String data = strings[1];
 
@@ -558,7 +558,7 @@ public class ThongTinChungFragment extends Fragment {
 
     /*##### UPDATE DATA ON VIEW #####*/
 
-    private void bindUI(View view) {
+    private void bindUI(@NonNull View view) {
         mSlidingUpPanelLayout = view.findViewById(R.id.sliding_layout);
         mGioiTinh = view.findViewById(R.id.tv_gioiTinh);
         mNgaySinh = view.findViewById(R.id.tv_ngaySinh);

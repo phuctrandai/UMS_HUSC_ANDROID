@@ -101,10 +101,10 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
         PendingIntent pendingIntent;
         Context context;
         TINNHAN tinNhan = new TINNHAN();
-        tinNhan.setMaTinNhan(Integer.parseInt(Objects.requireNonNull(messageId)));
-        tinNhan.setTieuDe(messageTitle);
-        tinNhan.setHoTenNguoiGui(messageSender);
-        tinNhan.setThoiDiemGui(messageSendTime);
+        tinNhan.MaTinNhan = messageId;
+        tinNhan.TieuDe = messageTitle;
+        tinNhan.HoTenNguoiGui = messageSender;
+        tinNhan.ThoiDiemGui = messageSendTime;
 
         if (mContext == null) { // Luc app ko chay
             context = this;

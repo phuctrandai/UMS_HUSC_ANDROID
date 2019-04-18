@@ -17,10 +17,10 @@ public class FireBaseIDTask extends AsyncTask<String, Void, Boolean> {
             Response response = NetworkUtil.makeRequest(url, true, requestBody);
             if (response != null) {
                 if (response.code() == NetworkUtil.OK) {
-                    Log.d("DEBUG", "FireBase token id do in background Success !!!");
+                    Log.e("DEBUG", "FireBase token id do in background Success !!!");
                     return true;
                 } else if (response.code() == NetworkUtil.BAD_REQUEST) {
-                    Log.d("DEBUG", "FireBase token id do in background Badrequest: " +
+                    Log.e("DEBUG", "FireBase token id do in background Badrequest: " +
                             (response.body() != null ? response.body().string() : null));
                     return false;
                 }
@@ -28,17 +28,17 @@ public class FireBaseIDTask extends AsyncTask<String, Void, Boolean> {
         } catch (Exception ex) {
             Log.e("DEBUG", "FireBase token id do in background Fail: " + ex.toString());
         }
-        Log.d("DEBUG", "FireBase token id do in background Fail !!!");
+        Log.e("DEBUG", "FireBase token id do in background Fail !!!");
         return false;
     }
 
     public static void saveTokenForAccount(String maSinhVien, String token) {
-        Log.d("DEBUG", "FireBase save token");
+        Log.e("DEBUG", "FireBase save token");
         new FireBaseIDTask().execute(Reference.getSaveTokenApiUrl(maSinhVien, token));
     }
 
     public static void deleteTokenFromAccount(String maSinhVien, String token) {
-        Log.d("DEBUG", "FireBase delete token");
+        Log.e("DEBUG", "FireBase delete token");
         new FireBaseIDTask().execute(Reference.getDeleteTokenApiUrl(maSinhVien, token));
     }
 }

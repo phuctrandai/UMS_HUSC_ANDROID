@@ -5,12 +5,11 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.util.Log;
 
 import com.practice.phuc.ums_husc.ResumeModule.DacDiemBanThanFragment;
 import com.practice.phuc.ums_husc.ResumeModule.LichSuBanThanFragment;
-import com.practice.phuc.ums_husc.ResumeModule.LienHeCuTruFragment;
-import com.practice.phuc.ums_husc.ResumeModule.ThongTinChungFragment;
+import com.practice.phuc.ums_husc.ResumeModule.ContactResidentFragment;
+import com.practice.phuc.ums_husc.ResumeModule.GeneralInfoFragment;
 import com.practice.phuc.ums_husc.ViewModel.VDacDiemBanThan;
 import com.practice.phuc.ums_husc.ViewModel.VLichSuBanThan;
 import com.practice.phuc.ums_husc.ViewModel.VQueQuan;
@@ -28,16 +27,16 @@ public class ResumePagerAdapter extends FragmentPagerAdapter {
     private VDacDiemBanThan dacDiemBanThan;
     private VLichSuBanThan lichSuBanThan;
 
-    private ThongTinChungFragment thongTinChungFragment;
-    private LienHeCuTruFragment lienHeCuTruFragment;
+    private GeneralInfoFragment generalInfoFragment;
+    private ContactResidentFragment contactResidentFragment;
     private DacDiemBanThanFragment dacDiemBanThanFragment;
     private LichSuBanThanFragment lichSuBanThanFragment;
 
     public ResumePagerAdapter(FragmentManager fm, Context context) {
         super(fm);
         mContext = context;
-        thongTinChungFragment = ThongTinChungFragment.newInstance(mContext, thongTinChung);
-        lienHeCuTruFragment = LienHeCuTruFragment.newInstance(thongTinLienHe, thuongTru, queQuan);
+        generalInfoFragment = GeneralInfoFragment.newInstance(mContext, thongTinChung);
+        contactResidentFragment = ContactResidentFragment.newInstance(thongTinLienHe, thuongTru, queQuan);
         dacDiemBanThanFragment = DacDiemBanThanFragment.newInstance(dacDiemBanThan);
         lichSuBanThanFragment = LichSuBanThanFragment.newInstance(lichSuBanThan);
     }
@@ -63,11 +62,11 @@ public class ResumePagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                thongTinChungFragment.setThongTin(thongTinChung);
-                return thongTinChungFragment;
+                generalInfoFragment.setThongTin(thongTinChung);
+                return generalInfoFragment;
             case 1:
-                lienHeCuTruFragment.setThongTin(thongTinLienHe, thuongTru, queQuan);
-                return lienHeCuTruFragment;
+                contactResidentFragment.setThongTin(thongTinLienHe, thuongTru, queQuan);
+                return contactResidentFragment;
             case 2:
                 dacDiemBanThanFragment.setThongTin(dacDiemBanThan);
                 return dacDiemBanThanFragment;
@@ -79,8 +78,8 @@ public class ResumePagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public void notifyDataSetChanged() {
-        thongTinChungFragment.setThongTin(thongTinChung);
-        lienHeCuTruFragment.setThongTin(thongTinLienHe, thuongTru, queQuan);
+        generalInfoFragment.setThongTin(thongTinChung);
+        contactResidentFragment.setThongTin(thongTinLienHe, thuongTru, queQuan);
         dacDiemBanThanFragment.setThongTin(dacDiemBanThan);
         lichSuBanThanFragment.setThongTin(lichSuBanThan);
         super.notifyDataSetChanged();

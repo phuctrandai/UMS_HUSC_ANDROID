@@ -52,9 +52,9 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
 
         final TINNHAN tinnhan = mTinNhanList.get(i);
 
-        String tieuDe = tinnhan.getTieuDe();
-        String thoiDiemGui = tinnhan.getThoiDiemGui();
-        String hoTenNguoiGui = tinnhan.getHoTenNguoiGui();
+        String tieuDe = tinnhan.TieuDe;
+        String thoiDiemGui = tinnhan.ThoiDiemGui;
+        String hoTenNguoiGui = tinnhan.HoTenNguoiGui;
         String ngayDang = DateHelper.formatYMDToDMY(thoiDiemGui.substring(0, 10));
         String gioDang = thoiDiemGui.substring(11, 16);
         String thoiGianDangStr = ngayDang + " " + gioDang;
@@ -66,10 +66,10 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
         viewHolder.tvThoiDiemGui.setText(thoiGianDangStr);
         viewHolder.tvNguoiGuiLabel.setText(StringHelper.getFirstCharToCap(hoTenNguoiGui));
 
-        String maSinhVien = Reference.getAccountId(mContext);
+        String maSinhVien = Reference.getStudentId(mContext);
         final NGUOINHAN nguoiNhan = tinnhan.getNguoiNhanTrongDanhSach(maSinhVien);
 
-        if (nguoiNhan != null && isNullOrEmpty(nguoiNhan.getThoiDiemXem())) {
+        if (nguoiNhan != null && isNullOrEmpty(nguoiNhan.ThoiDiemXem)) {
 //            Log.d("DEBUG", "TN: " + tinnhan.getTieuDe() + " Thoi diem xem: " + nguoiNhan.getThoiDiemXem());
 //            viewHolder.tvTieuDe.setTypeface(null, Typeface.BOLD);
 //            viewHolder.tvNguoiGui.setTypeface(null, Typeface.BOLD);
@@ -84,8 +84,8 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
                 intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, TINNHAN.toJson(tinnhan));
                 mContext.startActivity(intent);
 
-                if (nguoiNhan != null && isNullOrEmpty(nguoiNhan.getThoiDiemXem())) {
-                    nguoiNhan.setThoiDiemXem(DateHelper.toDateTimeString(DateHelper.getCalendar().getTime()));
+                if (nguoiNhan != null && isNullOrEmpty(nguoiNhan.ThoiDiemXem)) {
+                    nguoiNhan.ThoiDiemXem = DateHelper.toDateTimeString(DateHelper.getCalendar().getTime());
                     viewHolder.tvTieuDe.setTypeface(null, Typeface.NORMAL);
                     viewHolder.tvNguoiGui.setTypeface(null, Typeface.NORMAL);
                     viewHolder.tvThoiDiemGui.setTypeface(null, Typeface.NORMAL);

@@ -28,4 +28,9 @@
         <item name="android:textAllCaps">true</item>
     </style>
 
+    <!-- Bottom Navigation -->
+    <style name="Widget.BottomNavigationView" parent="Widget.Design.BottomNavigationView">
+        <item name="android:textSize">@dimen/normal_text</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

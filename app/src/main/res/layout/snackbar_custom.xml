@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/my_snackbar_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/snackbar_custom_background"
     android:layout_marginStart="@dimen/normal_margin"
     android:layout_marginEnd="@dimen/normal_margin"
+    android:background="@drawable/snackbar_custom_background"
     android:elevation="0dp"
-    android:orientation="horizontal"
     android:paddingStart="@dimen/normal_padding"
     android:paddingEnd="0dp">
 
@@ -16,9 +15,9 @@
         android:id="@+id/tv_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/big_margin"
-        android:layout_weight=".5"
-        android:gravity="center_vertical"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/normal_margin"
         android:text="Two button snackbar"
         android:textColor="@android:color/white"
         android:textSize="@dimen/normal_text"
@@ -28,32 +27,34 @@
         android:id="@+id/btn_negative"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight=".1"
-        android:background="?android:attr/selectableItemBackground"
+        android:layout_toStartOf="@id/btn_positive"
+        android:background="@android:color/transparent"
         android:clickable="true"
         android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
         android:gravity="center"
         android:paddingTop="@dimen/big_padding"
         android:paddingBottom="@dimen/big_padding"
         android:text="Deny"
         android:textColor="@android:color/white"
         android:textSize="@dimen/small_text"
-        tools:ignore="HardcodedText" />
+        tools:ignore="HardcodedText,UnusedAttribute" />
 
     <Button
         android:id="@+id/btn_positive"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight=".1"
-        android:background="?android:attr/selectableItemBackground"
+        android:layout_alignParentEnd="true"
+        android:background="@android:color/transparent"
         android:clickable="true"
         android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
         android:gravity="center"
         android:paddingTop="@dimen/big_padding"
         android:paddingBottom="@dimen/big_padding"
         android:text="Accept"
         android:textColor="@android:color/white"
         android:textSize="@dimen/small_text"
-        tools:ignore="HardcodedText" />
+        tools:ignore="HardcodedText,UnusedAttribute" />
 
-</LinearLayout>
+</RelativeLayout>

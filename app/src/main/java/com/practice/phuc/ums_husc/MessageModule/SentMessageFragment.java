@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,8 @@ import android.widget.LinearLayout;
 import com.practice.phuc.ums_husc.Adapter.MessageRecyclerDataAdapter;
 import com.practice.phuc.ums_husc.Helper.CustomSnackbar;
 import com.practice.phuc.ums_husc.Helper.DBHelper;
+import com.practice.phuc.ums_husc.Helper.MessageItemTouchHelper;
+import com.practice.phuc.ums_husc.Helper.MessageTaskHelper;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.Model.TINNHAN;
@@ -30,12 +33,14 @@ import com.practice.phuc.ums_husc.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.Response;
 
 import static android.content.Context.MODE_PRIVATE;
 
-public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class SentMessageFragment extends Fragment
+        implements SwipeRefreshLayout.OnRefreshListener, MessageItemTouchHelper.MessageItemTouchHelperListener {
 
     public SentMessageFragment() {
     }
@@ -53,8 +58,8 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
     private int mStatus, mLastAction;
     private int mCurrentItems, mTotalItems, mScrollOutItems;
     private long mCurrentPage;
-    private boolean mIsScrolling, mIsViewDestroyed, mIsMessageListChanged;
-    private Snackbar mNotNetworkSnackbar, mErrorSnackbar;
+    private boolean mIsScrolling, mIsViewDestroyed;
+    private Snackbar mNotNetworkSnackbar, mErrorSnackbar, mUndoDeleteSnakbar;
     private DBHelper mDBHelper;
 
     private final int ITEM_PER_PAGE = 8;
@@ -75,10 +80,9 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
     public void onCreate(@Nullable Bundle savedInstanceState) {
         mLastAction = ACTION_INIT;
         mStatus = STATUS_INIT;
-        mIsMessageListChanged = false;
+        mDBHelper = new DBHelper(mContext);
         mAdapter = new MessageRecyclerDataAdapter(mContext, new ArrayList<TINNHAN>());
         mIsScrolling = true;
-        mDBHelper = new DBHelper(mContext);
         long countRow = mDBHelper.countRow(DBHelper.MESSAGE);
         if (countRow > 0) {
             mCurrentPage = countRow / ITEM_PER_PAGE + 1;
@@ -152,6 +156,7 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
 
         showNetworkErrorSnackbar(false);
         showErrorSnackbar(false, null);
+        showUndoSnackbar(false, null);
 
         if (NetworkUtil.getConnectivityStatus(mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
             mStatus = STATUS_NOT_NETWORK;
@@ -189,6 +194,48 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
             mIsScrolling = false;
             mLoadMoreLayout.setVisibility(View.VISIBLE);
             attempGetData();
+        }
+    }
+
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
+        if (viewHolder instanceof MessageRecyclerDataAdapter.DataViewHolder) {
+
+            final TINNHAN deletedItem = mAdapter.getDataSet().get(viewHolder.getAdapterPosition());
+            final int deletedIndex = viewHolder.getAdapterPosition();
+
+            mAdapter.removeItem(deletedIndex);
+            MessageTaskHelper.getInstance().insertAttempDeleteMessage(deletedItem);
+
+            MessageFragment parentFrag = (MessageFragment) SentMessageFragment.this.getParentFragment();
+            final DeletedMessageFragment deletedMessageFrag = (DeletedMessageFragment) Objects.requireNonNull(parentFrag).
+                    getChildFragment(DeletedMessageFragment.class.getName());
+            if (deletedMessageFrag != null) {
+                deletedMessageFrag.onInsertMessage(deletedItem, 0);
+            }
+
+            final Handler handler = new Handler();
+            final Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    MessageTaskHelper.getInstance().attempDelete(deletedItem.MaTinNhan,
+                            Reference.getStudentId(mContext), Reference.getAccountPassword(mContext));
+                }
+            };
+            handler.postDelayed(runnable, 3500);
+
+            showUndoSnackbar(true, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mUndoDeleteSnakbar.dismiss();
+                    mAdapter.insertItem(deletedItem, deletedIndex);
+                    handler.removeCallbacks(runnable);
+                    MessageTaskHelper.getInstance().removeAttempDeleteMessage(deletedItem);
+                    if (deletedMessageFrag != null) {
+                        deletedMessageFrag.onRemoveMessage(deletedItem);
+                    }
+                }
+            });
         }
     }
 
@@ -325,6 +372,10 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
                 }
             }
         });
+
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback =
+                new MessageItemTouchHelper(0, ItemTouchHelper.LEFT, this);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(mRvMessage);
     }
 
     private void setUpSwipeRefreshLayout(View view) {
@@ -403,6 +454,22 @@ public class SentMessageFragment extends Fragment implements SwipeRefreshLayout.
             mNotNetworkSnackbar.show();
         } else if (mNotNetworkSnackbar != null) {
             mNotNetworkSnackbar.dismiss();
+        }
+    }
+
+    private void showUndoSnackbar(boolean show, View.OnClickListener action) {
+        if (mIsViewDestroyed) return;
+
+        if (show) {
+            mUndoDeleteSnakbar = CustomSnackbar.createTwoButtonSnackbar(mContext, mSwipeRefreshLayout
+                    , "Đã xóa 1 mục"
+                    , Snackbar.LENGTH_LONG
+                    , null
+                    , action);
+            mUndoDeleteSnakbar.show();
+
+        } else if (mUndoDeleteSnakbar != null) {
+            mUndoDeleteSnakbar.dismiss();
         }
     }
 }

@@ -9,6 +9,8 @@
 
     <stroke
         android:width="0dp"
+        android:dashWidth="0dp"
+        android:dashGap="0dp"
         android:color="@android:color/transparent" />
 
     <solid android:color="@android:color/white" />

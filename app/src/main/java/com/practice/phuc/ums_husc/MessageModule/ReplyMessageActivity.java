@@ -65,7 +65,7 @@ public class ReplyMessageActivity extends AppCompatActivity {
 
         String json = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_MESSAGE);
         mTinNhan = TINNHAN.fromJson(json);
-        Log.d("DEBUG", "Reply tin nhan: " + json);
+        Log.e("DEBUG", "Reply tin nhan: " + json);
 
         setUpData(mTinNhan);
     }
@@ -105,9 +105,9 @@ public class ReplyMessageActivity extends AppCompatActivity {
     private void setUpData(TINNHAN tinNhan) {
         if (tinNhan == null) return;
 
-        String tieuDe = tinNhan.getTieuDe();
-        String hoTenNguoiNhan = tinNhan.getHoTenNguoiGui();
-        String hoTenNguoiGui = Reference.getAccountName(this);
+        String tieuDe = tinNhan.TieuDe;
+        String hoTenNguoiNhan = tinNhan.HoTenNguoiGui;
+        String hoTenNguoiGui = Reference.getStudentName(this);
 
         String tieuDeReply = tieuDe.contains("Re: ") ? tieuDe : "Re: " + tieuDe;
         etTieuDe.setText(tieuDeReply);
@@ -162,22 +162,23 @@ public class ReplyMessageActivity extends AppCompatActivity {
 
     private void sendMessage(String title, String content) {
         String maNguoiGui = Reference.getAccountId(this);
-        String hoTenNguoiGui = Reference.getAccountName(this);
-        String maNguoiNhan = mTinNhan.getMaNguoiGui();
-        String hoTenNguoiNhan = mTinNhan.getHoTenNguoiGui();
+        String hoTenNguoiGui = Reference.getStudentName(this);
+        String maNguoiNhan = mTinNhan.MaNguoiGui;
+        String hoTenNguoiNhan = mTinNhan.HoTenNguoiGui;
 
         NGUOINHAN nguoiNhan = new NGUOINHAN();
-        nguoiNhan.setMaNguoiNhan(maNguoiNhan);
-        nguoiNhan.setHoTenNguoiNhan(hoTenNguoiNhan);
-        nguoiNhan.setThoiDiemXem("");
+        nguoiNhan.MaNguoiNhan = maNguoiNhan;
+        nguoiNhan.HoTenNguoiNhan = hoTenNguoiNhan;
+        nguoiNhan.ThoiDiemXem = "";
 
         TINNHAN tinNhan = new TINNHAN();
-        tinNhan.setTieuDe(title);
-        tinNhan.setNoiDung(content);
-        tinNhan.setThoiDiemGui("");
-        tinNhan.setMaNguoiGui(maNguoiGui);
-        tinNhan.setHoTenNguoiGui(hoTenNguoiGui);
-        tinNhan.setNGUOINHANs(new NGUOINHAN[]{ nguoiNhan });
+        tinNhan.TieuDe = title;
+        tinNhan.NoiDung = content;
+        tinNhan.ThoiDiemGui = "";
+
+        tinNhan.MaNguoiGui = maNguoiGui;
+        tinNhan.HoTenNguoiGui = hoTenNguoiGui;
+        tinNhan.NguoiNhans = new NGUOINHAN[]{ nguoiNhan };
 
         SendMessageTask sendMessageTask = new SendMessageTask(tinNhan);
         sendMessageTask.execute((String) null);
@@ -187,6 +188,7 @@ public class ReplyMessageActivity extends AppCompatActivity {
     @SuppressLint("StaticFieldLeak")
     class SendMessageTask extends AsyncTask<String, Void, Boolean> {
         Response mResponse;
+        String mMessage;
         TINNHAN tinNhan;
 
         SendMessageTask(TINNHAN tinNhan) {
@@ -195,52 +197,51 @@ public class ReplyMessageActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(String... strings) {
-            String maSinhVien = Reference.getAccountId(ReplyMessageActivity.this);
+            String maSinhVien = Reference.getStudentId(ReplyMessageActivity.this);
             String matKhau = Reference.getAccountPassword(ReplyMessageActivity.this);
             String url = Reference.getReplyTinNhanApiUrl(maSinhVien, matKhau);
 
             String json = TINNHAN.toJson(tinNhan);
-            Log.d("DEBUG", "Tin nhan gui di: " + json);
+            Log.e("DEBUG", "Tin nhan gui di: " + json);
 
             RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json);
-
             mResponse = NetworkUtil.makeRequest(url, true, requestBody);
 
-            return true;
+            if (mResponse == null) {
+                mMessage = "Không thể kết nối đến máy chủ";
+                return false;
+            }
+
+            if (mResponse.code() == NetworkUtil.BAD_REQUEST) {
+                Log.e("DEBUG", "Send message: " + mResponse.code());
+                mMessage = "Thông tin người gửi không đúng";
+                return false;
+            }
+
+            if (mResponse.code() == NetworkUtil.OK) {
+                Log.e("DEBUG", "Send message: " + mResponse.code());
+                mMessage = "Đã gửi tin nhắn";
+                return true;
+            }
+            try {
+                assert mResponse.body() != null;
+                Log.e("DEBUG", "Send message: " + mResponse.body().string());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mMessage = "Có lỗi xảy ra khi gửi tin nhắn";
+            return false;
         }
 
         @Override
         protected void onPostExecute(Boolean success) {
             super.onPostExecute(success);
 
-            if (mResponse == null) {
-                pushNotification("Không thể kết nối đến máy chủ", 0);
-                return;
-            }
-
-            if (mResponse.code() == NetworkUtil.BAD_REQUEST) {
-                Log.d("DEBUG", "Send message: " + mResponse.code());
-                pushNotification("Thông tin người gửi không đúng", 0);
-                return;
-            }
-
-            if (mResponse.code() == NetworkUtil.OK) {
-                Log.d("DEBUG", "Send message: " + mResponse.code());
-                pushNotification("Đã gửi tin nhắn", 5000);
-                return;
-            }
-            try {
-                assert mResponse.body() != null;
-                Log.d("DEBUG", "Send message: " + mResponse.body().string());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            pushNotification("Có lỗi xảy ra khi gửi tin nhắn", 0);
+            pushNotification(mMessage);
         }
     }
 
-    private void pushNotification(final String title, long timeOut) {
+    private void pushNotification(final String title) {
         SharedPreferences sp = getSharedPreferences(getString(R.string.share_pre_key_setting), MODE_PRIVATE);
         boolean allow = sp.getBoolean(getString(R.string.share_pre_key_send_message), true);
         if (!allow) return;
@@ -255,9 +256,9 @@ public class ReplyMessageActivity extends AppCompatActivity {
         mBuilder.setContentIntent(null);
         mBuilder.setSound(Uri.EMPTY);
         mBuilder.setGroup(Reference.SEND_MESSAGE_NOTIFICATION);
-        if (timeOut > 0) {
+        if ((long) 0 > 0) {
             mBuilder.setAutoCancel(true);
-            mBuilder.setTimeoutAfter(timeOut);
+            mBuilder.setTimeoutAfter((long) 0);
         }
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
         int norificationId = Integer.parseInt(String.valueOf(new Date().getTime() / 1000));
