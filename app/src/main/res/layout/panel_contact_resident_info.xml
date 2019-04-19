@@ -193,6 +193,28 @@
         </LinearLayout>
 
         <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/normal_margin"
+                android:drawableStart="@drawable/ic_building_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="Ký túc xá"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <Spinner
+                android:id="@+id/sp_kyTucXa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/layout_diaChiCuTru"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -205,7 +227,7 @@
                 android:layout_marginBottom="@dimen/normal_margin"
                 android:drawableStart="@drawable/ic_location_grey_12"
                 android:drawablePadding="@dimen/small_padding"
-                android:text="Địa chỉ cư trú tại"
+                android:text="Địa chỉ cư trú"
                 android:textSize="@dimen/small_text"
                 tools:ignore="HardcodedText" />
 
@@ -393,7 +415,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/normal_margin"
-                android:layout_toStartOf="@id/btn_luuThongTinChung"
+                android:layout_toStartOf="@id/btn_save"
                 android:visibility="gone" />
         </RelativeLayout>
     </LinearLayout>

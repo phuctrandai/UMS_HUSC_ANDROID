@@ -47,7 +47,7 @@ public class DateHelper {
         return result;
     }
 
-    private static String formatMDYToDMY(String dateString) {
+    public static String formatMDYToDMY(String dateString) {
         String result = "";
         if (dateString != null) {
             String arr[] = {};

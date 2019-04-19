@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.practice.phuc.ums_husc.Helper.DateHelper;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
+import com.practice.phuc.ums_husc.Model.KYTUCXA;
 import com.practice.phuc.ums_husc.R;
 import com.practice.phuc.ums_husc.ViewModel.PhuongXa;
 import com.practice.phuc.ums_husc.ViewModel.QuanHuyen;
@@ -56,6 +57,7 @@ public class ContactResidentFragment extends Fragment {
     private final String GET_CITIES_BY_NATION = "cites";
     private final String GET_DISTRICT_BY_CITY = "districts";
     private final String GET_WARDS_BY_DISTRICT = "wards";
+    private final String GET_DORMITORY = "dormitory";
     private final String HOME_UPDATE = "home";
     private final String RESIDENT_UPDATE = "resident";
     private final String DO_UPDATE = "update";
@@ -81,21 +83,13 @@ public class ContactResidentFragment extends Fragment {
     private VThongTinLienHe thongTinLienHe;
     private VThuongTru thuongTru;
     private VQueQuan queQuan;
-    private TextView mDiDong;
-    private TextView mCoDinh;
-    private TextView mEmail;
-    private TextView mHinhThucCuTru;
-    private TextView mNgayCuTru;
-    private TextView mDiaChi;
-    private TextView mQueQuan;
-    private TextView mHoKhau;
+    private TextView mDiDong, mCoDinh, mEmail, mHinhThucCuTru, mKyTucXa, mNgayCuTru, mDiaChi, mQueQuan, mHoKhau;
+    private ViewGroup mDiaChiCTLayout, mKyTucXaLayout;
     private SlidingUpPanelLayout mSlidingUpPanelLayout;
-    private EditText mEtDiDong, mEtCoDinh, mEtEmail;
-    private Spinner mSpHinhThucCT, mSpNgayCT, mSpThangCT, mSpNamCT;
-    private EditText mEtDiaChiCT;
+    private EditText mEtDiDong, mEtCoDinh, mEtEmail, mEtDiaChiCT, mEtDiaChiQQ, mEtDiaChiTR;
+    private Spinner mSpHinhThucCT, mSpNgayCT, mSpThangCT, mSpNamCT, mSpKyTucXa;
     private Spinner mSpQuocGiaQQ, mSpTinhThanhQQ, mSpQuanHuyenQQ, mSpPhuongXaQQ;
     private Spinner mSpQuocGiaTR, mSpTinhThanhTR, mSpQuanHuyenTR, mSpPhuongXaTR;
-    private EditText mEtDiaChiQQ, mEtDiaChiTR;
     private Button mBtnSave, mBtnCloseSlideBtm;
     private ImageButton mBtnCloseSlide, mBtnOpenSlide;
     private ProgressBar mPbLoading;
@@ -105,12 +99,14 @@ public class ContactResidentFragment extends Fragment {
     private ArrayAdapter<ThanhPho> mTinhThanhQQAdt, mTinhThanhTRAdt;
     private ArrayAdapter<QuanHuyen> mQuanHuyenQQAdt, mQuanHuyenTRAdt;
     private ArrayAdapter<PhuongXa> mPhuongXaQQAdt, mPhuongXaTRAdt;
+    private ArrayAdapter<KYTUCXA> mKyTucXaAdt;
 
     private List<String> mNgayCTData, mThangCTData, mNamCTData;
     private List<QuocGia> mQuocGiaQQData, mQuocGiaTRData;
     private List<ThanhPho> mTinhThanhQQData, mTinhThanhTRData;
     private List<QuanHuyen> mQuanHuyenQQData, mQuanHuyenTRData;
     private List<PhuongXa> mPhuongXaQQData, mPhuongXaTRData;
+    private List<KYTUCXA> mKyTucXaData;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -128,6 +124,7 @@ public class ContactResidentFragment extends Fragment {
         mTinhThanhTRData = new ArrayList<>();
         mQuanHuyenTRData = new ArrayList<>();
         mPhuongXaTRData = new ArrayList<>();
+        mKyTucXaData = new ArrayList<>();
 
         for (int i = 0; i <= 31; i++) {
             mNgayCTData.add(i + "");
@@ -138,6 +135,9 @@ public class ContactResidentFragment extends Fragment {
         for (int i = 1990; i <= year; i++) {
             mNamCTData.add(i + "");
         }
+
+        mKyTucXaAdt = new ArrayAdapter<>(mContext, R.layout.custom_simple_spinner_item, mKyTucXaData);
+        mKyTucXaAdt.setDropDownViewResource(R.layout.custom_simple_list_item_single_choice);
 
         mHinhThucCTAdt = new ArrayAdapter<>(mContext, R.layout.custom_simple_spinner_item, getResources().getStringArray(R.array.resident_type_name));
         mHinhThucCTAdt.setDropDownViewResource(R.layout.custom_simple_list_item_single_choice);
@@ -187,17 +187,17 @@ public class ContactResidentFragment extends Fragment {
 
         if (!mIsCreated) {
             mIsCreated = true;
-//
+
             new Task().execute(GET_NATIONS, "");
-//            new Task().execute(GET_CITIES_BY_NATION, HOME_UPDATE);
-//            new Task().execute(GET_DISTRICT_BY_CITY, HOME_UPDATE);
-//            new Task().execute(GET_WARDS_BY_DISTRICT, HOME_UPDATE);
-//            new Task().execute(GET_CITIES_BY_NATION, RESIDENT_UPDATE);
-//            new Task().execute(GET_DISTRICT_BY_CITY, RESIDENT_UPDATE);
-//            new Task().execute(GET_WARDS_BY_DISTRICT, RESIDENT_UPDATE);
+            new Task().execute(GET_DORMITORY, "");
         }
 
         return view;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
     }
 
     @Override
@@ -242,7 +242,25 @@ public class ContactResidentFragment extends Fragment {
         mSpHinhThucCT.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
+                switch (position) {
+                    case 3: // Theo ho khau
+                        mEtDiaChiCT.setEnabled(false);
+                        mSpKyTucXa.setEnabled(false);
+                        break;
+                    case 2: // Ngoai tru
+                        mEtDiaChiCT.setEnabled(true);
+                        mEtDiaChiCT.requestFocus();
+                        mSpKyTucXa.setEnabled(false);
+                        break;
+                    case 1: // Noi tru
+                        mEtDiaChiCT.setEnabled(false);
+                        mSpKyTucXa.setEnabled(true);
+                        break;
+                    default:
+                        mEtDiaChiCT.setEnabled(false);
+                        mSpKyTucXa.setEnabled(false);
+                        break;
+                }
             }
 
             @Override
@@ -363,6 +381,8 @@ public class ContactResidentFragment extends Fragment {
                     int thangCT = Integer.parseInt(mSpThangCT.getSelectedItem().toString());
                     int namCT = Integer.parseInt(mSpNamCT.getSelectedItem().toString());
                     thongTinLienHe.NgayBatDauCuTru = thangCT + "/" + ngayCT + "/" + namCT;
+                    thongTinLienHe.HinhThucCuTru = mSpHinhThucCT.getSelectedItemPosition() + "";
+                    thongTinLienHe.MaKyTucXa = ((KYTUCXA)mSpKyTucXa.getSelectedItem()).MaKyTucXa + "";
                     thongTinLienHe.DiaChi = mEtDiaChiCT.getText().toString();
 
                     thuongTru.MaQuocGia = ((QuocGia) mSpQuocGiaTR.getSelectedItem()).MaQuocGia + "";
@@ -403,19 +423,39 @@ public class ContactResidentFragment extends Fragment {
             mCoDinh.setText(getValueOrEmpty(thongTinLienHe.DienThoai));
             mEmail.setText(getValueOrEmpty(thongTinLienHe.Email));
             String ngayCuTru = isNullOrEmpty(thongTinLienHe.NgayBatDauCuTru) ? "..." :
-                    thongTinLienHe.NgayBatDauCuTru.substring(0, 10);
+                    DateHelper.formatYMDToDMY(thongTinLienHe.NgayBatDauCuTru.substring(0, 10));
             mNgayCuTru.setText(ngayCuTru);
 
             if (thongTinLienHe.HinhThucCuTru != null) {
-                if (thongTinLienHe.HinhThucCuTru.equals("3")) {
-                    mDiaChi.setText(mHoKhau.getText());
-                    mHinhThucCuTru.setText("Theo hộ khẩu thường trú");
-                } else {
-                    mDiaChi.setText("...");
+                switch (thongTinLienHe.HinhThucCuTru) {
+                    case "3":
+                        mHinhThucCuTru.setText("Theo hộ khẩu thường trú");
+                        mKyTucXaLayout.setVisibility(View.GONE);
+                        mDiaChiCTLayout.setVisibility(View.GONE);
+                        break;
+                    case "2":
+                        mHinhThucCuTru.setText("Ở ngoại trú");
+                        mDiaChiCTLayout.setVisibility(View.VISIBLE);
+                        mKyTucXaLayout.setVisibility(View.GONE);
+                        String diaChi = isNullOrEmpty(thongTinLienHe.DiaChi) ? "..." : thongTinLienHe.DiaChi;
+                        mDiaChi.setText(diaChi);
+                        break;
+                    case "1":
+                        mHinhThucCuTru.setText("Ở nội trú");
+                        mDiaChiCTLayout.setVisibility(View.GONE);
+                        mKyTucXaLayout.setVisibility(View.VISIBLE);
+                        mKyTucXa.setText(thongTinLienHe.TenKyTucXa);
+                        break;
+                    default:
+                        mHinhThucCuTru.setText("...");
+                        mDiaChiCTLayout.setVisibility(View.GONE);
+                        mKyTucXaLayout.setVisibility(View.GONE);
+                        break;
                 }
             } else {
                 mHinhThucCuTru.setText("...");
-                mDiaChi.setText("...");
+                mDiaChiCTLayout.setVisibility(View.GONE);
+                mKyTucXaLayout.setVisibility(View.GONE);
             }
         }
         if (queQuan != null) {
@@ -433,15 +473,37 @@ public class ContactResidentFragment extends Fragment {
     private void setUpSlidePanel(VThongTinLienHe thongTinLienHe, VThuongTru thuongTru, VQueQuan queQuan) {
         // Di dong
         String diDong = !isNullOrEmpty(thongTinLienHe.DiDong) ? thongTinLienHe.DiDong : "";
-        mEtDiDong.setText(diDong);
+        mEtDiDong.setText("");
+        mEtDiDong.append(diDong);
         // Co dinh
         String coDinh = !isNullOrEmpty(thongTinLienHe.DienThoai) ? thongTinLienHe.DienThoai : "";
-        mEtCoDinh.setText(coDinh);
+        mEtCoDinh.setText("");
+        mEtCoDinh.append(coDinh);
         // Email
         String email = !isNullOrEmpty(thongTinLienHe.Email) ? thongTinLienHe.Email : "";
-        mEtEmail.setText(email);
+        mEtEmail.setText("");
+        mEtEmail.append(email);
         // Hinh thuc cu tru
-
+        int indexHinhThucCT = 0;
+        if (thongTinLienHe.HinhThucCuTru != null) {
+            switch (thongTinLienHe.HinhThucCuTru) {
+                case "3": // Theo ho khau thuong tr
+                    indexHinhThucCT = 3;
+                    break;
+                case "2": // O ngoai tru
+                    indexHinhThucCT = 2;
+                    break;
+                case "1": // O noi tru
+                    indexHinhThucCT = 1;
+                    break;
+                default:
+                    indexHinhThucCT = 0;
+                    break;
+            }
+        }
+        mSpHinhThucCT.setSelection(indexHinhThucCT);
+        // Ky tuc xa
+        updateSpKyTucXa(mKyTucXaData);
         // Ngay cu tru
         String ngayCT;
         int indexNgay = 0, indexThang = 0, indexNam = 0;
@@ -450,14 +512,15 @@ public class ContactResidentFragment extends Fragment {
             Date d = DateHelper.stringToDate(ngayCT, "dd/MM/yyyy");
             indexNgay = DateHelper.getDayOfMonth(d);
             indexThang = DateHelper.getMonth(d);
-            indexNam = DateHelper.getYear(d);
+            indexNam = DateHelper.getYear(d) - 1989;
         }
         mSpNgayCT.setSelection(indexNgay);
         mSpThangCT.setSelection(indexThang);
         mSpNamCT.setSelection(indexNam);
         // Dia chi cu tru
         String diaChiCT = !isNullOrEmpty(thongTinLienHe.DiaChi) ? thongTinLienHe.DiaChi : "";
-        mEtDiaChiCT.setText(diaChiCT);
+        mEtDiaChiCT.setText("");
+        mEtDiaChiCT.append(diaChiCT);
         // Quoc gia Que Quan
         updateSpQuocGiaQQ(mQuocGiaQQData);
         // Tinh thanh QQ
@@ -468,7 +531,8 @@ public class ContactResidentFragment extends Fragment {
         updateSpPhuongXaQQ(mPhuongXaQQData);
         // Dia chi QQ
         String diaChiQQ = !isNullOrEmpty(queQuan.DiaChi) ? queQuan.DiaChi : "";
-        mEtDiaChiQQ.setText(diaChiQQ);
+        mEtDiaChiQQ.setText("");
+        mEtDiaChiQQ.append(diaChiQQ);
         // Quoc gia Thuong tru
         updateSpQuocGiaTR(mQuocGiaTRData);
         // Tinh thanh TR
@@ -479,7 +543,8 @@ public class ContactResidentFragment extends Fragment {
         updateSpPhuongXaTR(mPhuongXaTRData);
         // Dia chi TR
         String diaChiTR = !isNullOrEmpty(thuongTru.DiaChi) ? thuongTru.DiaChi : "";
-        mEtDiaChiTR.setText(diaChiTR);
+        mEtDiaChiTR.setText("");
+        mEtDiaChiTR.append(diaChiTR);
     }
 
     private void attempUpdate(VThongTinLienHe thongTinLienHe, VThuongTru thuongTru, VQueQuan queQuan) {
@@ -496,6 +561,7 @@ public class ContactResidentFragment extends Fragment {
         Response mResponse;
         String ORDER = "";
         String HOME_OR_RESIDENT = "";
+        String json = "";
 
         @Override
         protected Boolean doInBackground(String... strings) {
@@ -506,38 +572,55 @@ public class ContactResidentFragment extends Fragment {
                     String url = Reference.HOST + "api/DungChung/Get/QuocGia/";
                     mResponse = NetworkUtil.makeRequest(url, false, null);
                     ORDER = GET_NATIONS;
-                    return true;
+                    break;
 
                 case GET_CITIES_BY_NATION:
                     url = Reference.HOST + "api/DungChung/Get/ThanhPho/?refId=" + strings[1];
                     mResponse = NetworkUtil.makeRequest(url, false, null);
                     ORDER = GET_CITIES_BY_NATION;
-                    return true;
+                    break;
 
                 case GET_DISTRICT_BY_CITY:
                     url = Reference.HOST + "api/DungChung/Get/QuanHuyen/?refId=" + strings[1];
                     mResponse = NetworkUtil.makeRequest(url, false, null);
                     ORDER = GET_DISTRICT_BY_CITY;
-                    return true;
+                    break;
 
                 case GET_WARDS_BY_DISTRICT:
                     url = Reference.HOST + "api/DungChung/Get/PhuongXa/?refId=" + strings[1];
                     mResponse = NetworkUtil.makeRequest(url, false, null);
                     ORDER = GET_WARDS_BY_DISTRICT;
-                    return true;
+                    break;
+
+                case GET_DORMITORY:
+                    url = Reference.HOST + "api/DungChung/Get/KyTucXa/";
+                    mResponse = NetworkUtil.makeRequest(url, false, null);
+                    ORDER = GET_DORMITORY;
+                    break;
 
                 case DO_UPDATE:
                     url = Reference.HOST + "api/SinhVien/UpdateThongTinLienHe/" +
                             "?masinhvien=" + Reference.getStudentId(mContext) +
                             "&matkhau=" + Reference.getAccountPassword(mContext);
                     String data = strings[1];
-
+//                    Log.e("DEBUG", "Request body: " + data);
                     RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), data);
                     mResponse = NetworkUtil.makeRequest(url, true, body);
                     ORDER = DO_UPDATE;
-                    return true;
+                    break;
             }
-            return false;
+            if (mResponse == null)
+                return false;
+            else {
+                try {
+                    json = mResponse.body() != null ? mResponse.body().string() : "";
+                    return true;
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
         }
 
         @Override
@@ -548,112 +631,116 @@ public class ContactResidentFragment extends Fragment {
                     Toast.makeText(mContext, getString(R.string.error_server_not_response), Toast.LENGTH_LONG).show();
 
                 if (mResponse.code() == NetworkUtil.OK) {
-                    try {
-                        String json = mResponse.body() != null ? mResponse.body().string() : "";
-                        Log.e("DEBUG", "RESPONSE: " + json);
-                        switch (ORDER) {
-                            case GET_NATIONS:
-                                List<QuocGia> quocGias = QuocGia.fromJson(json);
-                                if (quocGias != null) {
-                                    mQuocGiaQQData.clear();
-                                    mQuocGiaQQData.add(new QuocGia(0, "----"));
-                                    mQuocGiaQQData.addAll(quocGias);
-                                    mQuocGiaQQAdt.notifyDataSetChanged();
-                                    updateSpQuocGiaQQ(mQuocGiaQQData);
+//                    Log.e("DEBUG", "UPDATE INFO RESPONSE: " + json);
+                    switch (ORDER) {
+                        case GET_NATIONS:
+                            List<QuocGia> quocGias = QuocGia.fromJson(json);
+                            if (quocGias != null) {
+                                mQuocGiaQQData.clear();
+                                mQuocGiaQQData.add(new QuocGia(0, "----"));
+                                mQuocGiaQQData.addAll(quocGias);
+                                mQuocGiaQQAdt.notifyDataSetChanged();
+                                updateSpQuocGiaQQ(mQuocGiaQQData);
 
-                                    mQuocGiaTRData.clear();
-                                    mQuocGiaTRData.add(new QuocGia(0, "----"));
-                                    mQuocGiaTRData.addAll(quocGias);
-                                    mQuocGiaTRAdt.notifyDataSetChanged();
-                                    updateSpQuocGiaTR(mQuocGiaTRData);
-                                }
-                                break;
+                                mQuocGiaTRData.clear();
+                                mQuocGiaTRData.add(new QuocGia(0, "----"));
+                                mQuocGiaTRData.addAll(quocGias);
+                                mQuocGiaTRAdt.notifyDataSetChanged();
+                                updateSpQuocGiaTR(mQuocGiaTRData);
+                            }
+                            break;
 
-                            case GET_CITIES_BY_NATION:
-                                List<ThanhPho> thanhPhos = ThanhPho.fromJson(json);
-                                if (thanhPhos != null) {
-                                    if (!isNullOrEmpty(HOME_OR_RESIDENT)) {
-                                        if (HOME_OR_RESIDENT.equals(HOME_UPDATE)) {
-                                            mTinhThanhQQData.clear();
-                                            mTinhThanhQQData.add(new ThanhPho(0, "----"));
-                                            mTinhThanhQQAdt.addAll(thanhPhos);
-                                            mTinhThanhQQAdt.notifyDataSetChanged();
-                                            updateSpTinhThanhQQ(mTinhThanhQQData);
-                                        } else {
-                                            mTinhThanhTRData.clear();
-                                            mTinhThanhTRData.add(new ThanhPho(0, "----"));
-                                            mTinhThanhTRAdt.addAll(thanhPhos);
-                                            mTinhThanhTRAdt.notifyDataSetChanged();
-                                            updateSpTinhThanhTR(mTinhThanhTRData);
-                                        }
+                        case GET_CITIES_BY_NATION:
+                            List<ThanhPho> thanhPhos = ThanhPho.fromJson(json);
+                            if (thanhPhos != null) {
+                                if (!isNullOrEmpty(HOME_OR_RESIDENT)) {
+                                    if (HOME_OR_RESIDENT.equals(HOME_UPDATE)) {
+                                        mTinhThanhQQData.clear();
+                                        mTinhThanhQQData.add(new ThanhPho(0, "----"));
+                                        mTinhThanhQQAdt.addAll(thanhPhos);
+                                        mTinhThanhQQAdt.notifyDataSetChanged();
+                                        updateSpTinhThanhQQ(mTinhThanhQQData);
+                                    } else {
+                                        mTinhThanhTRData.clear();
+                                        mTinhThanhTRData.add(new ThanhPho(0, "----"));
+                                        mTinhThanhTRAdt.addAll(thanhPhos);
+                                        mTinhThanhTRAdt.notifyDataSetChanged();
+                                        updateSpTinhThanhTR(mTinhThanhTRData);
                                     }
                                 }
-                                break;
+                            }
+                            break;
 
-                            case GET_DISTRICT_BY_CITY:
-                                List<QuanHuyen> quanHuyens = QuanHuyen.fromJson(json);
-                                if (quanHuyens != null) {
-                                    if (!isNullOrEmpty(HOME_OR_RESIDENT)) {
-                                        if (HOME_OR_RESIDENT.equals(HOME_UPDATE)) {
-                                            mQuanHuyenQQData.clear();
-                                            mQuanHuyenQQData.add(new QuanHuyen(0, "----"));
-                                            mQuanHuyenQQData.addAll(quanHuyens);
-                                            mQuanHuyenQQAdt.notifyDataSetChanged();
-                                            updateSpQuanHuyenQQ(mQuanHuyenQQData);
-                                        } else if (HOME_OR_RESIDENT.equals(RESIDENT_UPDATE)) {
-                                            mQuanHuyenTRData.clear();
-                                            mQuanHuyenTRData.add(new QuanHuyen(0, "----"));
-                                            mQuanHuyenTRData.addAll(quanHuyens);
-                                            mQuanHuyenTRAdt.notifyDataSetChanged();
-                                            updateSpQuanHuyenTR(mQuanHuyenTRData);
-                                        }
+                        case GET_DISTRICT_BY_CITY:
+                            List<QuanHuyen> quanHuyens = QuanHuyen.fromJson(json);
+                            if (quanHuyens != null) {
+                                if (!isNullOrEmpty(HOME_OR_RESIDENT)) {
+                                    if (HOME_OR_RESIDENT.equals(HOME_UPDATE)) {
+                                        mQuanHuyenQQData.clear();
+                                        mQuanHuyenQQData.add(new QuanHuyen(0, "----"));
+                                        mQuanHuyenQQData.addAll(quanHuyens);
+                                        mQuanHuyenQQAdt.notifyDataSetChanged();
+                                        updateSpQuanHuyenQQ(mQuanHuyenQQData);
+                                    } else if (HOME_OR_RESIDENT.equals(RESIDENT_UPDATE)) {
+                                        mQuanHuyenTRData.clear();
+                                        mQuanHuyenTRData.add(new QuanHuyen(0, "----"));
+                                        mQuanHuyenTRData.addAll(quanHuyens);
+                                        mQuanHuyenTRAdt.notifyDataSetChanged();
+                                        updateSpQuanHuyenTR(mQuanHuyenTRData);
                                     }
                                 }
-                                break;
+                            }
+                            break;
 
-                            case GET_WARDS_BY_DISTRICT:
-                                List<PhuongXa> phuongXas = PhuongXa.fromJson(json);
-                                if (phuongXas != null) {
-                                    if (!isNullOrEmpty(HOME_OR_RESIDENT)) {
-                                        if (HOME_OR_RESIDENT.equals(HOME_UPDATE)) {
-                                            mPhuongXaQQData.clear();
-                                            mPhuongXaQQData.add(new PhuongXa(0, "----"));
-                                            mPhuongXaQQData.addAll(phuongXas);
-                                            mPhuongXaQQAdt.notifyDataSetChanged();
-                                            updateSpPhuongXaQQ(mPhuongXaQQData);
-                                        } else if (HOME_OR_RESIDENT.equals(RESIDENT_UPDATE)) {
-                                            mPhuongXaTRData.clear();
-                                            mPhuongXaTRData.add(new PhuongXa(0, "----"));
-                                            mPhuongXaTRData.addAll(phuongXas);
-                                            mPhuongXaTRAdt.notifyDataSetChanged();
-                                            updateSpPhuongXaTR(mPhuongXaTRData);
-                                        }
+                        case GET_WARDS_BY_DISTRICT:
+                            List<PhuongXa> phuongXas = PhuongXa.fromJson(json);
+                            if (phuongXas != null) {
+                                if (!isNullOrEmpty(HOME_OR_RESIDENT)) {
+                                    if (HOME_OR_RESIDENT.equals(HOME_UPDATE)) {
+                                        mPhuongXaQQData.clear();
+                                        mPhuongXaQQData.add(new PhuongXa(0, "----"));
+                                        mPhuongXaQQData.addAll(phuongXas);
+                                        mPhuongXaQQAdt.notifyDataSetChanged();
+                                        updateSpPhuongXaQQ(mPhuongXaQQData);
+                                    } else if (HOME_OR_RESIDENT.equals(RESIDENT_UPDATE)) {
+                                        mPhuongXaTRData.clear();
+                                        mPhuongXaTRData.add(new PhuongXa(0, "----"));
+                                        mPhuongXaTRData.addAll(phuongXas);
+                                        mPhuongXaTRAdt.notifyDataSetChanged();
+                                        updateSpPhuongXaTR(mPhuongXaTRData);
                                     }
                                 }
-                                break;
+                            }
+                            break;
 
-                            case DO_UPDATE:
-                                mPbLoading.setVisibility(View.GONE);
-                                VLyLichCaNhan lyLichCaNhan = VLyLichCaNhan.fromJson(json);
-                                if (lyLichCaNhan != null) {
-                                    thongTinLienHe = lyLichCaNhan.getThongTinLienHe();
-                                    thuongTru = lyLichCaNhan.getThuongTru();
-                                    queQuan = lyLichCaNhan.getQueQuan();
-                                    setUpSlidePanel(thongTinLienHe, thuongTru, queQuan);
-                                    setUpMainPanel(thongTinLienHe, thuongTru, queQuan);
-                                    Toast.makeText(mContext, "Đã cập nhật !", Toast.LENGTH_LONG).show();
-                                }
-                                break;
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                        case GET_DORMITORY:
+                            List<KYTUCXA> kytucxas = KYTUCXA.fromJson(json);
+                            if (kytucxas != null) {
+                                mKyTucXaData.clear();
+                                mKyTucXaData.add(new KYTUCXA(0, "----"));
+                                mKyTucXaData.addAll(kytucxas);
+                                mKyTucXaAdt.notifyDataSetChanged();
+                                updateSpKyTucXa(mKyTucXaData);
+                            }
+                            break;
+
+                        case DO_UPDATE:
+                            mPbLoading.setVisibility(View.GONE);
+                            VLyLichCaNhan lyLichCaNhan = VLyLichCaNhan.fromJson(json);
+
+                            if (lyLichCaNhan != null) {
+                                thongTinLienHe = lyLichCaNhan.getThongTinLienHe();
+                                thuongTru = lyLichCaNhan.getThuongTru();
+                                queQuan = lyLichCaNhan.getQueQuan();
+                                setUpSlidePanel(thongTinLienHe, thuongTru, queQuan);
+                                setUpMainPanel(thongTinLienHe, thuongTru, queQuan);
+                                Toast.makeText(mContext, "Đã cập nhật !", Toast.LENGTH_LONG).show();
+                            }
+                            break;
                     }
+
                 } else {
-                    try {
-                        Log.d("DEBUG", mResponse.body() != null ? mResponse.body().string() : "NULL");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    Log.e("DEBUG", json);
                 }
             }
         }
@@ -666,16 +753,20 @@ public class ContactResidentFragment extends Fragment {
         mDiDong = view.findViewById(R.id.tv_diDong);
         mEmail = view.findViewById(R.id.tv_email);
         mHinhThucCuTru = view.findViewById(R.id.tv_hinhThucCuTru);
+        mKyTucXa = view.findViewById(R.id.tv_kyTucXa);
         mNgayCuTru = view.findViewById(R.id.tv_ngayBatDauCuTru);
         mDiaChi = view.findViewById(R.id.tv_diaChiCuTru);
         mQueQuan = view.findViewById(R.id.tv_queQuan);
         mHoKhau = view.findViewById(R.id.tv_hoKhauThuongTru);
+        mDiaChiCTLayout = view.findViewById(R.id.layout_diaChiCuTru);
+        mKyTucXaLayout = view.findViewById(R.id.layout_kyTucXa);
 
         mSlidingUpPanelLayout = view.findViewById(R.id.sliding_layout);
         mEtDiDong = view.findViewById(R.id.et_diDong);
         mEtCoDinh = view.findViewById(R.id.et_coDinh);
         mEtEmail = view.findViewById(R.id.et_email);
         mSpHinhThucCT = view.findViewById(R.id.sp_hinhThucCuTru);
+        mSpKyTucXa = view.findViewById(R.id.sp_kyTucXa);
         mSpNgayCT = view.findViewById(R.id.sp_ngayBdCuTru);
         mSpThangCT = view.findViewById(R.id.sp_thangBdCuTru);
         mSpNamCT = view.findViewById(R.id.sp_namBdCuTru);
@@ -708,6 +799,7 @@ public class ContactResidentFragment extends Fragment {
         mSpTinhThanhTR.setAdapter(mTinhThanhTRAdt);
         mSpQuanHuyenTR.setAdapter(mQuanHuyenTRAdt);
         mSpPhuongXaTR.setAdapter(mPhuongXaTRAdt);
+        mSpKyTucXa.setAdapter(mKyTucXaAdt);
     }
 
     private void updateSpQuocGiaQQ(List<QuocGia> quocGias) {
@@ -828,6 +920,21 @@ public class ContactResidentFragment extends Fragment {
                 }
         }
         mSpPhuongXaTR.setSelection(index);
+    }
+
+    private void updateSpKyTucXa(List<KYTUCXA> kytucxas) {
+        if (kytucxas == null) return;
+        int index = 0;
+
+        if (kytucxas.size() > 0 && thongTinLienHe.MaKyTucXa != null) {
+            String maHienTai = thongTinLienHe.MaKyTucXa;
+            for (int i = 0; i < kytucxas.size(); i++)
+                if (kytucxas.get(i).MaKyTucXa == Integer.parseInt(maHienTai)) {
+                    index = i;
+                    break;
+                }
+        }
+        mSpKyTucXa.setSelection(index);
     }
 
     private void updateNamNhuan(List<String> data, ArrayAdapter adapter, int position, Spinner spNam) {

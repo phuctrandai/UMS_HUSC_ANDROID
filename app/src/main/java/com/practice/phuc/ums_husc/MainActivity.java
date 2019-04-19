@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.activity_main_menu, menu);
         boolean isScheduleFrag = currentFragment.equals(ScheduleFragment.class.getName());
         boolean isResumeFrag = currentFragment.equals(ResumeFragment.class.getName());
 

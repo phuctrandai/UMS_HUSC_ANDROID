@@ -141,6 +141,7 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
         private void setItemClickListener(ItemClickListener itemClickListener) {
             this.itemClickListener = itemClickListener;
         }
+
         @Override
         public void onClick(View v) {
             itemClickListener.onClick(v, getAdapterPosition(), false);

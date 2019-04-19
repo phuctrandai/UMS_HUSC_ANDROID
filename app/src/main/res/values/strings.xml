@@ -133,6 +133,7 @@
 
     <!-- Resume -->
     <string-array name="resident_type_name">
+        <item>----</item>
         <item>Ở nội trú</item>
         <item>Ở ngoại trú</item>
         <item>Theo hộ khẩu thường trú</item>

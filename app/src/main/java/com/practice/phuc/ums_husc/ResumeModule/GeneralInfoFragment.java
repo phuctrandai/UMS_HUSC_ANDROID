@@ -190,12 +190,6 @@ public class GeneralInfoFragment extends Fragment {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        mSlidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
         mIsCreated = false;
@@ -483,7 +477,7 @@ public class GeneralInfoFragment extends Fragment {
                 if (mResponse.code() == NetworkUtil.OK) {
                     try {
                         String json = mResponse.body() != null ? mResponse.body().string() : "";
-                        Log.d("DEBUG", "RESPONSE: " + json);
+//                        Log.d("DEBUG", "RESPONSE: " + json);
                         switch (ORDER) {
                             case GET_NATIONS:
                                 List<QuocGia> quocGias = QuocGia.fromJson(json);

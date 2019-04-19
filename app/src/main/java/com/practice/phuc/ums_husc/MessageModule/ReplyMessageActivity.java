@@ -12,37 +12,50 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.practice.phuc.ums_husc.Adapter.SearchAccountAdapter;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.Model.NGUOINHAN;
 import com.practice.phuc.ums_husc.Model.TINNHAN;
 import com.practice.phuc.ums_husc.R;
+import com.practice.phuc.ums_husc.ViewModel.TaiKhoan;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class ReplyMessageActivity extends AppCompatActivity {
+public class ReplyMessageActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     private ViewGroup layoutRoot;
+    private SlidingUpPanelLayout slidingUpPanelLayout;
     private TextView tvNguoiNhan;
     private TextView tvNguoiGui;
     private EditText etTieuDe;
     private EditText etNoiDung;
+    private RecyclerView rvSearchResult;
 
     private TINNHAN mTinNhan;
+    private SearchAccountAdapter mSearchAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,19 +68,51 @@ public class ReplyMessageActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         layoutRoot = findViewById(R.id.layout_root_reply_message);
+        slidingUpPanelLayout = findViewById(R.id.sliding_layout);
         etTieuDe = findViewById(R.id.tv_tieuDe);
         tvNguoiNhan = findViewById(R.id.tv_nguoiNhan);
         tvNguoiGui = findViewById(R.id.tv_nguoiGui);
         etNoiDung = findViewById(R.id.et_noiDung);
-        etNoiDung.requestFocus();
-        Button btnGui = findViewById(R.id.btn_gui);
-        btnGui.setOnClickListener(sendMessageClickListener);
+        SearchView svSearch = findViewById(R.id.sv_query);
+        svSearch.onActionViewExpanded();
+        svSearch.setOnQueryTextListener(this);
+        svSearch.setActivated(true);
+        rvSearchResult = findViewById(R.id.rv_searchResult);
+        setUpRecyclerView();
+
+        ImageButton btnOpenSlidingPanel = findViewById(R.id.btn_addReceiver);
+        ImageButton btnCloseSlidingPanel = findViewById(R.id.btn_closeSlidePanel);
+
+        btnOpenSlidingPanel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+            }
+        });
+        btnCloseSlidingPanel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            }
+        });
 
         String json = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_MESSAGE);
         mTinNhan = TINNHAN.fromJson(json);
-        Log.e("DEBUG", "Reply tin nhan: " + json);
-
         setUpData(mTinNhan);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.reply_message_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_send_message) {
+            attempSendMessage();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -102,6 +147,30 @@ public class ReplyMessageActivity extends AppCompatActivity {
         builder.create().show();
     }
 
+    private void setUpRecyclerView() {
+        List<TaiKhoan> temp = new ArrayList<>();
+        temp.add(new TaiKhoan("1", "Nguyen Van A"));
+        temp.add(new TaiKhoan("2", "Nguyen Thi B"));
+        temp.add(new TaiKhoan("3", "Tran Van C"));
+        temp.add(new TaiKhoan("4", "Tran Van A"));
+        temp.add(new TaiKhoan("5", "Ho Thi D"));
+        mSearchAdapter = new SearchAccountAdapter(this, temp);
+        rvSearchResult.setLayoutManager(new LinearLayoutManager(this));
+        rvSearchResult.setAdapter(mSearchAdapter);
+        rvSearchResult.setHasFixedSize(true);
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        mSearchAdapter.onFilter(query);
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
     private void setUpData(TINNHAN tinNhan) {
         if (tinNhan == null) return;
 
@@ -114,13 +183,6 @@ public class ReplyMessageActivity extends AppCompatActivity {
         tvNguoiNhan.setText(hoTenNguoiNhan);
         tvNguoiGui.setText(hoTenNguoiGui);
     }
-
-    View.OnClickListener sendMessageClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            attempSendMessage();
-        }
-    };
 
     private void attempSendMessage() {
         if (etTieuDe.getText() == null || etTieuDe.getText().toString().equals("")) {
@@ -160,33 +222,9 @@ public class ReplyMessageActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-    private void sendMessage(String title, String content) {
-        String maNguoiGui = Reference.getAccountId(this);
-        String hoTenNguoiGui = Reference.getStudentName(this);
-        String maNguoiNhan = mTinNhan.MaNguoiGui;
-        String hoTenNguoiNhan = mTinNhan.HoTenNguoiGui;
-
-        NGUOINHAN nguoiNhan = new NGUOINHAN();
-        nguoiNhan.MaNguoiNhan = maNguoiNhan;
-        nguoiNhan.HoTenNguoiNhan = hoTenNguoiNhan;
-        nguoiNhan.ThoiDiemXem = "";
-
-        TINNHAN tinNhan = new TINNHAN();
-        tinNhan.TieuDe = title;
-        tinNhan.NoiDung = content;
-        tinNhan.ThoiDiemGui = "";
-
-        tinNhan.MaNguoiGui = maNguoiGui;
-        tinNhan.HoTenNguoiGui = hoTenNguoiGui;
-        tinNhan.NguoiNhans = new NGUOINHAN[]{ nguoiNhan };
-
-        SendMessageTask sendMessageTask = new SendMessageTask(tinNhan);
-        sendMessageTask.execute((String) null);
-        this.finish();
-    }
-
     @SuppressLint("StaticFieldLeak")
     class SendMessageTask extends AsyncTask<String, Void, Boolean> {
+
         Response mResponse;
         String mMessage;
         TINNHAN tinNhan;
@@ -239,6 +277,32 @@ public class ReplyMessageActivity extends AppCompatActivity {
 
             pushNotification(mMessage);
         }
+
+    }
+
+    private void sendMessage(String title, String content) {
+        String maNguoiGui = Reference.getAccountId(this);
+        String hoTenNguoiGui = Reference.getStudentName(this);
+        String maNguoiNhan = mTinNhan.MaNguoiGui;
+        String hoTenNguoiNhan = mTinNhan.HoTenNguoiGui;
+
+        NGUOINHAN nguoiNhan = new NGUOINHAN();
+        nguoiNhan.MaNguoiNhan = maNguoiNhan;
+        nguoiNhan.HoTenNguoiNhan = hoTenNguoiNhan;
+        nguoiNhan.ThoiDiemXem = "";
+
+        TINNHAN tinNhan = new TINNHAN();
+        tinNhan.TieuDe = title;
+        tinNhan.NoiDung = content;
+        tinNhan.ThoiDiemGui = "";
+
+        tinNhan.MaNguoiGui = maNguoiGui;
+        tinNhan.HoTenNguoiGui = hoTenNguoiGui;
+        tinNhan.NguoiNhans = new NGUOINHAN[]{nguoiNhan};
+
+        SendMessageTask sendMessageTask = new SendMessageTask(tinNhan);
+        sendMessageTask.execute((String) null);
+        this.finish();
     }
 
     private void pushNotification(final String title) {
@@ -256,10 +320,6 @@ public class ReplyMessageActivity extends AppCompatActivity {
         mBuilder.setContentIntent(null);
         mBuilder.setSound(Uri.EMPTY);
         mBuilder.setGroup(Reference.SEND_MESSAGE_NOTIFICATION);
-        if ((long) 0 > 0) {
-            mBuilder.setAutoCancel(true);
-            mBuilder.setTimeoutAfter((long) 0);
-        }
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
         int norificationId = Integer.parseInt(String.valueOf(new Date().getTime() / 1000));
         notificationManager.notify(norificationId, mBuilder.build());

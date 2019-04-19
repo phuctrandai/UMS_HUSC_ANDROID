@@ -12,6 +12,7 @@ public class VThongTinLienHe {
     public String DiDong;
     public String Email;
     public String HinhThucCuTru;
+    public String MaKyTucXa;
     public String TenKyTucXa;
     public String MaQuocGia;
     public String TenQuocGia;
