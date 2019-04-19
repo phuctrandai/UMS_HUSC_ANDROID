@@ -1,72 +1,63 @@
 package com.practice.phuc.ums_husc.ViewModel;
 
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+
 public class VLyLichCaNhan {
-    private VThongTinChung ThongTinChung;
-    private VThongTinLienHe ThongTinLienHe;
-    private VThuongTru ThuongTru;
-    private VQueQuan QueQuan;
-    private VDacDiemBanThan DacDiemBanThan;
-    private VLichSuBanThan LichSuBanThan;
+    public VThongTinChung ThongTinChung;
+    public VThongTinLienHe ThongTinLienHe;
+    public VThuongTru ThuongTru;
+    public VQueQuan QueQuan;
+    public VDacDiemBanThan DacDiemBanThan;
+    public VLichSuBanThan LichSuBanThan;
 
     public VThongTinChung getThongTinChung() {
         return ThongTinChung;
-    }
-
-    public void setThongTinChung(VThongTinChung thongTinChung) {
-        ThongTinChung = thongTinChung;
     }
 
     public VThongTinLienHe getThongTinLienHe() {
         return ThongTinLienHe;
     }
 
-    public void setThongTinLienHe(VThongTinLienHe thongTinLienHe) {
-        ThongTinLienHe = thongTinLienHe;
-    }
-
     public VThuongTru getThuongTru() {
         return ThuongTru;
-    }
-
-    public void setThuongTru(VThuongTru thuongTru) {
-        ThuongTru = thuongTru;
     }
 
     public VQueQuan getQueQuan() {
         return QueQuan;
     }
 
-    public void setQueQuan(VQueQuan queQuan) {
-        QueQuan = queQuan;
-    }
-
     public VDacDiemBanThan getDacDiemBanThan() {
         return DacDiemBanThan;
-    }
-
-    public void setDacDiemBanThan(VDacDiemBanThan dacDiemBanThan) {
-        DacDiemBanThan = dacDiemBanThan;
     }
 
     public VLichSuBanThan getLichSuBanThan() {
         return LichSuBanThan;
     }
 
-    public void setLichSuBanThan(VLichSuBanThan lichSuBanThan) {
-        LichSuBanThan = lichSuBanThan;
-    }
-
-    public VLyLichCaNhan(VThongTinChung thongTinChung, VThongTinLienHe thongTinLienHe,
-                         VThuongTru thuongTru, VQueQuan queQuan, VDacDiemBanThan dacDiemBanThan,
-                         VLichSuBanThan lichSuBanThan) {
-        ThongTinChung = thongTinChung;
-        ThongTinLienHe = thongTinLienHe;
-        ThuongTru = thuongTru;
-        QueQuan = queQuan;
-        DacDiemBanThan = dacDiemBanThan;
-        LichSuBanThan = lichSuBanThan;
-    }
-
     public VLyLichCaNhan() {
+    }
+
+    public static VLyLichCaNhan fromJson(String json) {
+        Moshi moshi = new Moshi.Builder().build();
+        Type type = Types.newParameterizedType(VLyLichCaNhan.class);
+        JsonAdapter<VLyLichCaNhan> adapter = moshi.adapter(type);
+        try {
+            return adapter.fromJson(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public String toJson() {
+        Moshi moshi = new Moshi.Builder().build();
+        Type type = Types.newParameterizedType(VLyLichCaNhan.class);
+        JsonAdapter<VLyLichCaNhan> adapter = moshi.adapter(type);
+        return adapter.toJson(this);
     }
 }

@@ -36,7 +36,7 @@ public class ResumePagerAdapter extends FragmentPagerAdapter {
         super(fm);
         mContext = context;
         generalInfoFragment = GeneralInfoFragment.newInstance(mContext, thongTinChung);
-        contactResidentFragment = ContactResidentFragment.newInstance(thongTinLienHe, thuongTru, queQuan);
+        contactResidentFragment = ContactResidentFragment.newInstance(mContext, thongTinLienHe, thuongTru, queQuan);
         dacDiemBanThanFragment = DacDiemBanThanFragment.newInstance(dacDiemBanThan);
         lichSuBanThanFragment = LichSuBanThanFragment.newInstance(lichSuBanThan);
     }

@@ -59,6 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number|phone"
+                android:maxLength="12"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/normal_text"
                 tools:ignore="Autofill,HardcodedText,LabelFor" />
@@ -87,6 +88,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number|phone"
+                android:maxLength="12"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/normal_text"
                 tools:ignore="Autofill,LabelFor" />
@@ -142,8 +144,10 @@
                 android:id="@+id/sp_hinhThucCuTru"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:entries="@array/resident_type_name"
                 android:textColor="@android:color/black"
-                android:textSize="@dimen/normal_text" />
+                android:textSize="@dimen/normal_text"
+                tools:listitem="@layout/custom_simple_spinner_item" />
 
         </LinearLayout>
 

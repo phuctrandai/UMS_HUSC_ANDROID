@@ -130,4 +130,12 @@
     <string name="title_activity_reply_message">Trả lời tin nhắn</string>
     <string name="share_pre_key_firebase">FIREBASE</string>
     <string name="pre_key_token">TOKEN</string>
+
+    <!-- Resume -->
+    <string-array name="resident_type_name">
+        <item>Ở nội trú</item>
+        <item>Ở ngoại trú</item>
+        <item>Theo hộ khẩu thường trú</item>
+    </string-array>
+
 </resources>

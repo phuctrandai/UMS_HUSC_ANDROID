@@ -48,7 +48,8 @@
                         android:layout_height="24dp"
                         android:layout_alignParentEnd="true"
                         android:background="@android:color/transparent"
-                        android:src="@drawable/ic_edit_grey_12" />
+                        android:src="@drawable/ic_edit_grey_12"
+                        tools:ignore="ContentDescription" />
                 </RelativeLayout>
 
                 <LinearLayout
@@ -96,7 +97,8 @@
                         android:layout_height="wrap_content"
                         android:text="Số cố định"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/normal_text" />
+                        android:textSize="@dimen/normal_text"
+                        tools:ignore="HardcodedText" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -104,7 +106,8 @@
                         android:drawableStart="@drawable/ic_local_phone_grey_12"
                         android:drawablePadding="@dimen/small_padding"
                         android:text="Cố định"
-                        android:textSize="@dimen/small_text" />
+                        android:textSize="@dimen/small_text"
+                        tools:ignore="HardcodedText" />
 
                 </LinearLayout>
 
@@ -124,7 +127,8 @@
                         android:layout_height="wrap_content"
                         android:text="Địa chỉ email"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/normal_text" />
+                        android:textSize="@dimen/normal_text"
+                        tools:ignore="HardcodedText" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -132,7 +136,8 @@
                         android:drawableStart="@drawable/ic_email_grey_12"
                         android:drawablePadding="@dimen/small_padding"
                         android:text="Email"
-                        android:textSize="@dimen/small_text" />
+                        android:textSize="@dimen/small_text"
+                        tools:ignore="HardcodedText" />
 
                 </LinearLayout>
 
@@ -152,7 +157,8 @@
                         android:layout_height="wrap_content"
                         android:text="Theo hộ khẩu thường trú"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/normal_text" />
+                        android:textSize="@dimen/normal_text"
+                        tools:ignore="HardcodedText" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -160,7 +166,8 @@
                         android:drawableStart="@drawable/ic_home_grey_12dp"
                         android:drawablePadding="@dimen/small_padding"
                         android:text="Hình thức cư trú"
-                        android:textSize="@dimen/small_text" />
+                        android:textSize="@dimen/small_text"
+                        tools:ignore="HardcodedText" />
 
                 </LinearLayout>
 
@@ -180,7 +187,8 @@
                         android:layout_height="wrap_content"
                         android:text="Ngày bắt đầu cư trú"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/normal_text" />
+                        android:textSize="@dimen/normal_text"
+                        tools:ignore="HardcodedText" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -188,7 +196,8 @@
                         android:drawableStart="@drawable/ic_date_range_grey_12"
                         android:drawablePadding="@dimen/small_padding"
                         android:text="Ngày bắt đầu cư trú"
-                        android:textSize="@dimen/small_text" />
+                        android:textSize="@dimen/small_text"
+                        tools:ignore="HardcodedText" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -207,7 +216,8 @@
                         android:layout_height="wrap_content"
                         android:text="Địa chỉ thường trú"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/normal_text" />
+                        android:textSize="@dimen/normal_text"
+                        tools:ignore="HardcodedText" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -215,7 +225,8 @@
                         android:drawableStart="@drawable/ic_location_grey_12"
                         android:drawablePadding="@dimen/small_padding"
                         android:text="Địa chỉ cư trú tại"
-                        android:textSize="@dimen/small_text" />
+                        android:textSize="@dimen/small_text"
+                        tools:ignore="HardcodedText" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -258,7 +269,8 @@
                         android:layout_height="wrap_content"
                         android:text="Quê quán"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/normal_text" />
+                        android:textSize="@dimen/normal_text"
+                        tools:ignore="HardcodedText" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -266,7 +278,8 @@
                         android:drawableStart="@drawable/ic_home_grey_12dp"
                         android:drawablePadding="@dimen/small_padding"
                         android:text="Quê quán"
-                        android:textSize="@dimen/small_text" />
+                        android:textSize="@dimen/small_text"
+                        tools:ignore="HardcodedText" />
 
                 </LinearLayout>
 
@@ -286,7 +299,8 @@
                         android:layout_height="wrap_content"
                         android:text="Địa chỉ hộ khẩu"
                         android:textColor="@android:color/black"
-                        android:textSize="@dimen/normal_text" />
+                        android:textSize="@dimen/normal_text"
+                        tools:ignore="HardcodedText" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -294,7 +308,8 @@
                         android:drawableStart="@drawable/ic_location_grey_12"
                         android:drawablePadding="@dimen/small_padding"
                         android:text="Hộ khẩu thường trú"
-                        android:textSize="@dimen/small_text" />
+                        android:textSize="@dimen/small_text"
+                        tools:ignore="HardcodedText" />
 
                 </LinearLayout>
             </LinearLayout>

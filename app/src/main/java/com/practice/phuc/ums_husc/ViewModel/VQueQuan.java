@@ -8,39 +8,15 @@ import java.lang.reflect.Type;
 
 public class VQueQuan {
     public String MaSinhVien;
+    public String MaQuocGia;
     public String TenQuocGia;
+    public String MaThanhPho;
     public String TenThanhPho;
+    public String MaQuanHuyen;
     public String TenQuanHuyen;
+    public String MaPhuongXa;
     public String TenPhuongXa;
     public String DiaChi;
-
-    public String getMaSinhVien() {
-        return MaSinhVien;
-    }
-
-    public void setMaSinhVien(String maSinhVien) {
-        MaSinhVien = maSinhVien;
-    }
-
-    public String getTenQuocGia() {
-        return TenQuocGia;
-    }
-
-    public String getTenThanhPho() {
-        return TenThanhPho;
-    }
-
-    public String getTenQuanHuyen() {
-        return TenQuanHuyen;
-    }
-
-    public String getTenPhuongXa() {
-        return TenPhuongXa;
-    }
-
-    public String getDiaChi() {
-        return DiaChi;
-    }
 
     public VQueQuan() {
     }

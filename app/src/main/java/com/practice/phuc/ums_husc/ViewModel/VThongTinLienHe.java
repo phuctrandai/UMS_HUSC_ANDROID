@@ -13,32 +13,16 @@ public class VThongTinLienHe {
     public String Email;
     public String HinhThucCuTru;
     public String TenKyTucXa;
+    public String MaQuocGia;
     public String TenQuocGia;
+    public String MaThanhPho;
     public String TenThanhPho;
+    public String MaQuanHuyen;
     public String TenQuanHuyen;
+    public String MaPhuongXa;
     public String TenPhuongXa;
     public String DiaChi;
     public String NgayBatDauCuTru;
-
-    public String getDienThoai() {
-        return DienThoai;
-    }
-
-    public String getDiDong() {
-        return DiDong;
-    }
-
-    public String getEmail() {
-        return Email;
-    }
-
-    public String getHinhThucCuTru() {
-        return HinhThucCuTru;
-    }
-
-    public String getNgayBatDauCuTru() {
-        return NgayBatDauCuTru;
-    }
 
     public VThongTinLienHe() {
     }

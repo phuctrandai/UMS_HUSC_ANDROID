@@ -136,38 +136,38 @@ public class GeneralInfoFragment extends Fragment {
             mNamDs.add(i + "");
         }
 
-        mNgaySinhAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mNgaySinhDs);
-        mNgaySinhAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
+        mNgaySinhAdapter = new ArrayAdapter<>(mContext, R.layout.custom_simple_spinner_item, mNgaySinhDs);
+        mNgaySinhAdapter.setDropDownViewResource(R.layout.custom_simple_list_item_single_choice);
 
-        mThangSinhAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mThangDs);
-        mThangSinhAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
+        mThangSinhAdapter = new ArrayAdapter<>(mContext, R.layout.custom_simple_spinner_item, mThangDs);
+        mThangSinhAdapter.setDropDownViewResource(R.layout.custom_simple_list_item_single_choice);
 
-        mNamSinhAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mNamDs);
-        mNamSinhAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
+        mNamSinhAdapter = new ArrayAdapter<>(mContext, R.layout.custom_simple_spinner_item, mNamDs);
+        mNamSinhAdapter.setDropDownViewResource(R.layout.custom_simple_list_item_single_choice);
 
-        mNgayCapCMNDAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mNgayCapCMNDDs);
-        mNgayCapCMNDAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
+        mNgayCapCMNDAdapter = new ArrayAdapter<>(mContext, R.layout.custom_simple_spinner_item, mNgayCapCMNDDs);
+        mNgayCapCMNDAdapter.setDropDownViewResource(R.layout.custom_simple_list_item_single_choice);
 
-        mThangCapCMNDAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mThangDs);
-        mThangCapCMNDAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
+        mThangCapCMNDAdapter = new ArrayAdapter<>(mContext, R.layout.custom_simple_spinner_item, mThangDs);
+        mThangCapCMNDAdapter.setDropDownViewResource(R.layout.custom_simple_list_item_single_choice);
 
-        mNamCapCMNDAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mNamDs);
-        mNamCapCMNDAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
+        mNamCapCMNDAdapter = new ArrayAdapter<>(mContext, R.layout.custom_simple_spinner_item, mNamDs);
+        mNamCapCMNDAdapter.setDropDownViewResource(R.layout.custom_simple_list_item_single_choice);
 
-        mQuocGiaAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mQuocGiaDs);
-        mQuocGiaAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
+        mQuocGiaAdapter = new ArrayAdapter<>(mContext, R.layout.custom_simple_spinner_item, mQuocGiaDs);
+        mQuocGiaAdapter.setDropDownViewResource(R.layout.custom_simple_list_item_single_choice);
 
-        mTinhThanhAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mTinhThanhDs);
-        mTinhThanhAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
+        mTinhThanhAdapter = new ArrayAdapter<>(mContext, R.layout.custom_simple_spinner_item, mTinhThanhDs);
+        mTinhThanhAdapter.setDropDownViewResource(R.layout.custom_simple_list_item_single_choice);
 
-        mQuocTichAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mQuocGiaDs);
-        mQuocTichAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
+        mQuocTichAdapter = new ArrayAdapter<>(mContext, R.layout.custom_simple_spinner_item, mQuocGiaDs);
+        mQuocTichAdapter.setDropDownViewResource(R.layout.custom_simple_list_item_single_choice);
 
-        mDanTocAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mDanTocDs);
-        mDanTocAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
+        mDanTocAdapter = new ArrayAdapter<>(mContext, R.layout.custom_simple_spinner_item, mDanTocDs);
+        mDanTocAdapter.setDropDownViewResource(R.layout.custom_simple_list_item_single_choice);
 
-        mTonGiaoAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mTonGiaoDs);
-        mTonGiaoAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
+        mTonGiaoAdapter = new ArrayAdapter<>(mContext, R.layout.custom_simple_spinner_item, mTonGiaoDs);
+        mTonGiaoAdapter.setDropDownViewResource(R.layout.custom_simple_list_item_single_choice);
     }
 
     @Override
