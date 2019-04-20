@@ -22,9 +22,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.practice.phuc.ums_husc.Adapter.ReceiverAdapter;
 import com.practice.phuc.ums_husc.Adapter.SearchAccountAdapter;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
@@ -48,14 +52,18 @@ public class ReplyMessageActivity extends AppCompatActivity implements SearchVie
 
     private ViewGroup layoutRoot;
     private SlidingUpPanelLayout slidingUpPanelLayout;
-    private TextView tvNguoiNhan;
     private TextView tvNguoiGui;
     private EditText etTieuDe;
     private EditText etNoiDung;
     private RecyclerView rvSearchResult;
+    private ProgressBar pbLoading;
+    private GridView gvReceiver;
 
     private TINNHAN mTinNhan;
     private SearchAccountAdapter mSearchAdapter;
+    private ReceiverAdapter mReceiverAdapter;
+    private int mCurrentPage;
+    private int ITEM_PER_PAGE;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,13 +78,24 @@ public class ReplyMessageActivity extends AppCompatActivity implements SearchVie
         layoutRoot = findViewById(R.id.layout_root_reply_message);
         slidingUpPanelLayout = findViewById(R.id.sliding_layout);
         etTieuDe = findViewById(R.id.tv_tieuDe);
-        tvNguoiNhan = findViewById(R.id.tv_nguoiNhan);
         tvNguoiGui = findViewById(R.id.tv_nguoiGui);
         etNoiDung = findViewById(R.id.et_noiDung);
+        pbLoading = findViewById(R.id.pb_loading);
+
+        mCurrentPage = 1;
+        ITEM_PER_PAGE = 15;
+
+        mTinNhan = TINNHAN.fromJson(getIntent().getStringExtra(Reference.BUNDLE_EXTRA_MESSAGE));
+        setUpData(mTinNhan);
+
         SearchView svSearch = findViewById(R.id.sv_query);
         svSearch.onActionViewExpanded();
         svSearch.setOnQueryTextListener(this);
         svSearch.setActivated(true);
+
+        gvReceiver = findViewById(R.id.gv_receiver);
+        setUpGridView();
+
         rvSearchResult = findViewById(R.id.rv_searchResult);
         setUpRecyclerView();
 
@@ -95,10 +114,7 @@ public class ReplyMessageActivity extends AppCompatActivity implements SearchVie
                 slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
             }
         });
-
-        String json = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_MESSAGE);
-        mTinNhan = TINNHAN.fromJson(json);
-        setUpData(mTinNhan);
+        etNoiDung.requestFocus();
     }
 
     @Override
@@ -147,19 +163,6 @@ public class ReplyMessageActivity extends AppCompatActivity implements SearchVie
         builder.create().show();
     }
 
-    private void setUpRecyclerView() {
-        List<TaiKhoan> temp = new ArrayList<>();
-        temp.add(new TaiKhoan("1", "Nguyen Van A"));
-        temp.add(new TaiKhoan("2", "Nguyen Thi B"));
-        temp.add(new TaiKhoan("3", "Tran Van C"));
-        temp.add(new TaiKhoan("4", "Tran Van A"));
-        temp.add(new TaiKhoan("5", "Ho Thi D"));
-        mSearchAdapter = new SearchAccountAdapter(this, temp);
-        rvSearchResult.setLayoutManager(new LinearLayoutManager(this));
-        rvSearchResult.setAdapter(mSearchAdapter);
-        rvSearchResult.setHasFixedSize(true);
-    }
-
     @Override
     public boolean onQueryTextChange(String query) {
         mSearchAdapter.onFilter(query);
@@ -168,23 +171,74 @@ public class ReplyMessageActivity extends AppCompatActivity implements SearchVie
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        return false;
+        new SearchAccountTask().execute(query);
+        return true;
     }
 
-    private void setUpData(TINNHAN tinNhan) {
-        if (tinNhan == null) return;
+    @SuppressLint("StaticFieldLeak")
+    class SearchAccountTask extends AsyncTask<String, Void, Boolean> {
+        private Response mResponse;
+        private String mMessage;
+        private String mResponseBody;
 
-        String tieuDe = tinNhan.TieuDe;
-        String hoTenNguoiNhan = tinNhan.HoTenNguoiGui;
-        String hoTenNguoiGui = Reference.getStudentName(this);
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pbLoading.setVisibility(View.VISIBLE);
+            rvSearchResult.setVisibility(View.GONE);
+        }
 
-        String tieuDeReply = tieuDe.contains("Re: ") ? tieuDe : "Re: " + tieuDe;
-        etTieuDe.setText(tieuDeReply);
-        tvNguoiNhan.setText(hoTenNguoiNhan);
-        tvNguoiGui.setText(hoTenNguoiGui);
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            String url = Reference.getSearchTaiKhoan(strings[0], mCurrentPage, ITEM_PER_PAGE);
+
+            mResponse = NetworkUtil.makeRequest(url, false, null);
+
+            if (mResponse == null) {
+                mMessage = getString(R.string.error_server_not_response);
+                Log.e("DEBUG", "Search account RESPONSE NULL");
+                return false;
+
+            } else {
+
+                if (mResponse.code() == NetworkUtil.OK) {
+                    try {
+                        mResponseBody = mResponse.body() != null ? mResponse.body().string() : "";
+                        Log.e("DEBUG", mResponseBody);
+                        return true;
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Log.e("DEBUG", "Có lỗi bất ngờ khi tìm kiếm tài khoản");
+                        return false;
+                    }
+                }
+            }
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            super.onPostExecute(success);
+            pbLoading.setVisibility(View.GONE);
+            rvSearchResult.setVisibility(View.VISIBLE);
+
+            if (success) {
+                List<TaiKhoan> taiKhoans = TaiKhoan.fromJson(mResponseBody);
+
+                if (taiKhoans != null && taiKhoans.size() > 0) {
+                    mSearchAdapter.onNotifySearchResultChanged(taiKhoans);
+                }
+            }
+        }
     }
 
     private void attempSendMessage() {
+        if (mReceiverAdapter.getCount() == 0) {
+            Toast.makeText(this, "Phải có ít nhất một người nhận", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (etTieuDe.getText() == null || etTieuDe.getText().toString().equals("")) {
             etTieuDe.setError("Tiêu đề không được trống");
             etTieuDe.requestFocus();
@@ -205,7 +259,7 @@ public class ReplyMessageActivity extends AppCompatActivity implements SearchVie
 
         AlertDialog.Builder builder = new AlertDialog.Builder(ReplyMessageActivity.this);
         builder.setTitle("Thông báo");
-        builder.setMessage("Gửi tin nhắn đến " + tvNguoiNhan.getText());
+        builder.setMessage("Gửi tin nhắn ?");
         builder.setCancelable(false);
         builder.setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
             @Override
@@ -243,7 +297,7 @@ public class ReplyMessageActivity extends AppCompatActivity implements SearchVie
             Log.e("DEBUG", "Tin nhan gui di: " + json);
 
             RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json);
-            mResponse = NetworkUtil.makeRequest(url, true, requestBody);
+            //mResponse = NetworkUtil.makeRequest(url, true, requestBody);
 
             if (mResponse == null) {
                 mMessage = "Không thể kết nối đến máy chủ";
@@ -283,13 +337,6 @@ public class ReplyMessageActivity extends AppCompatActivity implements SearchVie
     private void sendMessage(String title, String content) {
         String maNguoiGui = Reference.getAccountId(this);
         String hoTenNguoiGui = Reference.getStudentName(this);
-        String maNguoiNhan = mTinNhan.MaNguoiGui;
-        String hoTenNguoiNhan = mTinNhan.HoTenNguoiGui;
-
-        NGUOINHAN nguoiNhan = new NGUOINHAN();
-        nguoiNhan.MaNguoiNhan = maNguoiNhan;
-        nguoiNhan.HoTenNguoiNhan = hoTenNguoiNhan;
-        nguoiNhan.ThoiDiemXem = "";
 
         TINNHAN tinNhan = new TINNHAN();
         tinNhan.TieuDe = title;
@@ -298,11 +345,47 @@ public class ReplyMessageActivity extends AppCompatActivity implements SearchVie
 
         tinNhan.MaNguoiGui = maNguoiGui;
         tinNhan.HoTenNguoiGui = hoTenNguoiGui;
-        tinNhan.NguoiNhans = new NGUOINHAN[]{nguoiNhan};
+        tinNhan.NguoiNhans = new NGUOINHAN[mReceiverAdapter.getCount()];
+        int i = 0;
+        for (TaiKhoan item : mReceiverAdapter.getReceiverList()) {
+            NGUOINHAN n = new NGUOINHAN(item.MaTaiKhoan, item.HoTen, "");
+            tinNhan.NguoiNhans[i] = n;
+            i++;
+        }
 
         SendMessageTask sendMessageTask = new SendMessageTask(tinNhan);
         sendMessageTask.execute((String) null);
         this.finish();
+    }
+
+    private void setUpData(TINNHAN tinNhan) {
+        if (tinNhan == null) return;
+
+        String tieuDe = tinNhan.TieuDe;
+        String hoTenNguoiGui = Reference.getStudentName(this);
+
+        String tieuDeReply = tieuDe.contains("Re: ") ? tieuDe : "Re: " + tieuDe;
+        etTieuDe.setText(tieuDeReply);
+        tvNguoiGui.setText(hoTenNguoiGui);
+    }
+
+    private void setUpGridView() {
+        mReceiverAdapter = new ReceiverAdapter(this);
+        mReceiverAdapter.getReceiverList().add(new TaiKhoan(mTinNhan.MaNguoiGui, mTinNhan.HoTenNguoiGui));
+        gvReceiver.setAdapter(mReceiverAdapter);
+    }
+
+    private void setUpRecyclerView() {
+        List<TaiKhoan> temp = new ArrayList<>();
+        temp.add(new TaiKhoan("1", "Nguyen Van A"));
+        temp.add(new TaiKhoan("2", "Nguyen Thi B"));
+        temp.add(new TaiKhoan("3", "Tran Van C"));
+        temp.add(new TaiKhoan("4", "Tran Van A"));
+        temp.add(new TaiKhoan("5", "Ho Thi D"));
+        mSearchAdapter = new SearchAccountAdapter(this, temp, mReceiverAdapter);
+        rvSearchResult.setLayoutManager(new LinearLayoutManager(this));
+        rvSearchResult.setAdapter(mSearchAdapter);
+        rvSearchResult.setHasFixedSize(true);
     }
 
     private void pushNotification(final String title) {

@@ -36,20 +36,30 @@
         android:layout_below="@id/tv_title"
         android:layout_marginTop="@dimen/big_margin"
         android:background="@drawable/radius_grey_background"
-        android:backgroundTint="@color/colorGrey"
         android:elevation="0dp"
+        android:foreground="@android:color/transparent"
         android:textSize="@dimen/normal_text"
-        tools:ignore="HardcodedText,LabelFor,UnusedAttribute">
+        tools:ignore="HardcodedText,LabelFor,UnusedAttribute" />
 
-        <requestFocus />
-    </android.support.v7.widget.SearchView>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_searchResult"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_below="@id/sv_query"
         android:layout_marginTop="@dimen/normal_margin"
-        android:layout_marginBottom="@dimen/normal_margin" />
+        android:layout_marginBottom="@dimen/normal_margin">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_searchResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </ScrollView>
+
+    <ProgressBar
+        android:id="@+id/pb_loading"
+        style="@android:style/Widget.Holo.Light.ProgressBar.Inverse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
 
 </RelativeLayout>

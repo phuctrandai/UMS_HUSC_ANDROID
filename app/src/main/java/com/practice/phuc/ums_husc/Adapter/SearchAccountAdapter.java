@@ -3,10 +3,10 @@ package com.practice.phuc.ums_husc.Adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.R;
@@ -17,38 +17,61 @@ import java.util.List;
 
 public class SearchAccountAdapter extends RecyclerView.Adapter<SearchAccountAdapter.DataViewHolder> {
     private Context mContext;
-    private List<TaiKhoan> mAccountList;
+    private List<TaiKhoan> mLocalAccountList;
     private List<TaiKhoan> mSearchResult;
+    private ReceiverAdapter mReceiverAdapter;
 
-    public SearchAccountAdapter(Context context, List<TaiKhoan> accountList) {
+    public SearchAccountAdapter(Context context, List<TaiKhoan> accountList, ReceiverAdapter receiverAdapter) {
         mContext = context;
-        mAccountList = accountList;
+        mLocalAccountList = accountList;
+        mReceiverAdapter = receiverAdapter;
         mSearchResult = new ArrayList<>();
+    }
+
+    public void onNotifySearchResultChanged(List<TaiKhoan> newResult) {
+        mSearchResult.clear();
+        mSearchResult.addAll(newResult);
+        notifyDataSetChanged();
     }
 
     public void onFilter(String query) {
         mSearchResult.clear();
         if (!query.equals("")) {
-            for (TaiKhoan item : mAccountList) {
-                if (item.HoVaTen.toLowerCase().contains(query.toLowerCase()))
+            for (TaiKhoan item : mLocalAccountList) {
+                if (item.HoTen.toLowerCase().contains(query.toLowerCase()))
                     mSearchResult.add(item);
             }
         }
         notifyDataSetChanged();
     }
 
-    public List<TaiKhoan> getDataSet() { return mSearchResult; }
+    private void onItemClick(DataViewHolder holder, int postion) {
+        TaiKhoan item = mSearchResult.get(postion);
+        mReceiverAdapter.updateReceiverList(item);
+
+        if (mReceiverAdapter.isInReceiverList(item)) {
+            holder.ivChecked.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_circle_primary_24));
+
+        } else {
+            holder.ivChecked.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_circle_grey_24));
+        }
+    }
 
     class DataViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private TextView tvAccountId;
+        private TextView tvAccountName;
+        private TextView tvAccountDesc;
+        private ImageButton ivChecked;
 
         DataViewHolder(@NonNull View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
-            tvAccountId = itemView.findViewById(R.id.tv_accountName);
+            tvAccountName = itemView.findViewById(R.id.tv_accountName);
+            tvAccountDesc = itemView.findViewById(R.id.tv_accountDesc);
+            ivChecked = itemView.findViewById(R.id.iv_checked);
         }
 
         private ItemClickListener itemClickListener;
+
         private void setItemClickListener(ItemClickListener itemClickListener) {
             this.itemClickListener = itemClickListener;
         }
@@ -59,17 +82,26 @@ public class SearchAccountAdapter extends RecyclerView.Adapter<SearchAccountAdap
         }
     }
 
-    interface ItemClickListener {
-        void onItemClickListener(View view, int position, boolean isLongClick);
-    }
-
     @Override
-    public void onBindViewHolder(@NonNull DataViewHolder holder, int i) {
-        holder.tvAccountId.setText(mSearchResult.get(i).HoVaTen);
+    public void onBindViewHolder(@NonNull final DataViewHolder holder, int i) {
+        if (mReceiverAdapter.isInReceiverList(mSearchResult.get(i))) {
+            holder.ivChecked.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_circle_primary_24));
+
+        } else {
+            holder.ivChecked.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_circle_grey_24));
+
+        }
+
+        if (mSearchResult.get(i).MaSinhVien != null) {
+            String desc = !mSearchResult.get(i).MaSinhVien.equals("") ? mSearchResult.get(i).MaSinhVien : "Giáo viên";
+            holder.tvAccountDesc.setText(desc);
+        }
+
+        holder.tvAccountName.setText(mSearchResult.get(i).HoTen);
         holder.setItemClickListener(new ItemClickListener() {
             @Override
             public void onItemClickListener(View view, int position, boolean isLongClick) {
-                Log.d("DEBUG", "CHOOSE THIS ACCOUNT: " + mSearchResult.get(position).HoVaTen);
+                onItemClick(holder, position);
             }
         });
     }
@@ -84,5 +116,9 @@ public class SearchAccountAdapter extends RecyclerView.Adapter<SearchAccountAdap
     @Override
     public int getItemCount() {
         return mSearchResult == null ? 0 : mSearchResult.size();
+    }
+
+    interface ItemClickListener {
+        void onItemClickListener(View view, int position, boolean isLongClick);
     }
 }

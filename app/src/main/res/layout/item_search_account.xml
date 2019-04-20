@@ -8,13 +8,36 @@
     android:foreground="?android:attr/selectableItemBackground"
     tools:ignore="UnusedAttribute">
 
+    <ImageButton
+        android:id="@+id/iv_checked"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/small_margin"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_check_circle_grey_24"
+        tools:ignore="ContentDescription" />
+
     <TextView
         android:id="@+id/tv_accountName"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/big_margin"
+        android:layout_centerVertical="true"
+        android:layout_margin="@dimen/normal_margin"
+        android:layout_toEndOf="@id/iv_checked"
         android:text="Account name"
         android:textColor="@color/colorBlack"
         android:textSize="@dimen/normal_text"
         tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/tv_accountDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="@dimen/big_margin"
+        android:text=""
+        android:textColor="@color/colorBlack"
+        android:textSize="@dimen/normal_text"
+        tools:ignore="HardcodedText,RelativeOverlap" />
 </RelativeLayout>

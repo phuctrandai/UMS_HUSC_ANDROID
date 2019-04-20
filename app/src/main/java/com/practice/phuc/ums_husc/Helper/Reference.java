@@ -33,13 +33,15 @@ public final class Reference {
 
     private static final String LOAD_NOI_DUNG_TIN_NHAN_API = "api/SinhVien/TinNhan/NoiDung/";
 
-    private static final String UPDATE_THOI_DIEM_XEM_TIN_NHAN_API = "api/SinhVien/CapNhatThoiDiemXem";
+    private static final String UPDATE_THOI_DIEM_XEM_TIN_NHAN_API = "api/SinhVien/CapNhatThoiDiemXem/";
 
-    private static final String ATTEMP_DELETE_TIN_NHAN_API = "api/SinhVien/TinNhan/XoaTamThoi";
+    private static final String ATTEMP_DELETE_TIN_NHAN_API = "api/SinhVien/TinNhan/XoaTamThoi/";
 
-    private static final String FOREVER_DELETE_TIN_NHAN_API = "api/SinhVien/TinNhan/XoaVinhVien";
+    private static final String FOREVER_DELETE_TIN_NHAN_API = "api/SinhVien/TinNhan/XoaVinhVien/";
 
     private static final String REPLY_TIN_NHAN_API = "api/SinhVien/TraLoiTinNhan/";
+
+    private static final String SEARCH_TAI_KHOAN = "api/SinhVien/TaiKhoan/?order=";
 
     private static final String SAVE_TOKEN_API = "api/FCM/Excute/Save/";
 
@@ -128,6 +130,10 @@ public final class Reference {
         return HOST + REPLY_TIN_NHAN_API
                 + "?masinhvien=" + maSinhVien
                 + "&matkhau=" + matKhau;
+    }
+
+    public static String getSearchTaiKhoan(String query, int currentPage, int itemPerPage) {
+        return HOST + SEARCH_TAI_KHOAN + query + "&sotrang=" + currentPage + "&sodong=" + itemPerPage;
     }
 
     public static String getLoadLyLichApiUrl(String maSinhVien, String matKhau) {
