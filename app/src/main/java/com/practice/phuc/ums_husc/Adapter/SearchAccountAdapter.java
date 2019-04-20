@@ -6,7 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.R;
@@ -47,9 +47,9 @@ public class SearchAccountAdapter extends RecyclerView.Adapter<SearchAccountAdap
 
     private void onItemClick(DataViewHolder holder, int postion) {
         TaiKhoan item = mSearchResult.get(postion);
-        mReceiverAdapter.updateReceiverList(item);
+        boolean isInserted = mReceiverAdapter.updateReceiverList(item);
 
-        if (mReceiverAdapter.isInReceiverList(item)) {
+        if (isInserted) {
             holder.ivChecked.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_circle_primary_24));
 
         } else {
@@ -57,10 +57,37 @@ public class SearchAccountAdapter extends RecyclerView.Adapter<SearchAccountAdap
         }
     }
 
+    @Override
+    public void onBindViewHolder(@NonNull final DataViewHolder holder, int i) {
+        TaiKhoan item = mSearchResult.get(i);
+
+        if (mReceiverAdapter.isInReceiverList(item)) {
+            holder.ivChecked.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_circle_primary_24));
+
+        } else {
+            holder.ivChecked.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_circle_grey_24));
+
+        }
+
+        if (item.MaSinhVien != null) {
+            String desc = !item.MaSinhVien.equals("") ? item.MaSinhVien : "Giáo viên";
+            holder.tvAccountDesc.setText(desc);
+        }
+
+        holder.tvAccountName.setText(mSearchResult.get(i).HoTen);
+
+        holder.setItemClickListener(new ItemClickListener() {
+            @Override
+            public void onItemClickListener(View view, int position, boolean isLongClick) {
+                onItemClick(holder, position);
+            }
+        });
+    }
+
     class DataViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView tvAccountName;
         private TextView tvAccountDesc;
-        private ImageButton ivChecked;
+        private ImageView ivChecked;
 
         DataViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -80,30 +107,6 @@ public class SearchAccountAdapter extends RecyclerView.Adapter<SearchAccountAdap
         public void onClick(View v) {
             itemClickListener.onItemClickListener(v, getAdapterPosition(), false);
         }
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull final DataViewHolder holder, int i) {
-        if (mReceiverAdapter.isInReceiverList(mSearchResult.get(i))) {
-            holder.ivChecked.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_circle_primary_24));
-
-        } else {
-            holder.ivChecked.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_circle_grey_24));
-
-        }
-
-        if (mSearchResult.get(i).MaSinhVien != null) {
-            String desc = !mSearchResult.get(i).MaSinhVien.equals("") ? mSearchResult.get(i).MaSinhVien : "Giáo viên";
-            holder.tvAccountDesc.setText(desc);
-        }
-
-        holder.tvAccountName.setText(mSearchResult.get(i).HoTen);
-        holder.setItemClickListener(new ItemClickListener() {
-            @Override
-            public void onItemClickListener(View view, int position, boolean isLongClick) {
-                onItemClick(holder, position);
-            }
-        });
     }
 
     @NonNull

@@ -48,7 +48,7 @@ import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class ReplyMessageActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class SendMessageActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     private ViewGroup layoutRoot;
     private SlidingUpPanelLayout slidingUpPanelLayout;
@@ -70,37 +70,59 @@ public class ReplyMessageActivity extends AppCompatActivity implements SearchVie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reply_message);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
         layoutRoot = findViewById(R.id.layout_root_reply_message);
         slidingUpPanelLayout = findViewById(R.id.sliding_layout);
         etTieuDe = findViewById(R.id.tv_tieuDe);
         tvNguoiGui = findViewById(R.id.tv_nguoiGui);
         etNoiDung = findViewById(R.id.et_noiDung);
         pbLoading = findViewById(R.id.pb_loading);
-
-        mCurrentPage = 1;
-        ITEM_PER_PAGE = 15;
-
-        mTinNhan = TINNHAN.fromJson(getIntent().getStringExtra(Reference.BUNDLE_EXTRA_MESSAGE));
-        setUpData(mTinNhan);
-
+        gvReceiver = findViewById(R.id.gv_receiver);
+        rvSearchResult = findViewById(R.id.rv_searchResult);
+        ImageButton btnOpenSlidingPanel = findViewById(R.id.btn_addReceiver);
+        ImageButton btnCloseSlidingPanel = findViewById(R.id.btn_closeSlidePanel);
         SearchView svSearch = findViewById(R.id.sv_query);
         svSearch.onActionViewExpanded();
         svSearch.setOnQueryTextListener(this);
         svSearch.setActivated(true);
 
-        gvReceiver = findViewById(R.id.gv_receiver);
-        setUpGridView();
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        rvSearchResult = findViewById(R.id.rv_searchResult);
+        mCurrentPage = 1;
+        ITEM_PER_PAGE = 15;
+        String json = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_MESSAGE);
+        mTinNhan = json != null ? TINNHAN.fromJson(json) : null;
+
+        boolean isNew = getIntent().getBooleanExtra(Reference.BUNDLE_EXTRA_MESSAGE_NEW, false);
+        boolean isReply = getIntent().getBooleanExtra(Reference.BUNDLE_EXTRA_MESSAGE_REPLY, false);
+        boolean isForward = getIntent().getBooleanExtra(Reference.BUNDLE_EXTRA_MESSAGE_FORWARD, false);
+
+        int MODE;
+        if (isNew) {
+            MODE = 0;
+            getSupportActionBar().setTitle("Gửi tin mới");
+            etTieuDe.requestFocus();
+
+        } else if (isReply) {
+            MODE = 1;
+            getSupportActionBar().setTitle("Trả lời");
+            etNoiDung.requestFocus();
+
+        } else if (isForward) {
+            MODE = 2;
+            getSupportActionBar().setTitle("Chuyển tiếp");
+            etNoiDung.requestFocus();
+
+        } else
+            MODE = 0;
+
+        setUpData(mTinNhan, MODE);
+
+        setUpGridView(MODE);
+
         setUpRecyclerView();
-
-        ImageButton btnOpenSlidingPanel = findViewById(R.id.btn_addReceiver);
-        ImageButton btnCloseSlidingPanel = findViewById(R.id.btn_closeSlidePanel);
 
         btnOpenSlidingPanel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,7 +136,6 @@ public class ReplyMessageActivity extends AppCompatActivity implements SearchVie
                 slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
             }
         });
-        etNoiDung.requestFocus();
     }
 
     @Override
@@ -151,7 +172,7 @@ public class ReplyMessageActivity extends AppCompatActivity implements SearchVie
         builder.setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                ReplyMessageActivity.super.onBackPressed();
+                SendMessageActivity.super.onBackPressed();
             }
         });
         builder.setNegativeButton("Thôi", new DialogInterface.OnClickListener() {
@@ -257,7 +278,7 @@ public class ReplyMessageActivity extends AppCompatActivity implements SearchVie
             return;
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(ReplyMessageActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(SendMessageActivity.this);
         builder.setTitle("Thông báo");
         builder.setMessage("Gửi tin nhắn ?");
         builder.setCancelable(false);
@@ -289,8 +310,8 @@ public class ReplyMessageActivity extends AppCompatActivity implements SearchVie
 
         @Override
         protected Boolean doInBackground(String... strings) {
-            String maSinhVien = Reference.getStudentId(ReplyMessageActivity.this);
-            String matKhau = Reference.getAccountPassword(ReplyMessageActivity.this);
+            String maSinhVien = Reference.getStudentId(SendMessageActivity.this);
+            String matKhau = Reference.getAccountPassword(SendMessageActivity.this);
             String url = Reference.getReplyTinNhanApiUrl(maSinhVien, matKhau);
 
             String json = TINNHAN.toJson(tinNhan);
@@ -358,21 +379,29 @@ public class ReplyMessageActivity extends AppCompatActivity implements SearchVie
         this.finish();
     }
 
-    private void setUpData(TINNHAN tinNhan) {
-        if (tinNhan == null) return;
-
-        String tieuDe = tinNhan.TieuDe;
+    private void setUpData(TINNHAN tinNhan, int mode) {
+        String tieuDe = "";
+        String tieuDeReply = "";
         String hoTenNguoiGui = Reference.getStudentName(this);
 
-        String tieuDeReply = tieuDe.contains("Re: ") ? tieuDe : "Re: " + tieuDe;
+        if (tinNhan != null) tieuDe = tinNhan.TieuDe;
+
+        if (mode == 1)
+            tieuDeReply = tieuDe.contains("Re: ") ? tieuDe : "Re: " + tieuDe;
+
+        else if (mode == 2)
+            tieuDeReply = tieuDe.contains("Fwd: ") ? tieuDe : "Fwd: " + tieuDe;
+
         etTieuDe.setText(tieuDeReply);
         tvNguoiGui.setText(hoTenNguoiGui);
     }
 
-    private void setUpGridView() {
+    private void setUpGridView(int mode) {
         mReceiverAdapter = new ReceiverAdapter(this);
-        mReceiverAdapter.getReceiverList().add(new TaiKhoan(mTinNhan.MaNguoiGui, mTinNhan.HoTenNguoiGui));
         gvReceiver.setAdapter(mReceiverAdapter);
+
+        if (mode == 1 && mTinNhan != null)
+            mReceiverAdapter.updateReceiverList(new TaiKhoan(mTinNhan.MaNguoiGui, mTinNhan.HoTenNguoiGui));
     }
 
     private void setUpRecyclerView() {
@@ -384,8 +413,8 @@ public class ReplyMessageActivity extends AppCompatActivity implements SearchVie
         temp.add(new TaiKhoan("5", "Ho Thi D"));
         mSearchAdapter = new SearchAccountAdapter(this, temp, mReceiverAdapter);
         rvSearchResult.setLayoutManager(new LinearLayoutManager(this));
-        rvSearchResult.setAdapter(mSearchAdapter);
         rvSearchResult.setHasFixedSize(true);
+        rvSearchResult.setAdapter(mSearchAdapter);
     }
 
     private void pushNotification(final String title) {

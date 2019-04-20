@@ -5,10 +5,10 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="?android:attr/selectableItemBackground"
+    android:foreground="?android:selectableItemBackground"
     tools:ignore="UnusedAttribute">
 
-    <ImageButton
+    <ImageView
         android:id="@+id/iv_checked"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

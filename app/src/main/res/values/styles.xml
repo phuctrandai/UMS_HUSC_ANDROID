@@ -32,5 +32,7 @@
     <style name="Widget.BottomNavigationView" parent="Widget.Design.BottomNavigationView">
         <item name="android:textSize">@dimen/normal_text</item>
         <item name="android:textStyle">bold</item>
+        <item name="colorControlHighlight">@color/colorAccent</item>
     </style>
+
 </resources>

@@ -37,8 +37,9 @@
         android:layout_marginTop="@dimen/big_margin"
         android:background="@drawable/radius_grey_background"
         android:elevation="0dp"
-        android:foreground="@android:color/transparent"
+        android:queryBackground="@android:color/transparent"
         android:textSize="@dimen/normal_text"
+        app:queryBackground="@android:color/transparent"
         tools:ignore="HardcodedText,LabelFor,UnusedAttribute" />
 
     <ScrollView

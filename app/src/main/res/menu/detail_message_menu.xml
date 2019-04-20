@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:tools="http://schemas.android.com/tools"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <item
-        android:icon="@drawable/ic_reply_white_24"
-        app:showAsAction="always"
         android:id="@+id/item_traLoi"
+        android:icon="@drawable/ic_reply_white_24"
         android:title="Trả lời"
+        app:showAsAction="always"
         tools:ignore="AlwaysShowAction,HardcodedText" />
-    <!--<item-->
-        <!--android:id="@+id/item_chuyenTiep"-->
-        <!--android:title="Chuyển tiếp" />-->
+    <item
+        android:id="@+id/item_chuyenTiep"
+        android:icon="@drawable/ic_forward_white_24"
+        android:title="Chuyển tiếp"
+        app:showAsAction="always"
+        tools:ignore="HardcodedText" />
     <item
         android:id="@+id/item_xoa"
-        android:icon="@drawable/ic_delete_temp_white_24"
+        android:icon="@drawable/ic_delete_white_24"
         android:title="Chuyển vào thùng rác"
-        app:showAsAction="collapseActionView"
+        app:showAsAction="always"
         tools:ignore="HardcodedText" />
 </menu>

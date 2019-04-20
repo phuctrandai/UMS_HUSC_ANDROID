@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <item
         android:id="@+id/action_goToToday"
         android:icon="@drawable/ic_today_white_24"
@@ -9,13 +10,20 @@
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_refreshResume"
+        android:icon="@drawable/ic_refresh_white_24"
         android:orderInCategory="101"
         android:title="@string/action_refresh_resume"
-        android:icon="@drawable/ic_sync_white_24"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_newMessage"
+        android:icon="@drawable/ic_pen_white_24"
+        android:orderInCategory="102"
+        android:title="Tin nhắn mới"
+        app:showAsAction="ifRoom"
+        tools:ignore="HardcodedText,UnusedAttribute" />
     <item
         android:id="@+id/action_selectSemester"
-        android:orderInCategory="102"
+        android:orderInCategory="103"
         android:title="@string/action_selectSemester"
         app:showAsAction="never" />
 </menu>

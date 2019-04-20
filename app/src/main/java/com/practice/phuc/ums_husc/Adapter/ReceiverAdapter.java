@@ -35,12 +35,18 @@ public class ReceiverAdapter extends BaseAdapter {
         mReceiverList.add(obj);
     }
 
-    void updateReceiverList(TaiKhoan obj) {
-        if (isInReceiverList(obj))
+    public boolean updateReceiverList(TaiKhoan obj) {
+        boolean result;
+        if (isInReceiverList(obj)) {
             removeReceiver(obj);
-        else
+            result = false;
+        }
+        else {
             insertReceiver(obj);
+            result = true;
+        }
         notifyDataSetChanged();
+        return result;
     }
 
     boolean isInReceiverList(TaiKhoan obj) {

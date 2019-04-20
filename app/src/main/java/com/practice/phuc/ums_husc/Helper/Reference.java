@@ -172,6 +172,9 @@ public final class Reference {
     public static String BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI = "launch_from_noti";
 
     public static String BUNDLE_EXTRA_MESSAGE = "message";
+    public static final String BUNDLE_EXTRA_MESSAGE_REPLY = "reply";
+    public static final String BUNDLE_EXTRA_MESSAGE_FORWARD = "forward";
+    public static final String BUNDLE_EXTRA_MESSAGE_NEW = "new";
     public static String BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI = "launch_from_noti";
 
     public static String getStudentId(Context context) {

@@ -108,10 +108,10 @@
             android:layout_marginEnd="@dimen/big_margin"
             android:layout_marginBottom="@dimen/small_margin"
             android:background="@null"
+            android:hint="Tiêu đề tin nhắn"
             android:importantForAutofill="no"
             android:paddingTop="@dimen/normal_padding"
             android:paddingBottom="@dimen/normal_padding"
-            android:text="Tiêu đề tin nhắn"
             android:textColor="@android:color/black"
             android:textSize="@dimen/big_text"
             tools:ignore="HardcodedText,LabelFor,TextFields,UnusedAttribute" />

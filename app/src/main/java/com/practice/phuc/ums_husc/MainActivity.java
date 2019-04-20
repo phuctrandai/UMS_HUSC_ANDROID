@@ -31,6 +31,7 @@ import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.MessageModule.DetailMessageActivity;
 import com.practice.phuc.ums_husc.MessageModule.MessageFragment;
+import com.practice.phuc.ums_husc.MessageModule.SendMessageActivity;
 import com.practice.phuc.ums_husc.NewsModule.DetailNewsActivity;
 import com.practice.phuc.ums_husc.NewsModule.MainFragment;
 import com.practice.phuc.ums_husc.ResumeModule.ResumeFragment;
@@ -151,9 +152,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getMenuInflater().inflate(R.menu.activity_main_menu, menu);
         boolean isScheduleFrag = currentFragment.equals(ScheduleFragment.class.getName());
         boolean isResumeFrag = currentFragment.equals(ResumeFragment.class.getName());
+        boolean isMessageFrag = currentFragment.equals(MessageFragment.class.getName());
 
         menu.findItem(R.id.action_goToToday).setVisible(isScheduleFrag);
         menu.findItem(R.id.action_refreshResume).setVisible(isResumeFrag);
+        menu.findItem(R.id.action_newMessage).setVisible(isMessageFrag);
+        menu.findItem(R.id.action_selectSemester).setVisible(!(isMessageFrag || isResumeFrag));
+
         return true;
     }
 
@@ -167,15 +172,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     scheduleFragment.goToToday();
                 }
                 return true;
+
             case R.id.action_refreshResume:
                 ResumeFragment resumeFragment = (ResumeFragment) fragmentManager.findFragmentByTag(ResumeFragment.class.getName());
                 if (resumeFragment != null) {
                     resumeFragment.onRefresh();
                 }
                 return true;
+
             case R.id.action_selectSemester:
                 showSelectSemesterDialog();
                 return true;
+
+            case R.id.action_newMessage:
+                Intent intent = new Intent(this, SendMessageActivity.class);
+                intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE_NEW, true);
+                startActivity(intent);
+                return true;
+
             default:
                 break;
         }

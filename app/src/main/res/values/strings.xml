@@ -87,7 +87,7 @@
     </string-array>
 
     <!-- Message -->
-    <string name="title_activity_detail_message">Chi tiết tin nhắn</string>
+    <string name="title_activity_detail_message">Tin nhắn</string>
     <string name="title_received_message">Đã nhận</string>
     <string name="title_sent_message">Đã gửi</string>
     <string name="title_deleted">Đã xóa</string>
@@ -127,7 +127,7 @@
     <string name="pre_key_semester">semester</string>
     <string name="error_not_handle">Có lỗi bất ngờ xảy ra, vui lòng thử lại sau</string>
 
-    <string name="title_activity_reply_message">Trả lời tin nhắn</string>
+    <string name="title_activity_reply_message">Trả lời</string>
     <string name="share_pre_key_firebase">FIREBASE</string>
     <string name="pre_key_token">TOKEN</string>
 

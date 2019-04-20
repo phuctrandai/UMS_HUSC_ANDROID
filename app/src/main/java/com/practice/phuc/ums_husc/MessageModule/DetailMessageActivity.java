@@ -69,7 +69,6 @@ public class DetailMessageActivity extends AppCompatActivity {
 
         String json = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_MESSAGE);
         mTinNhan = TINNHAN.fromJson(json);
-        Log.e("DEBUG", "Xem chi tiet tin nhan: " + json);
         showData(mTinNhan);
     }
 
@@ -115,7 +114,17 @@ public class DetailMessageActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch (id) {
             case R.id.item_traLoi:
-                replyMessage(mTinNhan);
+                Intent intent = new Intent(this, SendMessageActivity.class);
+                intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, TINNHAN.toJson(mTinNhan));
+                intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE_REPLY, true);
+                startActivity(intent);
+                break;
+
+            case R.id.item_chuyenTiep:
+                Intent intentCT = new Intent(this, SendMessageActivity.class);
+                intentCT.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, TINNHAN.toJson(mTinNhan));
+                intentCT.putExtra(Reference.BUNDLE_EXTRA_MESSAGE_FORWARD, true);
+                startActivity(intentCT);
                 break;
 
             case R.id.item_xoa:
@@ -250,12 +259,6 @@ public class DetailMessageActivity extends AppCompatActivity {
 
         // Luu lai cac tin nhan moi, de them vao o Received fragment
 //            Reference.getmListNewThongBao().add(tinnhan);
-    }
-
-    private void replyMessage(TINNHAN tinNhan) {
-        Intent intent = new Intent(this, ReplyMessageActivity.class);
-        intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, TINNHAN.toJson(tinNhan));
-        startActivity(intent);
     }
 
     private void setUpTvNguoiNhan(final String[] receiverNameList) {
