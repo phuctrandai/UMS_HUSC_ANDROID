@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -32,7 +32,11 @@
     <style name="Widget.BottomNavigationView" parent="Widget.Design.BottomNavigationView">
         <item name="android:textSize">@dimen/normal_text</item>
         <item name="android:textStyle">bold</item>
-        <item name="colorControlHighlight">@color/colorAccent</item>
+        <item name="colorControlHighlight">#4D0D47A1</item>
     </style>
 
+    <style name="CustomTabLayout">
+        <item name="tabRippleColor">#4D0D47A1</item>
+        <item name="android:colorControlHighlight">#4D0D47A1</item>
+    </style>
 </resources>

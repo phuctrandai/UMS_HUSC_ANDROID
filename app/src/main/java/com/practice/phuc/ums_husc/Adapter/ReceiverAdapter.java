@@ -1,6 +1,7 @@
 package com.practice.phuc.ums_husc.Adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,15 +29,21 @@ public class ReceiverAdapter extends BaseAdapter {
     }
 
     private void removeReceiver(TaiKhoan obj) {
-        mReceiverList.remove(obj);
+        for (int i=0 ; i < mReceiverList.size(); i++) {
+            if (mReceiverList.get(i).MaTaiKhoan.trim().equals(obj.MaTaiKhoan.trim())) {
+                mReceiverList.remove(i);
+                return;
+            }
+        }
     }
 
-    private void insertReceiver(TaiKhoan obj) {
+    public void insertReceiver(TaiKhoan obj) {
         mReceiverList.add(obj);
     }
 
     public boolean updateReceiverList(TaiKhoan obj) {
         boolean result;
+
         if (isInReceiverList(obj)) {
             removeReceiver(obj);
             result = false;
@@ -50,9 +57,12 @@ public class ReceiverAdapter extends BaseAdapter {
     }
 
     boolean isInReceiverList(TaiKhoan obj) {
+        Log.d("DEBUG", "MTK: " + obj.MaTaiKhoan);
+
         for (TaiKhoan item : mReceiverList) {
-            if (item.MaTaiKhoan.equals(obj.MaTaiKhoan))
+            if (item.MaTaiKhoan.trim().equals(obj.MaTaiKhoan.trim())) {
                 return true;
+            }
         }
         return false;
     }

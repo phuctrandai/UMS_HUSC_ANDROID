@@ -3,7 +3,6 @@ package com.practice.phuc.ums_husc;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.Service;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -39,9 +38,6 @@ import com.practice.phuc.ums_husc.ScheduleModule.ScheduleFragment;
 
 import java.util.Objects;
 
-import static com.practice.phuc.ums_husc.Helper.ScheduleDailyNotification.getScheduleTime;
-import static com.practice.phuc.ums_husc.Helper.ScheduleDailyNotification.setUpScheduleAlarm;
-
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private NavigationView navigationView;
     private DrawerLayout drawer;
@@ -67,11 +63,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             initAll();
             initFragmentManager();
             showAccountInfo();
-
-            SharedPreferences mSharedPreferences = getSharedPreferences(getString(R.string.share_pre_key_setting), Context.MODE_PRIVATE);
-            boolean mSpTimeTableChecked = mSharedPreferences.getBoolean(getString(R.string.share_pre_key_alarm_timetable), true);
-            if (mSpTimeTableChecked)
-                setUpScheduleAlarm(this, getScheduleTime(null));
 
             boolean mIsLaunchFromNewsNoti = getIntent().getBooleanExtra(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, false);
             boolean mIsLaunchFromMessageNoti = getIntent().getBooleanExtra(Reference.BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, false);
@@ -153,11 +144,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         boolean isScheduleFrag = currentFragment.equals(ScheduleFragment.class.getName());
         boolean isResumeFrag = currentFragment.equals(ResumeFragment.class.getName());
         boolean isMessageFrag = currentFragment.equals(MessageFragment.class.getName());
+        boolean isChangePassFrag = currentFragment.equals(ChangePasswordFragment.class.getName());
+        boolean isSettingFrag = currentFragment.equals(SettingFragment.class.getName());
 
         menu.findItem(R.id.action_goToToday).setVisible(isScheduleFrag);
         menu.findItem(R.id.action_refreshResume).setVisible(isResumeFrag);
         menu.findItem(R.id.action_newMessage).setVisible(isMessageFrag);
-        menu.findItem(R.id.action_selectSemester).setVisible(!(isMessageFrag || isResumeFrag));
+        menu.findItem(R.id.action_selectSemester).setVisible(!(isMessageFrag || isResumeFrag || isChangePassFrag || isSettingFrag));
 
         return true;
     }

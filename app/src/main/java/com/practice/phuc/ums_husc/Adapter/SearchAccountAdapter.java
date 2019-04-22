@@ -58,7 +58,7 @@ public class SearchAccountAdapter extends RecyclerView.Adapter<SearchAccountAdap
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final DataViewHolder holder, int i) {
+    public void onBindViewHolder(@NonNull final DataViewHolder holder, final int i) {
         TaiKhoan item = mSearchResult.get(i);
 
         if (mReceiverAdapter.isInReceiverList(item)) {
@@ -79,7 +79,7 @@ public class SearchAccountAdapter extends RecyclerView.Adapter<SearchAccountAdap
         holder.setItemClickListener(new ItemClickListener() {
             @Override
             public void onItemClickListener(View view, int position, boolean isLongClick) {
-                onItemClick(holder, position);
+                onItemClick(holder, holder.getAdapterPosition());
             }
         });
     }

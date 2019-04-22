@@ -16,13 +16,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
 
 import java.io.IOException;
 
+import es.dmoral.toasty.Toasty;
 import okhttp3.Response;
 
 public class ChangePasswordFragment extends Fragment {
@@ -46,7 +47,7 @@ public class ChangePasswordFragment extends Fragment {
     private EditText mTxtRepPass;
     private Button mBtnChangePass;
     private ProgressBar mProgressBar;
-    private RelativeLayout mRootLayout;
+    private ScrollView mRootLayout;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -156,13 +157,11 @@ public class ChangePasswordFragment extends Fragment {
             if (validData && !mIsDestroyView) {
                 if (NetworkUtil.getConnectivityStatus(mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
 
-                    Snackbar.make(mRootLayout, getString(R.string.error_network_disconected), Snackbar.LENGTH_SHORT)
-                            .setAction("Thử lại", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    changePass();
-                                }
-                            })
+                    Toasty.custom(mContext, getString(R.string.error_network_disconected),
+                            getResources().getDrawable(R.drawable.ic_signal_wifi_off_white_24),
+                            getResources().getColor(R.color.colorRed),
+                            getResources().getColor(android.R.color.white),
+                            Toasty.LENGTH_LONG, true, true)
                             .show();
                     showProgress(false);
                 } else {
@@ -185,27 +184,32 @@ public class ChangePasswordFragment extends Fragment {
         View focusView = null;
 
         if (TextUtils.isEmpty(oldPass)) {
-            mTxtOldPass.setError(getString(R.string.error_truong_bat_buoc));
+            Toasty.error(mContext, "Phải nhập mật khẩu cũ", Toasty.LENGTH_LONG).show();
             focusView = mTxtOldPass;
             cancel = true;
+
         } else if (!oldPass.equals(mSharedPreferences.getString(getString(R.string.pre_key_password), ""))) {
-            mTxtOldPass.setError(getString(R.string.error_old_pass_incorect));
+            Toasty.error(mContext, "Mật khẩu cũ không đúng", Toasty.LENGTH_LONG).show();
             focusView = mTxtOldPass;
             cancel = true;
+
         } else if (TextUtils.isEmpty(newPass)) {
-            mTxtNewPass.setError(getString(R.string.error_truong_bat_buoc));
+            Toasty.error(mContext, "Phải nhập mật khẩu mới", Toasty.LENGTH_LONG).show();
             focusView = mTxtNewPass;
             cancel = true;
+
         } else if (newPass.length() < 6) {
-            mTxtNewPass.setError(getString(R.string.error_mat_khau_qua_ngan));
+            Toasty.error(mContext, "Mật khẩu mới quá ngắn", Toasty.LENGTH_LONG).show();
             focusView = mTxtNewPass;
             cancel = true;
+
         } else if (TextUtils.isEmpty(repPass)) {
-            mTxtRepPass.setError(getString(R.string.error_truong_bat_buoc));
+            Toasty.error(mContext, "Phải nhập mật khẩu xác nhận", Toasty.LENGTH_LONG).show();
             focusView = mTxtRepPass;
             cancel = true;
+
         } else if (!repPass.equals(newPass)) {
-            mTxtRepPass.setError(getString(R.string.error_rep_password_incorrect));
+            Toasty.error(mContext, "Xác nhận mật khẩu không đúng", Toasty.LENGTH_LONG).show();
             focusView = mTxtRepPass;
             cancel = true;
         }

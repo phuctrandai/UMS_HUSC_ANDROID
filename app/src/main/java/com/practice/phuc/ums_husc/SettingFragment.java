@@ -91,11 +91,18 @@ public class SettingFragment extends PreferenceFragmentCompat {
                 mEditor.putBoolean(getString(R.string.share_pre_key_alarm_timetable), (boolean) newValue);
                 mEditor.apply();
                 if ((boolean) newValue) {
-                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(null));
+                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(22));
+                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(23));
+                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(7));
+                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(8));
+                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(12));
+                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(14));
+
                 } else {
-                    AlarmManager alarmManager =(AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
                     Intent intent = new Intent(mContext, ScheduleReceiver.class);
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                            mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    AlarmManager alarmManager =(AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
                     alarmManager.cancel(pendingIntent);
                 }
                 return true;

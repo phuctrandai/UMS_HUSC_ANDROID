@@ -19,7 +19,7 @@
         android:layout_height="55dp"
         android:layout_gravity="bottom"
         android:background="@color/colorWhite"
-        android:elevation="0dp"
+        android:elevation="2dp"
         android:theme="@style/Widget.BottomNavigationView"
         app:elevation="0dp"
         app:itemIconTint="@color/bnv_tab_item_foreground"

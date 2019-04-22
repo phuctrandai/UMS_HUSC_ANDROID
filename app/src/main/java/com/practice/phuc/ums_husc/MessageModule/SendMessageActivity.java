@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AlertDialog;
@@ -20,13 +19,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.practice.phuc.ums_husc.Adapter.ReceiverAdapter;
 import com.practice.phuc.ums_husc.Adapter.SearchAccountAdapter;
@@ -44,13 +41,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import es.dmoral.toasty.Toasty;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class SendMessageActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
-    private ViewGroup layoutRoot;
     private SlidingUpPanelLayout slidingUpPanelLayout;
     private TextView tvNguoiGui;
     private EditText etTieuDe;
@@ -59,9 +56,9 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
     private ProgressBar pbLoading;
     private GridView gvReceiver;
 
-    private TINNHAN mTinNhan;
     private SearchAccountAdapter mSearchAdapter;
     private ReceiverAdapter mReceiverAdapter;
+    private TINNHAN mTinNhan;
     private int mCurrentPage;
     private int ITEM_PER_PAGE;
 
@@ -70,7 +67,6 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reply_message);
 
-        layoutRoot = findViewById(R.id.layout_root_reply_message);
         slidingUpPanelLayout = findViewById(R.id.sliding_layout);
         etTieuDe = findViewById(R.id.tv_tieuDe);
         tvNguoiGui = findViewById(R.id.tv_nguoiGui);
@@ -92,8 +88,6 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
 
         mCurrentPage = 1;
         ITEM_PER_PAGE = 15;
-        String json = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_MESSAGE);
-        mTinNhan = json != null ? TINNHAN.fromJson(json) : null;
 
         boolean isNew = getIntent().getBooleanExtra(Reference.BUNDLE_EXTRA_MESSAGE_NEW, false);
         boolean isReply = getIntent().getBooleanExtra(Reference.BUNDLE_EXTRA_MESSAGE_REPLY, false);
@@ -118,11 +112,11 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
         } else
             MODE = 0;
 
-        setUpData(mTinNhan, MODE);
-
-        setUpGridView(MODE);
+        setUpGridView();
 
         setUpRecyclerView();
+
+        mTinNhan = setUpData(MODE);
 
         btnOpenSlidingPanel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -256,24 +250,28 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
 
     private void attempSendMessage() {
         if (mReceiverAdapter.getCount() == 0) {
-            Toast.makeText(this, "Phải có ít nhất một người nhận", Toast.LENGTH_SHORT).show();
+            Toasty.error(this, "Phải có ít nhất một người nhận", Toasty.LENGTH_SHORT, true).show();
             return;
         }
 
         if (etTieuDe.getText() == null || etTieuDe.getText().toString().equals("")) {
-            etTieuDe.setError("Tiêu đề không được trống");
+            Toasty.error(this,"Tiêu đề không được trống", Toasty.LENGTH_LONG, true).show();
             etTieuDe.requestFocus();
             return;
         }
 
         if (etNoiDung.getText() == null || etNoiDung.getText().toString().equals("")) {
-            etNoiDung.setError("Nội dung không được trống");
+            Toasty.error(this,"Nội dung không được trống", Toasty.LENGTH_LONG, true).show();
             etNoiDung.requestFocus();
             return;
         }
 
         if (NetworkUtil.getConnectivityStatus(this) == NetworkUtil.TYPE_NOT_CONNECTED) {
-            Snackbar.make(layoutRoot, getString(R.string.error_network_disconected), Snackbar.LENGTH_LONG)
+            Toasty.custom(this, getString(R.string.error_network_disconected),
+                    getResources().getDrawable(R.drawable.ic_signal_wifi_off_white_24),
+                    getResources().getColor(R.color.colorRed),
+                    getResources().getColor(android.R.color.white),
+                    Toasty.LENGTH_LONG, true, true)
                     .show();
             return;
         }
@@ -356,52 +354,67 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
     }
 
     private void sendMessage(String title, String content) {
-        String maNguoiGui = Reference.getAccountId(this);
-        String hoTenNguoiGui = Reference.getStudentName(this);
+        mTinNhan.TieuDe = title;
+        mTinNhan.NoiDung = content;
 
-        TINNHAN tinNhan = new TINNHAN();
-        tinNhan.TieuDe = title;
-        tinNhan.NoiDung = content;
-        tinNhan.ThoiDiemGui = "";
-
-        tinNhan.MaNguoiGui = maNguoiGui;
-        tinNhan.HoTenNguoiGui = hoTenNguoiGui;
-        tinNhan.NguoiNhans = new NGUOINHAN[mReceiverAdapter.getCount()];
+        mTinNhan.NguoiNhans = new NGUOINHAN[mReceiverAdapter.getCount()];
         int i = 0;
         for (TaiKhoan item : mReceiverAdapter.getReceiverList()) {
             NGUOINHAN n = new NGUOINHAN(item.MaTaiKhoan, item.HoTen, "");
-            tinNhan.NguoiNhans[i] = n;
+            mTinNhan.NguoiNhans[i] = n;
             i++;
         }
 
-        SendMessageTask sendMessageTask = new SendMessageTask(tinNhan);
+        SendMessageTask sendMessageTask = new SendMessageTask(mTinNhan);
         sendMessageTask.execute((String) null);
         this.finish();
     }
 
-    private void setUpData(TINNHAN tinNhan, int mode) {
+    private TINNHAN setUpData(int mode) {
+        String json = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_MESSAGE);
+        TINNHAN current = json != null ? TINNHAN.fromJson(json) : null;
+        TINNHAN toSent = new TINNHAN();
+
         String tieuDe = "";
-        String tieuDeReply = "";
+        String maNguoiGui = Reference.getAccountId(this);
         String hoTenNguoiGui = Reference.getStudentName(this);
 
-        if (tinNhan != null) tieuDe = tinNhan.TieuDe;
+        if (current != null && current.MaNguoiGui.equals(maNguoiGui) && mode != 2)
+            mode = 4;
 
-        if (mode == 1)
-            tieuDeReply = tieuDe.contains("Re: ") ? tieuDe : "Re: " + tieuDe;
+        if (mode == 1 && current != null) { // Reply
+            tieuDe = current.TieuDe.contains("Re: ") ? current.TieuDe : "Re: " + current.TieuDe;
+            mReceiverAdapter.updateReceiverList(new TaiKhoan(/*Ma nguoi nhan:*/ current.MaNguoiGui, current.HoTenNguoiGui));
 
-        else if (mode == 2)
-            tieuDeReply = tieuDe.contains("Fwd: ") ? tieuDe : "Fwd: " + tieuDe;
+        } else if (mode == 2 && current != null) { // Forward
+            tieuDe = current.TieuDe.contains("Fwd: ") ? current.TieuDe : "Fwd: " + current.TieuDe;
 
-        etTieuDe.setText(tieuDeReply);
+        } else if (mode == 4 && current != null && current.NguoiNhans != null) { // Reply sent message
+            tieuDe = current.TieuDe.contains("Re: ") ? current.TieuDe : "Re: " + current.TieuDe;
+
+            for (int i = 0; i < current.NguoiNhans.length; i++) {
+                mReceiverAdapter.insertReceiver(new TaiKhoan(
+                        current.NguoiNhans[i].MaNguoiNhan,
+                        current.NguoiNhans[i].HoTenNguoiNhan
+                ));
+            }
+            mReceiverAdapter.notifyDataSetChanged();
+        }
+
+        etTieuDe.setText(tieuDe);
         tvNguoiGui.setText(hoTenNguoiGui);
+
+        toSent.TieuDe = tieuDe;
+        toSent.MaNguoiGui = maNguoiGui;
+        toSent.HoTenNguoiGui = hoTenNguoiGui;
+        toSent.ThoiDiemGui = "";
+
+        return toSent;
     }
 
-    private void setUpGridView(int mode) {
+    private void setUpGridView() {
         mReceiverAdapter = new ReceiverAdapter(this);
         gvReceiver.setAdapter(mReceiverAdapter);
-
-        if (mode == 1 && mTinNhan != null)
-            mReceiverAdapter.updateReceiverList(new TaiKhoan(mTinNhan.MaNguoiGui, mTinNhan.HoTenNguoiGui));
     }
 
     private void setUpRecyclerView() {

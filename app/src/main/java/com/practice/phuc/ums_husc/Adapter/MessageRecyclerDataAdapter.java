@@ -38,13 +38,6 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
         mTinNhanList = tinNhanList;
     }
 
-    @NonNull
-    @Override
-    public DataViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_message, viewGroup, false);
-        return new DataViewHolder(view);
-    }
-
     @SuppressLint("ResourceAsColor")
     @Override
     public void onBindViewHolder(@NonNull final DataViewHolder viewHolder, int i) {
@@ -95,6 +88,13 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
         });
     }
 
+    @NonNull
+    @Override
+    public DataViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_message, viewGroup, false);
+        return new DataViewHolder(view);
+    }
+
     @Override
     public int getItemCount() {
         return mTinNhanList == null ? 0 : mTinNhanList.size();
@@ -103,14 +103,6 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
     @Override
     public void onViewDetachedFromWindow(@NonNull final DataViewHolder viewHolder) {
         viewHolder.clearAnimation();
-    }
-
-    private void setFadeAnimation(View view, int position) {
-        if (mContext != null && position > mLastPosition) {
-            Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.fade_translate_animation);
-            view.startAnimation(animation);
-            mLastPosition = position;
-        }
     }
 
     public static class DataViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -149,6 +141,14 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
 
         private void clearAnimation() {
             mRootLayout.clearAnimation();
+        }
+    }
+
+    private void setFadeAnimation(View view, int position) {
+        if (mContext != null && position > mLastPosition) {
+            Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.fade_translate_animation);
+            view.startAnimation(animation);
+            mLastPosition = position;
         }
     }
 
@@ -191,6 +191,5 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
 
     public void clearDataSet() {
         mTinNhanList.clear();
-//        notifyDataSetChanged();
     }
 }
