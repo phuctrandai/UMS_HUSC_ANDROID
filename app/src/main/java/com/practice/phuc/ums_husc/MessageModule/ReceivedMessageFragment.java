@@ -77,6 +77,10 @@ public class ReceivedMessageFragment extends Fragment
     private RecyclerView mRvMessage;
     private LinearLayout mLoadMoreLayout;
 
+    public void onInsertMessage(TINNHAN tinNhan, int position) {
+        mAdapter.insertItem(tinNhan, position);
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         mLastAction = ACTION_INIT;
@@ -202,8 +206,8 @@ public class ReceivedMessageFragment extends Fragment
         if (!(viewHolder instanceof MessageRecyclerDataAdapter.DataViewHolder)) return;
 
         if (direction == ItemTouchHelper.LEFT) {
-            final TINNHAN deletedItem = mAdapter.getDataSet().get(viewHolder.getAdapterPosition());
             final int deletedIndex = viewHolder.getAdapterPosition();
+            final TINNHAN deletedItem = mAdapter.getDataSet().get(deletedIndex);
 
             mAdapter.removeItem(deletedIndex);
             MessageTaskHelper.getInstance().insertAttempDeleteMessage(deletedItem);
@@ -337,10 +341,14 @@ public class ReceivedMessageFragment extends Fragment
     private void refreshData(List<TINNHAN> list) {
         if (list != null) {
 
-            if (mLastAction == ACTION_REFRESH || mLastAction == ACTION_INIT)
-                mAdapter.changeDataSet(list);
+            if (mLastAction == ACTION_REFRESH || mLastAction == ACTION_INIT) {
 
-            else if (mLastAction == ACTION_LOAD_MORE && list.size() > 0)
+                if (MessageTaskHelper.getInstance().getAttempRestoreReceivedMessage().size() > 0)
+                    for (TINNHAN item : MessageTaskHelper.getInstance().getAttempRestoreReceivedMessage()) {
+                        if (!list.contains(item)) list.add(0, item);
+                    }
+                mAdapter.changeDataSet(list);
+            } else if (mLastAction == ACTION_LOAD_MORE && list.size() > 0)
                 mAdapter.insertItemRange(list, mAdapter.getItemCount(), ITEM_PER_PAGE);
         }
     }

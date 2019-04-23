@@ -21,14 +21,31 @@ public class MessageTaskHelper {
         if (instance == null) {
             instance = new MessageTaskHelper();
             instance.mAttempDeleteMessage = new ArrayList<>();
+            instance.mAttempRestoreSentMessage = new ArrayList<>();
+            instance.mAttempRestoreReceivedMessage = new ArrayList<>();
         }
         return instance;
     }
 
+    public void destroy() {
+        mAttempRestoreSentMessage.clear();
+        mAttempRestoreReceivedMessage.clear();
+        mAttempDeleteMessage.clear();
+        instance = null;
+    }
+
     private List<TINNHAN> mAttempDeleteMessage;
+    private List<TINNHAN> mAttempRestoreSentMessage;
+    private List<TINNHAN> mAttempRestoreReceivedMessage;
 
     public List<TINNHAN> getAttempDeletemessage() {
         return mAttempDeleteMessage;
+    }
+    public List<TINNHAN> getAttempRestoreSentMessage() {
+        return mAttempRestoreSentMessage;
+    }
+    public List<TINNHAN> getAttempRestoreReceivedMessage() {
+        return mAttempRestoreReceivedMessage;
     }
 
     public void insertAttempDeleteMessage(TINNHAN message) {
@@ -48,6 +65,32 @@ public class MessageTaskHelper {
         for (int i = 0; i < mAttempDeleteMessage.size(); i++) {
             if (mAttempDeleteMessage.get(i).MaTinNhan.equals(messageId)) {
                 mAttempDeleteMessage.remove(i);
+                break;
+            }
+        }
+    }
+
+    public void insertAttempRestoreSentMessage(TINNHAN message) {
+        mAttempRestoreSentMessage.add(message);
+    }
+
+    private void removeAttempRestoreSentMessage(String messageId) {
+        for (int i = 0; i < mAttempRestoreSentMessage.size(); i++) {
+            if (mAttempRestoreSentMessage.get(i).MaTinNhan.equals(messageId)) {
+                mAttempRestoreSentMessage.remove(i);
+                break;
+            }
+        }
+    }
+
+    public void insertAttempRestoreReceivedMessage(TINNHAN message) {
+        mAttempRestoreReceivedMessage.add(message);
+    }
+
+    private void removeAttempRestoreReceivedMessage(String messageId) {
+        for (int i = 0; i < mAttempRestoreReceivedMessage.size(); i++) {
+            if (mAttempRestoreReceivedMessage.get(i).MaTinNhan.equals(messageId)) {
+                mAttempRestoreReceivedMessage.remove(i);
                 break;
             }
         }
@@ -78,20 +121,33 @@ public class MessageTaskHelper {
         new Task(Task.DO_FOREVER_DELETE).execute(url);
     }
 
+    public void restore(String messageId, String maSinhVien, String matKhau) {
+        String url = Reference.getRestoreDeletedTinNhanApiUrl(maSinhVien, matKhau, messageId);
+        Log.e("DEBUG", "Request to server: " + url);
+
+        new Task(Task.DO_RESTORE).execute(url, messageId);
+    }
+
     @SuppressLint("StaticFieldLeak")
     class Task extends AsyncTask<String, Void, Boolean> {
         private static final int DO_UPDATE_SEEN_TIME = -1;
         private static final int DO_ATTEMP_DELETE = 0;
         private static final int DO_FOREVER_DELETE = 1;
+        private static final int DO_RESTORE = 2;
+
         private int order;
         private String messageId;
 
-        Task(int order) { this.order = order; }
+        Task(int order) {
+            this.order = order;
+        }
 
         @Override
         protected Boolean doInBackground(String... strings) {
             try {
-                messageId = order == DO_ATTEMP_DELETE ? strings[1] : "";
+                if (order == DO_ATTEMP_DELETE || order == DO_RESTORE)
+                    messageId = strings[1];
+
                 String url = strings[0];
 
                 Response response = NetworkUtil.makeRequest(url, false, null);
@@ -130,6 +186,10 @@ public class MessageTaskHelper {
                         MessageTaskHelper.getInstance().removeAttempDeleteMessage(messageId);
                         break;
 
+                    case DO_RESTORE:
+                        MessageTaskHelper.getInstance().removeAttempRestoreSentMessage(messageId);
+                        MessageTaskHelper.getInstance().removeAttempRestoreReceivedMessage(messageId);
+                        break;
                 }
             }
             super.onPostExecute(success);

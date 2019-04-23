@@ -33,6 +33,7 @@ import com.practice.phuc.ums_husc.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.Response;
 
@@ -76,7 +77,6 @@ public class DeletedMessageFragment extends Fragment
     private LinearLayout mLoadMoreLayout;
 
     public void onInsertMessage(TINNHAN tinNhan, int position) {
-        Log.e("DEBUG", "INSERT TIN NHAN");
         mAdapter.insertItem(tinNhan, position);
     }
 
@@ -212,17 +212,16 @@ public class DeletedMessageFragment extends Fragment
         if (!(viewHolder instanceof MessageRecyclerDataAdapter.DataViewHolder))
             return;
 
+        final int swipedIndex = viewHolder.getAdapterPosition();
+        final TINNHAN swipedItem = mAdapter.getDataSet().get(swipedIndex);
+        final Handler handler = new Handler();
+        mAdapter.removeItem(swipedIndex);
+
         if (direction == ItemTouchHelper.LEFT) {
-            final TINNHAN deletedItem = mAdapter.getDataSet().get(viewHolder.getAdapterPosition());
-            final int deletedIndex = viewHolder.getAdapterPosition();
-
-            mAdapter.removeItem(viewHolder.getAdapterPosition());
-
-            final Handler handler = new Handler();
             final Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    MessageTaskHelper.getInstance().foreverDelete(deletedItem.MaTinNhan,
+                    MessageTaskHelper.getInstance().foreverDelete(swipedItem.MaTinNhan,
                             Reference.getStudentId(mContext), Reference.getAccountPassword(mContext));
                     Log.e("DEBUG", "DO DELETE");
                 }
@@ -233,13 +232,42 @@ public class DeletedMessageFragment extends Fragment
                 @Override
                 public void onClick(View v) {
                     mUndoDeleteSnakbar.dismiss();
-                    mAdapter.insertItem(deletedItem, deletedIndex);
+                    mAdapter.insertItem(swipedItem, swipedIndex);
                     handler.removeCallbacks(runnable);
                 }
             });
         } else if (direction == ItemTouchHelper.RIGHT) {
-            Log.e("DEBUG", "DO Restore");
+            final Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    Log.d("DEBUG", "Restore message");
+                    MessageTaskHelper.getInstance().restore(swipedItem.MaTinNhan,
+                            Reference.getStudentId(mContext), Reference.getAccountPassword(mContext));
 
+                }
+            };
+            handler.postDelayed(runnable, 3500);
+            attempRestoreMessage(swipedItem);
+        }
+    }
+
+    private void attempRestoreMessage(TINNHAN tinNhan) {
+        MessageFragment parentFrag = (MessageFragment) getParentFragment();
+
+        if (tinNhan.MaNguoiGui.equals(Reference.getAccountId(mContext))) { // Restore sent message
+            SentMessageFragment smf = (SentMessageFragment) Objects.requireNonNull(parentFrag)
+                    .getChildFragment(SentMessageFragment.class.getName());
+            if (smf != null) {
+                smf.onInsertMessage(tinNhan, 0);
+                MessageTaskHelper.getInstance().insertAttempRestoreSentMessage(tinNhan);
+            }
+        } else { // Restore received message
+            ReceivedMessageFragment rmf = (ReceivedMessageFragment) Objects.requireNonNull(parentFrag)
+                    .getChildFragment(ReceivedMessageFragment.class.getName());
+            if (rmf != null) {
+                rmf.onInsertMessage(tinNhan, 0);
+                MessageTaskHelper.getInstance().insertAttempRestoreReceivedMessage(tinNhan);
+            }
         }
     }
 
