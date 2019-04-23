@@ -28,14 +28,19 @@ import java.util.List;
 import static com.practice.phuc.ums_husc.Helper.StringHelper.isNullOrEmpty;
 
 public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecyclerDataAdapter.DataViewHolder> {
+    public static final int RECEIVED_MESSAGE = 1;
+    public static final int SENT_MESSAGE = 2;
+    public static final int DELETED_MESSAGE = 3;
 
     private Context mContext;
     private List<TINNHAN> mTinNhanList;
+    private int mMessageType;
     public int mLastPosition;
 
-    public MessageRecyclerDataAdapter(Context context, List<TINNHAN> tinNhanList) {
+    public MessageRecyclerDataAdapter(Context context, List<TINNHAN> tinNhanList, int type) {
         mContext = context;
         mTinNhanList = tinNhanList;
+        mMessageType = type;
     }
 
     @SuppressLint("ResourceAsColor")
@@ -44,7 +49,6 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
         setFadeAnimation(viewHolder.mRootLayout, i);
 
         final TINNHAN tinnhan = mTinNhanList.get(i);
-
         String tieuDe = tinnhan.TieuDe;
         String thoiDiemGui = tinnhan.ThoiDiemGui;
         String hoTenNguoiGui = tinnhan.HoTenNguoiGui;
@@ -88,6 +92,47 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
         });
     }
 
+    public static class DataViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public RelativeLayout viewBackground;
+        public RelativeLayout viewBackground2;
+        public RelativeLayout viewForeground;
+        private FrameLayout mRootLayout;
+        private TextView tvTieuDe;
+        private TextView tvThoiDiemGui;
+        private TextView tvNguoiGui;
+        private TextView tvNguoiGuiLabel;
+        private TextView tvNguoiNhan;
+        private ItemClickListener itemClickListener;
+
+        DataViewHolder(@NonNull View itemView) {
+            super(itemView);
+            mRootLayout = itemView.findViewById(R.id.message_item_layout);
+            viewBackground = itemView.findViewById(R.id.layout_background);
+            viewBackground2 = itemView.findViewById(R.id.layout_background_2);
+            viewForeground = itemView.findViewById(R.id.layout_foreground);
+            tvTieuDe = itemView.findViewById(R.id.tv_tieuDe);
+            tvNguoiGui = itemView.findViewById(R.id.tv_nguoiGui);
+            tvThoiDiemGui = itemView.findViewById(R.id.tv_thoiDiemGui);
+            tvNguoiGuiLabel = itemView.findViewById(R.id.tv_nguoiGuiLabel);
+            tvNguoiNhan = itemView.findViewById(R.id.tv_nguoiNhan);
+
+            itemView.setOnClickListener(this);
+        }
+
+        private void setItemClickListener(ItemClickListener itemClickListener) {
+            this.itemClickListener = itemClickListener;
+        }
+
+        @Override
+        public void onClick(View v) {
+            itemClickListener.onClick(v, getAdapterPosition(), false);
+        }
+
+        private void clearAnimation() {
+            mRootLayout.clearAnimation();
+        }
+    }
+
     @NonNull
     @Override
     public DataViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -103,45 +148,6 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
     @Override
     public void onViewDetachedFromWindow(@NonNull final DataViewHolder viewHolder) {
         viewHolder.clearAnimation();
-    }
-
-    public static class DataViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private FrameLayout mRootLayout;
-        RelativeLayout viewBackground;
-        public RelativeLayout viewForeground;
-        private TextView tvTieuDe;
-        private TextView tvThoiDiemGui;
-        private TextView tvNguoiGui;
-        private TextView tvNguoiGuiLabel;
-        private TextView tvNguoiNhan;
-
-        DataViewHolder(@NonNull View itemView) {
-            super(itemView);
-            mRootLayout = itemView.findViewById(R.id.message_item_layout);
-            viewBackground = itemView.findViewById(R.id.layout_background);
-            viewForeground = itemView.findViewById(R.id.layout_foreground);
-            tvTieuDe = itemView.findViewById(R.id.tv_tieuDe);
-            tvNguoiGui = itemView.findViewById(R.id.tv_nguoiGui);
-            tvThoiDiemGui = itemView.findViewById(R.id.tv_thoiDiemGui);
-            tvNguoiGuiLabel = itemView.findViewById(R.id.tv_nguoiGuiLabel);
-            tvNguoiNhan = itemView.findViewById(R.id.tv_nguoiNhan);
-
-            itemView.setOnClickListener(this);
-        }
-
-        private ItemClickListener itemClickListener;
-        private void setItemClickListener(ItemClickListener itemClickListener) {
-            this.itemClickListener = itemClickListener;
-        }
-
-        @Override
-        public void onClick(View v) {
-            itemClickListener.onClick(v, getAdapterPosition(), false);
-        }
-
-        private void clearAnimation() {
-            mRootLayout.clearAnimation();
-        }
     }
 
     private void setFadeAnimation(View view, int position) {

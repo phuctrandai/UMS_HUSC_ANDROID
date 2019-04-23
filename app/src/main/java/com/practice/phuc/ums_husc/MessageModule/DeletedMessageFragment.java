@@ -89,7 +89,7 @@ public class DeletedMessageFragment extends Fragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         mLastAction = ACTION_INIT;
         mStatus = STATUS_INIT;
-        mAdapter = new MessageRecyclerDataAdapter(mContext, new ArrayList<TINNHAN>());
+        mAdapter = new MessageRecyclerDataAdapter(mContext, new ArrayList<TINNHAN>(), MessageRecyclerDataAdapter.DELETED_MESSAGE);
         mIsScrolling = true;
         mDBHelper = new DBHelper(mContext);
         long countRow = mDBHelper.countRow(DBHelper.MESSAGE);
@@ -208,9 +208,11 @@ public class DeletedMessageFragment extends Fragment
     }
 
     @Override
-    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
-        if (viewHolder instanceof MessageRecyclerDataAdapter.DataViewHolder) {
+    public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction, int position) {
+        if (!(viewHolder instanceof MessageRecyclerDataAdapter.DataViewHolder))
+            return;
 
+        if (direction == ItemTouchHelper.LEFT) {
             final TINNHAN deletedItem = mAdapter.getDataSet().get(viewHolder.getAdapterPosition());
             final int deletedIndex = viewHolder.getAdapterPosition();
 
@@ -235,6 +237,9 @@ public class DeletedMessageFragment extends Fragment
                     handler.removeCallbacks(runnable);
                 }
             });
+        } else if (direction == ItemTouchHelper.RIGHT) {
+            Log.e("DEBUG", "DO Restore");
+
         }
     }
 
@@ -378,7 +383,7 @@ public class DeletedMessageFragment extends Fragment
         });
 
         ItemTouchHelper.SimpleCallback itemTouchHelperCallback =
-                new MessageItemTouchHelper(0, ItemTouchHelper.LEFT, this);
+                new MessageItemTouchHelper(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, this);
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(mRvMessage);
     }
 

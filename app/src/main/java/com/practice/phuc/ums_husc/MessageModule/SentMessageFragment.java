@@ -81,7 +81,7 @@ public class SentMessageFragment extends Fragment
         mLastAction = ACTION_INIT;
         mStatus = STATUS_INIT;
         mDBHelper = new DBHelper(mContext);
-        mAdapter = new MessageRecyclerDataAdapter(mContext, new ArrayList<TINNHAN>());
+        mAdapter = new MessageRecyclerDataAdapter(mContext, new ArrayList<TINNHAN>(), MessageRecyclerDataAdapter.SENT_MESSAGE);
         mIsScrolling = true;
         long countRow = mDBHelper.countRow(DBHelper.MESSAGE);
         if (countRow > 0) {
@@ -199,7 +199,10 @@ public class SentMessageFragment extends Fragment
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
-        if (viewHolder instanceof MessageRecyclerDataAdapter.DataViewHolder) {
+        if (!(viewHolder instanceof MessageRecyclerDataAdapter.DataViewHolder))
+            return;
+
+        if (direction == ItemTouchHelper.LEFT) {
 
             final TINNHAN deletedItem = mAdapter.getDataSet().get(viewHolder.getAdapterPosition());
             final int deletedIndex = viewHolder.getAdapterPosition();

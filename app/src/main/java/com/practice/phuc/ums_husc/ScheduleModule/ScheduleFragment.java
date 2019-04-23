@@ -20,9 +20,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.practice.phuc.ums_husc.Helper.ScheduleDailyNotification.getScheduleTime;
-import static com.practice.phuc.ums_husc.Helper.ScheduleDailyNotification.setUpScheduleAlarm;
-
 public class ScheduleFragment extends Fragment {
 
     private Context mContext;
@@ -73,6 +70,15 @@ public class ScheduleFragment extends Fragment {
         super.onDestroyView();
     }
 
+    private int countTotalWeek() {
+        Date[] dateArr = new Date[mClassList.size()];
+        findMinStartDate(dateArr);
+        findMaxEndDate(dateArr);
+
+        int numberOfDate = DateHelper.daysBetween(mMinStartDate, mMaxEndDate) + 1;
+        return numberOfDate % 7 == 0 ? numberOfDate / 7 : numberOfDate / 7 + 1;
+    }
+
     private void setUpFragments() {
         Date startDateOfWeek = mMinStartDate;
         Date endDateOfWeek = DateHelper.plusDay(startDateOfWeek, 6);
@@ -97,15 +103,6 @@ public class ScheduleFragment extends Fragment {
         mViewPager.setAdapter(mWeeksTabAdapter);
         mViewPager.setCurrentItem(mCurrentWeekPos);
         mTabLayout.setupWithViewPager(mViewPager);
-    }
-
-    private int countTotalWeek() {
-        Date[] dateArr = new Date[mClassList.size()];
-        findMinStartDate(dateArr);
-        findMaxEndDate(dateArr);
-
-        int numberOfDate = DateHelper.daysBetween(mMinStartDate, mMaxEndDate) + 1;
-        return numberOfDate % 7 == 0 ? numberOfDate / 7 : numberOfDate / 7 + 1;
     }
 
     private void findMinStartDate(Date[] dateArr) {

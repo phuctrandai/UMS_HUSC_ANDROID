@@ -82,7 +82,7 @@ public class ReceivedMessageFragment extends Fragment
         mLastAction = ACTION_INIT;
         mStatus = STATUS_INIT;
         mDBHelper = new DBHelper(mContext);
-        mAdapter = new MessageRecyclerDataAdapter(mContext, new ArrayList<TINNHAN>());
+        mAdapter = new MessageRecyclerDataAdapter(mContext, new ArrayList<TINNHAN>(), MessageRecyclerDataAdapter.RECEIVED_MESSAGE);
         mIsScrolling = true;
         long countRow = mDBHelper.countRow(DBHelper.MESSAGE);
         if (countRow > 0) {
@@ -199,8 +199,9 @@ public class ReceivedMessageFragment extends Fragment
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
-        if (viewHolder instanceof MessageRecyclerDataAdapter.DataViewHolder) {
+        if (!(viewHolder instanceof MessageRecyclerDataAdapter.DataViewHolder)) return;
 
+        if (direction == ItemTouchHelper.LEFT) {
             final TINNHAN deletedItem = mAdapter.getDataSet().get(viewHolder.getAdapterPosition());
             final int deletedIndex = viewHolder.getAdapterPosition();
 
@@ -209,7 +210,7 @@ public class ReceivedMessageFragment extends Fragment
 
             MessageFragment parentFrag = (MessageFragment) ReceivedMessageFragment.this.getParentFragment();
             final DeletedMessageFragment deletedMessageFragment = (DeletedMessageFragment) Objects.requireNonNull(parentFrag)
-                            .getChildFragment(DeletedMessageFragment.class.getName());
+                    .getChildFragment(DeletedMessageFragment.class.getName());
             if (deletedMessageFragment != null) {
                 deletedMessageFragment.onInsertMessage(deletedItem, 0);
             }
@@ -220,7 +221,6 @@ public class ReceivedMessageFragment extends Fragment
                 public void run() {
                     MessageTaskHelper.getInstance().attempDelete(deletedItem.MaTinNhan,
                             Reference.getStudentId(mContext), Reference.getAccountPassword(mContext));
-                    Log.e("DEBUG", "Attemp Delete");
                 }
             };
             handler.postDelayed(runnable, 3500);

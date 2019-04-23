@@ -244,6 +244,8 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
                 if (taiKhoans != null && taiKhoans.size() > 0) {
                     mSearchAdapter.onNotifySearchResultChanged(taiKhoans);
                 }
+            } else {
+                Log.e("DEBUG", mMessage);
             }
         }
     }
@@ -269,7 +271,7 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
             Log.e("DEBUG", "Tin nhan gui di: " + json);
 
             RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json);
-            //mResponse = NetworkUtil.makeRequest(url, true, requestBody);
+            mResponse = NetworkUtil.makeRequest(url, true, requestBody);
 
             if (mResponse == null) {
                 mMessage = "Không thể kết nối đến máy chủ";

@@ -1,5 +1,6 @@
 package com.practice.phuc.ums_husc.Helper;
 
+import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -43,18 +44,28 @@ public class MessageTaskHelper {
         }
     }
 
+    private void removeAttempDeleteMessage(String messageId) {
+        for (int i = 0; i < mAttempDeleteMessage.size(); i++) {
+            if (mAttempDeleteMessage.get(i).MaTinNhan.equals(messageId)) {
+                mAttempDeleteMessage.remove(i);
+                break;
+            }
+        }
+    }
+
     public void updateSeenTime(int messageId, String maSinhVien, String matKhau) {
         String url = Reference.getUpdateThoiDiemXemTinNhanApiUrl(maSinhVien, matKhau, String.valueOf(messageId));
 
-        new Task().execute(url);
+        new Task(Task.DO_UPDATE_SEEN_TIME).execute(url);
     }
 
     public void attempDelete(String messageId, String maSinhVien, String matKhau) {
         int count = MessageTaskHelper.getInstance().mAttempDeleteMessage.size();
+
         if (count > 0) {
             String url = Reference.getAttempDeleteTinNhanApiUrl(maSinhVien, matKhau, messageId);
             Log.e("DEBUG", "Request to server: " + url);
-            new Task().execute(url);
+            new Task(Task.DO_ATTEMP_DELETE).execute(url, messageId);
         } else {
             Log.e("DEBUG", "Nothing to request");
         }
@@ -64,13 +75,23 @@ public class MessageTaskHelper {
         String url = Reference.getForeverDeleteTinNhanApiUrl(maSinhVien, matKhau, messageId);
         Log.e("DEBUG", "Request to server: " + url);
 
-        new Task().execute(url);
+        new Task(Task.DO_FOREVER_DELETE).execute(url);
     }
 
-    static class Task extends AsyncTask<String, Void, Boolean> {
+    @SuppressLint("StaticFieldLeak")
+    class Task extends AsyncTask<String, Void, Boolean> {
+        private static final int DO_UPDATE_SEEN_TIME = -1;
+        private static final int DO_ATTEMP_DELETE = 0;
+        private static final int DO_FOREVER_DELETE = 1;
+        private int order;
+        private String messageId;
+
+        Task(int order) { this.order = order; }
+
         @Override
         protected Boolean doInBackground(String... strings) {
             try {
+                messageId = order == DO_ATTEMP_DELETE ? strings[1] : "";
                 String url = strings[0];
 
                 Response response = NetworkUtil.makeRequest(url, false, null);
@@ -91,7 +112,7 @@ public class MessageTaskHelper {
 
                 } else {
                     Log.e("DEBUG", "Không tìm thấy máy chủ: "
-                    + (response.body() != null ? response.body().string() : ""));
+                            + (response.body() != null ? response.body().string() : ""));
                     return false;
                 }
             } catch (Exception ex) {
@@ -103,8 +124,14 @@ public class MessageTaskHelper {
 
         @Override
         protected void onPostExecute(Boolean success) {
-            if (success)
-                MessageTaskHelper.getInstance().mAttempDeleteMessage.clear();
+            if (success) {
+                switch (order) {
+                    case DO_ATTEMP_DELETE:
+                        MessageTaskHelper.getInstance().removeAttempDeleteMessage(messageId);
+                        break;
+
+                }
+            }
             super.onPostExecute(success);
         }
     }

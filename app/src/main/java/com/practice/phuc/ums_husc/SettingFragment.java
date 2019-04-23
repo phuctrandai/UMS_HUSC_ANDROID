@@ -1,22 +1,15 @@
 package com.practice.phuc.ums_husc;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.SwitchPreferenceCompat;
-import android.util.Log;
 
-import com.practice.phuc.ums_husc.Helper.DateHelper;
 import com.practice.phuc.ums_husc.Helper.ScheduleDailyNotification;
 import com.practice.phuc.ums_husc.Helper.ScheduleReceiver;
-
-import java.util.Calendar;
 
 public class SettingFragment extends PreferenceFragmentCompat {
     private Context mContext;
@@ -64,7 +57,7 @@ public class SettingFragment extends PreferenceFragmentCompat {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 mSpNews.setDefaultValue(newValue);
-                mEditor.putBoolean(getString(R.string.share_pre_key_news),(boolean) newValue);
+                mEditor.putBoolean(getString(R.string.share_pre_key_news), (boolean) newValue);
                 mEditor.apply();
                 return true;
             }
@@ -95,21 +88,21 @@ public class SettingFragment extends PreferenceFragmentCompat {
                 mEditor.putBoolean(getString(R.string.share_pre_key_alarm_timetable), (boolean) newValue);
                 mEditor.apply();
                 if ((boolean) newValue) {
-                    Log.d("DEBUG", DateHelper.toDateTimeString(Calendar.getInstance().getTime()));
 
-                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(9));
-                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(10));
-                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(11));
-                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(12));
-                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(15));
-                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(16));
+                    ScheduleDailyNotification.setReminder(mContext, 1, ScheduleReceiver.class, 10, 0);
+                    ScheduleDailyNotification.setReminder(mContext, 2, ScheduleReceiver.class, 11, 0);
+                    ScheduleDailyNotification.setReminder(mContext, 3, ScheduleReceiver.class, 11, 20);
+                    ScheduleDailyNotification.setReminder(mContext, 4, ScheduleReceiver.class, 11, 30);
+                    ScheduleDailyNotification.setReminder(mContext, 5, ScheduleReceiver.class, 13, 0);
+                    ScheduleDailyNotification.setReminder(mContext, 6, ScheduleReceiver.class, 14, 0);
+                    ScheduleDailyNotification.setReminder(mContext, 7, ScheduleReceiver.class, 15, 0);
 
                 } else {
-                    Intent intent = new Intent(mContext, ScheduleReceiver.class);
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                            mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                    AlarmManager alarmManager =(AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
-                    alarmManager.cancel(pendingIntent);
+
+                    for (int i = 0; i < 10; i++) {
+                        ScheduleDailyNotification.cancelReminder(mContext, i, ScheduleReceiver.class);
+                    }
+
                 }
                 return true;
             }
