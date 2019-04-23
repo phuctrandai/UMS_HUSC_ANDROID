@@ -10,9 +10,13 @@ import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.SwitchPreferenceCompat;
+import android.util.Log;
 
+import com.practice.phuc.ums_husc.Helper.DateHelper;
 import com.practice.phuc.ums_husc.Helper.ScheduleDailyNotification;
 import com.practice.phuc.ums_husc.Helper.ScheduleReceiver;
+
+import java.util.Calendar;
 
 public class SettingFragment extends PreferenceFragmentCompat {
     private Context mContext;
@@ -91,12 +95,14 @@ public class SettingFragment extends PreferenceFragmentCompat {
                 mEditor.putBoolean(getString(R.string.share_pre_key_alarm_timetable), (boolean) newValue);
                 mEditor.apply();
                 if ((boolean) newValue) {
-                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(22));
-                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(23));
-                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(7));
-                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(8));
+                    Log.d("DEBUG", DateHelper.toDateTimeString(Calendar.getInstance().getTime()));
+
+                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(9));
+                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(10));
+                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(11));
                     ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(12));
-                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(14));
+                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(15));
+                    ScheduleDailyNotification.setUpScheduleAlarm(mContext, ScheduleDailyNotification.getScheduleTime(16));
 
                 } else {
                     Intent intent = new Intent(mContext, ScheduleReceiver.class);

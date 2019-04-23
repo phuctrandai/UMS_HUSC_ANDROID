@@ -248,53 +248,6 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
         }
     }
 
-    private void attempSendMessage() {
-        if (mReceiverAdapter.getCount() == 0) {
-            Toasty.error(this, "Phải có ít nhất một người nhận", Toasty.LENGTH_SHORT, true).show();
-            return;
-        }
-
-        if (etTieuDe.getText() == null || etTieuDe.getText().toString().equals("")) {
-            Toasty.error(this,"Tiêu đề không được trống", Toasty.LENGTH_LONG, true).show();
-            etTieuDe.requestFocus();
-            return;
-        }
-
-        if (etNoiDung.getText() == null || etNoiDung.getText().toString().equals("")) {
-            Toasty.error(this,"Nội dung không được trống", Toasty.LENGTH_LONG, true).show();
-            etNoiDung.requestFocus();
-            return;
-        }
-
-        if (NetworkUtil.getConnectivityStatus(this) == NetworkUtil.TYPE_NOT_CONNECTED) {
-            Toasty.custom(this, getString(R.string.error_network_disconected),
-                    getResources().getDrawable(R.drawable.ic_signal_wifi_off_white_24),
-                    getResources().getColor(R.color.colorRed),
-                    getResources().getColor(android.R.color.white),
-                    Toasty.LENGTH_LONG, true, true)
-                    .show();
-            return;
-        }
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(SendMessageActivity.this);
-        builder.setTitle("Thông báo");
-        builder.setMessage("Gửi tin nhắn ?");
-        builder.setCancelable(false);
-        builder.setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                sendMessage(etTieuDe.getText().toString(), etNoiDung.getText().toString());
-            }
-        });
-        builder.setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        builder.create().show();
-    }
-
     @SuppressLint("StaticFieldLeak")
     class SendMessageTask extends AsyncTask<String, Void, Boolean> {
 
@@ -353,23 +306,6 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
 
     }
 
-    private void sendMessage(String title, String content) {
-        mTinNhan.TieuDe = title;
-        mTinNhan.NoiDung = content;
-
-        mTinNhan.NguoiNhans = new NGUOINHAN[mReceiverAdapter.getCount()];
-        int i = 0;
-        for (TaiKhoan item : mReceiverAdapter.getReceiverList()) {
-            NGUOINHAN n = new NGUOINHAN(item.MaTaiKhoan, item.HoTen, "");
-            mTinNhan.NguoiNhans[i] = n;
-            i++;
-        }
-
-        SendMessageTask sendMessageTask = new SendMessageTask(mTinNhan);
-        sendMessageTask.execute((String) null);
-        this.finish();
-    }
-
     private TINNHAN setUpData(int mode) {
         String json = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_MESSAGE);
         TINNHAN current = json != null ? TINNHAN.fromJson(json) : null;
@@ -410,6 +346,70 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
         toSent.ThoiDiemGui = "";
 
         return toSent;
+    }
+
+    private void attempSendMessage() {
+        if (mReceiverAdapter.getCount() == 0) {
+            Toasty.error(this, "Phải có ít nhất một người nhận", Toasty.LENGTH_SHORT, true).show();
+            return;
+        }
+
+        if (etTieuDe.getText() == null || etTieuDe.getText().toString().equals("")) {
+            Toasty.error(this,"Tiêu đề không được trống", Toasty.LENGTH_LONG, true).show();
+            etTieuDe.requestFocus();
+            return;
+        }
+
+        if (etNoiDung.getText() == null || etNoiDung.getText().toString().equals("")) {
+            Toasty.error(this,"Nội dung không được trống", Toasty.LENGTH_LONG, true).show();
+            etNoiDung.requestFocus();
+            return;
+        }
+
+        if (NetworkUtil.getConnectivityStatus(this) == NetworkUtil.TYPE_NOT_CONNECTED) {
+            Toasty.custom(this, getString(R.string.error_network_disconected),
+                    getResources().getDrawable(R.drawable.ic_signal_wifi_off_white_24),
+                    getResources().getColor(R.color.colorRed),
+                    getResources().getColor(android.R.color.white),
+                    Toasty.LENGTH_LONG, true, true)
+                    .show();
+            return;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(SendMessageActivity.this);
+        builder.setTitle("Thông báo");
+        builder.setMessage("Gửi tin nhắn ?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                sendMessage(etTieuDe.getText().toString(), etNoiDung.getText().toString());
+            }
+        });
+        builder.setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
+    }
+
+    private void sendMessage(String title, String content) {
+        mTinNhan.TieuDe = title;
+        mTinNhan.NoiDung = content;
+
+        mTinNhan.NguoiNhans = new NGUOINHAN[mReceiverAdapter.getCount()];
+        int i = 0;
+        for (TaiKhoan item : mReceiverAdapter.getReceiverList()) {
+            NGUOINHAN n = new NGUOINHAN(item.MaTaiKhoan, item.HoTen, "");
+            mTinNhan.NguoiNhans[i] = n;
+            i++;
+        }
+
+        SendMessageTask sendMessageTask = new SendMessageTask(mTinNhan);
+        sendMessageTask.execute((String) null);
+        this.finish();
     }
 
     private void setUpGridView() {

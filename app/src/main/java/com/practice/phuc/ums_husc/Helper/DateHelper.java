@@ -103,7 +103,7 @@ public class DateHelper {
     }
 
     public static String toDateTimeString(Date date) {
-        return toShortDateString(date) + " " + getCalendar().get(Calendar.HOUR_OF_DAY) + ":" + getCalendar().get(Calendar.MINUTE);
+        return toShortDateString(date) + " " + DateHelper.getHourOfDay(date) + ":" + getMinute(date);
     }
 
     public static Date plusDay(Date date, int days) {
@@ -211,6 +211,18 @@ public class DateHelper {
         Calendar calendar = Calendar.getInstance(new Locale("vie", "VN"));
         calendar.setTime(date);
         return calendar.get(Calendar.YEAR);
+    }
+
+    public static int getHourOfDay(Date date) {
+        Calendar calendar = getCalendar();
+        calendar.setTime(date);
+        return calendar.get(Calendar.HOUR_OF_DAY);
+    }
+
+    public static int getMinute(Date date) {
+        Calendar calendar = getCalendar();
+        calendar.setTime(date);
+        return calendar.get(Calendar.MINUTE);
     }
 
     public static int daysBetween(Date d1, Date d2) {
