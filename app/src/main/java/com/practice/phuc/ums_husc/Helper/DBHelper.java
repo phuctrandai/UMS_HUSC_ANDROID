@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.practice.phuc.ums_husc.Model.THONGBAO;
 import com.practice.phuc.ums_husc.Model.TINNHAN;
+import com.practice.phuc.ums_husc.ViewModel.TaiKhoan;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,11 @@ import java.util.List;
 public class DBHelper extends SQLiteOpenHelper {
     private static int DB_VERSION = 1;
     private static final String DB_NAME = "umshuscdb";
+
+    private static final String ACCOUNT = "account";
+    private static final String ACCOUNT_ID = "account_id";
+    private static final String ACCOUNT_NAME = "account_name";
+    private static final String STUDENT_ID = "student_id";
 
     public static final String NEWS = "news";
     private static final String NEWS_ID = "news_id";
@@ -36,6 +42,7 @@ public class DBHelper extends SQLiteOpenHelper {
         try (SQLiteDatabase db = getWritableDatabase()) {
             createNewsTable(db);
             createMessageTable(db);
+            createAccountTable(db);
         }
     }
 
@@ -43,14 +50,54 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         createNewsTable(db);
         createMessageTable(db);
+        createAccountTable(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-//        DB_VERSION = oldVersion + 1;
-//        db.execSQL("DROP TABLE IF EXISTS " + NEWS);
-//        db.execSQL("DROP TABLE IF EXISTS " + MESSAGE_SEEN_TIME);
-//        onCreate(db);
+        DB_VERSION = oldVersion + 1;
+        db.execSQL("DROP TABLE IF EXISTS " + NEWS);
+        db.execSQL("DROP TABLE IF EXISTS " + MESSAGE);
+        onCreate(db);
+    }
+
+    /*
+     * Method for account table
+     */
+    private void createAccountTable(SQLiteDatabase db) {
+        String CREATE_ACCOUNT_TABLE = "CREATE TABLE IF NOT EXISTS " + ACCOUNT + "("
+                + ACCOUNT_ID + " TEXT,"
+                + ACCOUNT_NAME + " TEXT,"
+                + STUDENT_ID + " TEXT" + ")";
+        db.execSQL(CREATE_ACCOUNT_TABLE);
+    }
+
+    public List<TaiKhoan> getAllAccount() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        List<TaiKhoan> list = new ArrayList<>();
+        TaiKhoan taiKhoan;
+        Cursor cursor = db.rawQuery("SELECT * FROM " + ACCOUNT
+                + " ORDER BY " + ACCOUNT_NAME + " DESC", null);
+        while (cursor.moveToNext()) {
+            taiKhoan = new TaiKhoan();
+            taiKhoan.MaTaiKhoan = cursor.getString(cursor.getColumnIndex(ACCOUNT_ID));
+            taiKhoan.HoTen = cursor.getString(cursor.getColumnIndex(ACCOUNT_NAME));
+            taiKhoan.MaSinhVien = cursor.getString(cursor.getColumnIndex(STUDENT_ID));
+            list.add(taiKhoan);
+        }
+        cursor.close();
+        db.close();
+        return list;
+    }
+
+    public void insertAccount(TaiKhoan taiKhoan) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ACCOUNT_ID, taiKhoan.MaTaiKhoan);
+        contentValues.put(ACCOUNT_NAME, taiKhoan.HoTen);
+        contentValues.put(STUDENT_ID, taiKhoan.MaSinhVien);
+        db.insert(ACCOUNT, null, contentValues);
+        db.close();
     }
 
     /*

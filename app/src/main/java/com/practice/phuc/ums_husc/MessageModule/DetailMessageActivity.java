@@ -15,7 +15,6 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.practice.phuc.ums_husc.Helper.CustomSnackbar;
 import com.practice.phuc.ums_husc.Helper.DateHelper;
@@ -77,8 +76,8 @@ public class DetailMessageActivity extends AppCompatActivity {
         super.onNewIntent(intent);
         setIntent(intent);
         String json = intent.getStringExtra(Reference.BUNDLE_EXTRA_MESSAGE);
-        TINNHAN tinNhan = TINNHAN.fromJson(json);
-        showData(tinNhan);
+        mTinNhan = TINNHAN.fromJson(json);
+        showData(mTinNhan);
     }
 
     @Override
@@ -127,8 +126,7 @@ public class DetailMessageActivity extends AppCompatActivity {
                 startActivity(intentCT);
                 break;
 
-            case R.id.item_xoa:
-                Toast.makeText(this, "Xoa tin nhan", Toast.LENGTH_SHORT).show();
+            default:
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -156,7 +154,6 @@ public class DetailMessageActivity extends AppCompatActivity {
             mProgressBar.setVisibility(View.GONE);
 
         } else {
-            Log.e("DEBUG", tinNhan.MaTinNhan);
             mLoadTask = new LoadMessageContentTask(tinNhan.MaTinNhan);
             mLoadTask.execute((String) null);
         }
@@ -218,7 +215,8 @@ public class DetailMessageActivity extends AppCompatActivity {
                     Log.e("DEBUG", "Lay tin nhan theo id: " + json);
                     mTinNhan = TINNHAN.fromJson(json);
                     showMessageBody(Objects.requireNonNull(mTinNhan));
-
+                    Reference.mHasNewReceivedMessage = true;
+                    Reference.getListNewReceivedMessage().add(mTinNhan);
                     mProgressBar.setVisibility(View.GONE);
 
                     showErrorSnackbar(false, "");
@@ -256,9 +254,6 @@ public class DetailMessageActivity extends AppCompatActivity {
 
         final String[] dsTenNguoiNhan = tinNhan.getTenNguoiNhanArray();
         setUpTvNguoiNhan(dsTenNguoiNhan);
-
-        // Luu lai cac tin nhan moi, de them vao o Received fragment
-//            Reference.getmListNewThongBao().add(tinnhan);
     }
 
     private void setUpTvNguoiNhan(final String[] receiverNameList) {

@@ -57,8 +57,6 @@ public class ReceiverAdapter extends BaseAdapter {
     }
 
     boolean isInReceiverList(TaiKhoan obj) {
-        Log.d("DEBUG", "MTK: " + obj.MaTaiKhoan);
-
         for (TaiKhoan item : mReceiverList) {
             if (item.MaTaiKhoan.trim().equals(obj.MaTaiKhoan.trim())) {
                 return true;

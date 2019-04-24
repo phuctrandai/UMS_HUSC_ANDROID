@@ -105,7 +105,7 @@ public class DeletedMessageFragment extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_received_message, container, false);
+        View view = inflater.inflate(R.layout.content_fragment_message, container, false);
         mRvMessage = view.findViewById(R.id.rv_message);
         mLoadMoreLayout = view.findViewById(R.id.load_more_layout);
         mIsViewDestroyed = false;

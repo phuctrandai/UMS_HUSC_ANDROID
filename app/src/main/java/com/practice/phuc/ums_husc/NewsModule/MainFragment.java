@@ -139,7 +139,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         if (Reference.mHasNewNews) {
             Reference.mHasNewNews = false;
             List<THONGBAO> newItems = Reference.getmListNewThongBao();
-            for (int i=0; i < newItems.size(); i++) {
+            for (int i = 0; i < newItems.size(); i++) {
                 mAdapter.insertItem(newItems.get(i), 0);
             }
             Reference.getmListNewThongBao().clear();
@@ -252,7 +252,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 mLoadMoreLayout.setVisibility(View.GONE);
                 mCurrentPage += 1;
                 mIsScrolling = false;
-                refreshData(THONGBAO.fromJsonToList(mJson));
+                refreshData(THONGBAO.fromJsonToList(mJson), false);
 
             } else {
                 showErrorSnackbar(true, mErrorMessage);
@@ -280,7 +280,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
             if (mDBHelper.countRow(DBHelper.NEWS) > 0) {
                 List<THONGBAO> list = mDBHelper.getAllNews();
-                refreshData(list);
+                refreshData(list, true);
             }
         } else {
             mLoadNewsTask = new LoadNewsTask();
@@ -300,7 +300,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         return NetworkUtil.makeRequest(url, false, null);
     }
 
-    private void refreshData(List<THONGBAO> list) {
+    private void refreshData(List<THONGBAO> list, boolean isLocalData) {
         if (list != null) {
             mStatus = STATUS_SHOW_DATA;
             if (mLastAction == ACTION_REFRESH || mLastAction == ACTION_INIT)
@@ -308,6 +308,11 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
             else if (mLastAction == ACTION_LOAD_MORE && list.size() > 0)
                 mAdapter.insertItemRange(list, mAdapter.getItemCount(), ITEM_PER_PAGE);
+
+            if (list.size() > 0 && (!isLocalData))
+                for (THONGBAO item : list) {
+                    mDBHelper.insertNews(item);
+                }
         }
     }
 

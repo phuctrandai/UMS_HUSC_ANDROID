@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.Adapter.ReceiverAdapter;
 import com.practice.phuc.ums_husc.Adapter.SearchAccountAdapter;
+import com.practice.phuc.ums_husc.Helper.DBHelper;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.Model.NGUOINHAN;
@@ -36,7 +37,6 @@ import com.practice.phuc.ums_husc.ViewModel.TaiKhoan;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -56,6 +56,7 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
     private ProgressBar pbLoading;
     private GridView gvReceiver;
 
+    private DBHelper mDBHelper;
     private SearchAccountAdapter mSearchAdapter;
     private ReceiverAdapter mReceiverAdapter;
     private TINNHAN mTinNhan;
@@ -65,15 +66,15 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_reply_message);
+        setContentView(R.layout.activity_send_message);
 
-        slidingUpPanelLayout = findViewById(R.id.sliding_layout);
         etTieuDe = findViewById(R.id.tv_tieuDe);
-        tvNguoiGui = findViewById(R.id.tv_nguoiGui);
         etNoiDung = findViewById(R.id.et_noiDung);
         pbLoading = findViewById(R.id.pb_loading);
+        tvNguoiGui = findViewById(R.id.tv_nguoiGui);
         gvReceiver = findViewById(R.id.gv_receiver);
         rvSearchResult = findViewById(R.id.rv_searchResult);
+        slidingUpPanelLayout = findViewById(R.id.sliding_layout);
         ImageButton btnOpenSlidingPanel = findViewById(R.id.btn_addReceiver);
         ImageButton btnCloseSlidingPanel = findViewById(R.id.btn_closeSlidePanel);
         SearchView svSearch = findViewById(R.id.sv_query);
@@ -88,6 +89,7 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
 
         mCurrentPage = 1;
         ITEM_PER_PAGE = 15;
+        mDBHelper = new DBHelper(this);
 
         boolean isNew = getIntent().getBooleanExtra(Reference.BUNDLE_EXTRA_MESSAGE_NEW, false);
         boolean isReply = getIntent().getBooleanExtra(Reference.BUNDLE_EXTRA_MESSAGE_REPLY, false);
@@ -302,7 +304,6 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
         @Override
         protected void onPostExecute(Boolean success) {
             super.onPostExecute(success);
-
             pushNotification(mMessage);
         }
 
@@ -408,7 +409,8 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
             mTinNhan.NguoiNhans[i] = n;
             i++;
         }
-
+        Reference.mHasNewSentMessage = true;
+        Reference.getListNewSentMessage().add(mTinNhan);
         SendMessageTask sendMessageTask = new SendMessageTask(mTinNhan);
         sendMessageTask.execute((String) null);
         this.finish();
@@ -420,12 +422,7 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
     }
 
     private void setUpRecyclerView() {
-        List<TaiKhoan> temp = new ArrayList<>();
-        temp.add(new TaiKhoan("1", "Nguyen Van A"));
-        temp.add(new TaiKhoan("2", "Nguyen Thi B"));
-        temp.add(new TaiKhoan("3", "Tran Van C"));
-        temp.add(new TaiKhoan("4", "Tran Van A"));
-        temp.add(new TaiKhoan("5", "Ho Thi D"));
+        List<TaiKhoan> temp = mDBHelper.getAllAccount();
         mSearchAdapter = new SearchAccountAdapter(this, temp, mReceiverAdapter);
         rvSearchResult.setLayoutManager(new LinearLayoutManager(this));
         rvSearchResult.setHasFixedSize(true);

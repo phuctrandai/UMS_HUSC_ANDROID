@@ -70,9 +70,6 @@ public class MessageFragment extends Fragment {
                 case R.id.navigation_delete:
                     loadFragment(DeletedMessageFragment.newInstance(mContext));
                     return true;
-                case R.id.navigation_pending_send:
-
-                    return true;
             }
             return false;
         }
