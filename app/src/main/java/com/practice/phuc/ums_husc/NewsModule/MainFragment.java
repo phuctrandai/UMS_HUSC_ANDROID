@@ -132,17 +132,14 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public void onResume() {
         super.onResume();
-        onHasNewNews();
-    }
 
-    public void onHasNewNews() {
         if (Reference.mHasNewNews) {
-            Reference.mHasNewNews = false;
             List<THONGBAO> newItems = Reference.getmListNewThongBao();
             for (int i = 0; i < newItems.size(); i++) {
                 mAdapter.insertItem(newItems.get(i), 0);
             }
-            Reference.getmListNewThongBao().clear();
+            Reference.clearListNewThongBao();
+            Reference.mHasNewNews = false;
         }
     }
 

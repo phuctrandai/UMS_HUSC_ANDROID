@@ -42,6 +42,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -368,7 +369,13 @@ public class ContactResidentFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (NetworkUtil.getConnectivityStatus(mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
-                    Toast.makeText(mContext, getString(R.string.error_network_disconected), Toast.LENGTH_LONG).show();
+                    Toasty.custom(mContext, getString(R.string.error_network_disconected),
+                            getResources().getDrawable(R.drawable.ic_signal_wifi_off_white_24),
+                            getResources().getColor(R.color.colorRed),
+                            getResources().getColor(android.R.color.white),
+                            Toasty.LENGTH_SHORT, true, true)
+                            .show();
+
                 } else {
                     VThongTinLienHe thongTinLienHe = new VThongTinLienHe();
                     VThuongTru thuongTru = new VThuongTru();
@@ -552,6 +559,7 @@ public class ContactResidentFragment extends Fragment {
         lyLichCaNhan.ThongTinLienHe = thongTinLienHe;
         lyLichCaNhan.ThuongTru = thuongTru;
         lyLichCaNhan.QueQuan = queQuan;
+
         new Task().execute(DO_UPDATE, lyLichCaNhan.toJson());
         mPbLoading.setVisibility(View.VISIBLE);
     }
@@ -559,14 +567,16 @@ public class ContactResidentFragment extends Fragment {
     @SuppressLint("StaticFieldLeak")
     public class Task extends AsyncTask<String, Void, Boolean> {
         Response mResponse;
+        String mJson = "";
         String ORDER = "";
         String HOME_OR_RESIDENT = "";
-        String json = "";
 
         @Override
         protected Boolean doInBackground(String... strings) {
             String order = strings[0];
+
             if (strings.length == 3) HOME_OR_RESIDENT = strings[2];
+
             switch (order) {
                 case GET_NATIONS:
                     String url = Reference.HOST + "api/DungChung/Get/QuocGia/";
@@ -603,7 +613,6 @@ public class ContactResidentFragment extends Fragment {
                             "?masinhvien=" + Reference.getStudentId(mContext) +
                             "&matkhau=" + Reference.getAccountPassword(mContext);
                     String data = strings[1];
-//                    Log.e("DEBUG", "Request body: " + data);
                     RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), data);
                     mResponse = NetworkUtil.makeRequest(url, true, body);
                     ORDER = DO_UPDATE;
@@ -613,7 +622,7 @@ public class ContactResidentFragment extends Fragment {
                 return false;
             else {
                 try {
-                    json = mResponse.body() != null ? mResponse.body().string() : "";
+                    mJson = mResponse.body() != null ? mResponse.body().string() : "";
                     return true;
 
                 } catch (IOException e) {
@@ -627,14 +636,15 @@ public class ContactResidentFragment extends Fragment {
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
             if (aBoolean) {
-                if (mResponse == null)
-                    Toast.makeText(mContext, getString(R.string.error_server_not_response), Toast.LENGTH_LONG).show();
+                if (mResponse == null) {
+                    Toasty.error(mContext, getString(R.string.error_server_not_response), Toast.LENGTH_LONG).show();
+                    return;
+                }
 
                 if (mResponse.code() == NetworkUtil.OK) {
-//                    Log.e("DEBUG", "UPDATE INFO RESPONSE: " + json);
                     switch (ORDER) {
                         case GET_NATIONS:
-                            List<QuocGia> quocGias = QuocGia.fromJson(json);
+                            List<QuocGia> quocGias = QuocGia.fromJson(mJson);
                             if (quocGias != null) {
                                 mQuocGiaQQData.clear();
                                 mQuocGiaQQData.add(new QuocGia(0, "----"));
@@ -651,7 +661,7 @@ public class ContactResidentFragment extends Fragment {
                             break;
 
                         case GET_CITIES_BY_NATION:
-                            List<ThanhPho> thanhPhos = ThanhPho.fromJson(json);
+                            List<ThanhPho> thanhPhos = ThanhPho.fromJson(mJson);
                             if (thanhPhos != null) {
                                 if (!isNullOrEmpty(HOME_OR_RESIDENT)) {
                                     if (HOME_OR_RESIDENT.equals(HOME_UPDATE)) {
@@ -672,7 +682,7 @@ public class ContactResidentFragment extends Fragment {
                             break;
 
                         case GET_DISTRICT_BY_CITY:
-                            List<QuanHuyen> quanHuyens = QuanHuyen.fromJson(json);
+                            List<QuanHuyen> quanHuyens = QuanHuyen.fromJson(mJson);
                             if (quanHuyens != null) {
                                 if (!isNullOrEmpty(HOME_OR_RESIDENT)) {
                                     if (HOME_OR_RESIDENT.equals(HOME_UPDATE)) {
@@ -693,7 +703,7 @@ public class ContactResidentFragment extends Fragment {
                             break;
 
                         case GET_WARDS_BY_DISTRICT:
-                            List<PhuongXa> phuongXas = PhuongXa.fromJson(json);
+                            List<PhuongXa> phuongXas = PhuongXa.fromJson(mJson);
                             if (phuongXas != null) {
                                 if (!isNullOrEmpty(HOME_OR_RESIDENT)) {
                                     if (HOME_OR_RESIDENT.equals(HOME_UPDATE)) {
@@ -714,7 +724,7 @@ public class ContactResidentFragment extends Fragment {
                             break;
 
                         case GET_DORMITORY:
-                            List<KYTUCXA> kytucxas = KYTUCXA.fromJson(json);
+                            List<KYTUCXA> kytucxas = KYTUCXA.fromJson(mJson);
                             if (kytucxas != null) {
                                 mKyTucXaData.clear();
                                 mKyTucXaData.add(new KYTUCXA(0, "----"));
@@ -726,7 +736,7 @@ public class ContactResidentFragment extends Fragment {
 
                         case DO_UPDATE:
                             mPbLoading.setVisibility(View.GONE);
-                            VLyLichCaNhan lyLichCaNhan = VLyLichCaNhan.fromJson(json);
+                            VLyLichCaNhan lyLichCaNhan = VLyLichCaNhan.fromJson(mJson);
 
                             if (lyLichCaNhan != null) {
                                 thongTinLienHe = lyLichCaNhan.getThongTinLienHe();
@@ -734,13 +744,13 @@ public class ContactResidentFragment extends Fragment {
                                 queQuan = lyLichCaNhan.getQueQuan();
                                 setUpSlidePanel(thongTinLienHe, thuongTru, queQuan);
                                 setUpMainPanel(thongTinLienHe, thuongTru, queQuan);
-                                Toast.makeText(mContext, "Đã cập nhật !", Toast.LENGTH_LONG).show();
+                                Toasty.success(mContext, "Đã cập nhật !", Toast.LENGTH_SHORT).show();
                             }
                             break;
                     }
 
                 } else {
-                    Log.e("DEBUG", json);
+                    Log.e("DEBUG", mJson);
                 }
             }
         }

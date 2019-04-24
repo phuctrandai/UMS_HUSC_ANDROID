@@ -85,7 +85,7 @@ public class SentMessageFragment extends Fragment
         mLastAction = ACTION_INIT;
         mStatus = STATUS_INIT;
         mDBHelper = new DBHelper(mContext);
-        mAdapter = new MessageRecyclerDataAdapter(mContext, new ArrayList<TINNHAN>(), MessageRecyclerDataAdapter.SENT_MESSAGE);
+        mAdapter = new MessageRecyclerDataAdapter(mContext, new ArrayList<TINNHAN>());
         mIsScrolling = true;
         long countRow = mDBHelper.countRow(DBHelper.MESSAGE);
         if (countRow > 0) {
@@ -100,7 +100,7 @@ public class SentMessageFragment extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_sent_message, container, false);
+        View view = inflater.inflate(R.layout.content_fragment_message, container, false);
         mRvMessage = view.findViewById(R.id.rv_message);
         mLoadMoreLayout = view.findViewById(R.id.load_more_layout);
         mIsViewDestroyed = false;
@@ -132,6 +132,19 @@ public class SentMessageFragment extends Fragment
             }
         });
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (Reference.mHasNewSentMessage) {
+            List<TINNHAN> list = Reference.getListNewSentMessage();
+            for(TINNHAN item : list)
+                mAdapter.insertItem(item, 0);
+            Reference.clearListNewSentMessage();
+            Reference.mHasNewSentMessage = false;
+        }
     }
 
     @Override

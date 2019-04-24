@@ -212,9 +212,9 @@ public class DetailMessageActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean success) {
             if (mLoadTask != null) {
                 if (success) {
-                    Log.e("DEBUG", "Lay tin nhan theo id: " + json);
                     mTinNhan = TINNHAN.fromJson(json);
                     showMessageBody(Objects.requireNonNull(mTinNhan));
+
                     Reference.mHasNewReceivedMessage = true;
                     Reference.getListNewReceivedMessage().add(mTinNhan);
                     mProgressBar.setVisibility(View.GONE);

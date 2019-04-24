@@ -7,7 +7,6 @@ import android.graphics.Typeface;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,19 +30,14 @@ import java.util.List;
 import static com.practice.phuc.ums_husc.Helper.StringHelper.isNullOrEmpty;
 
 public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecyclerDataAdapter.DataViewHolder> {
-    public static final int RECEIVED_MESSAGE = 1;
-    public static final int SENT_MESSAGE = 2;
-    public static final int DELETED_MESSAGE = 3;
 
     private Context mContext;
     private List<TINNHAN> mTinNhanList;
-    private int mMessageType;
     public int mLastPosition;
 
-    public MessageRecyclerDataAdapter(Context context, List<TINNHAN> tinNhanList, int type) {
+    public MessageRecyclerDataAdapter(Context context, List<TINNHAN> tinNhanList) {
         mContext = context;
         mTinNhanList = tinNhanList;
-        mMessageType = type;
     }
 
     @SuppressLint("ResourceAsColor")
@@ -55,11 +49,13 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
         String tieuDe = tinnhan.TieuDe;
         String thoiDiemGui = tinnhan.ThoiDiemGui;
         String hoTenNguoiGui = tinnhan.HoTenNguoiGui;
-        String ngayDang = DateHelper.formatYMDToDMY(thoiDiemGui.substring(0, 10));
-        String gioDang = thoiDiemGui.substring(11, 16);
-        String thoiGianDangStr = ngayDang + " " + gioDang;
         String tenNguoiNhanCollapse = tinnhan.getTenNguoiNhanCollapse();
-
+        String thoiGianDangStr = thoiDiemGui;
+        if (thoiDiemGui.length() > 16) {
+            String ngayDang = DateHelper.formatYMDToDMY(thoiDiemGui.substring(0, 10));
+            String gioDang = thoiDiemGui.substring(11, 16);
+            thoiGianDangStr = ngayDang + " " + gioDang;
+        }
         viewHolder.tvTieuDe.setText(tieuDe);
         viewHolder.tvNguoiGui.setText(hoTenNguoiGui);
         viewHolder.tvNguoiNhan.setText(tenNguoiNhanCollapse);
@@ -70,7 +66,6 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
         final NGUOINHAN nguoiNhan = tinnhan.getNguoiNhanTrongDanhSach(maTaiKhoan);
 
         if (nguoiNhan != null && isNullOrEmpty(nguoiNhan.ThoiDiemXem)) {
-            Log.d("DEBUG", "TN: " + tinnhan.TieuDe + " Thoi diem xem: " + nguoiNhan.ThoiDiemXem);
             viewHolder.tvTieuDe.setTypeface(null, Typeface.BOLD);
             viewHolder.tvNguoiGui.setTypeface(null, Typeface.BOLD);
             viewHolder.tvThoiDiemGui.setTypeface(null, Typeface.BOLD);

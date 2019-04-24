@@ -99,11 +99,17 @@ public class DateHelper {
     }
 
     public static String toShortDateString(Date date) {
-        return DateHelper.getDayOfMonth(date) + "/" + DateHelper.getMonth(date) + "/" + DateHelper.getYear(date);
+        int nDayOfMonth = getDayOfMonth(date);
+        int nMonth = getMonth(date);
+        String dayOfMonth = nDayOfMonth < 10 ? "0" + nDayOfMonth : nDayOfMonth + "";
+        String month = nMonth < 10 ? "0" + nMonth : nMonth + "";
+        return dayOfMonth + "/" + month + "/" + getYear(date);
     }
 
     public static String toDateTimeString(Date date) {
-        return toShortDateString(date) + " " + DateHelper.getHourOfDay(date) + ":" + getMinute(date);
+        int nMinute = getMinute(date);
+        String minute = nMinute < 10 ? "0" + nMinute : nMinute + "";
+        return toShortDateString(date) + " " + DateHelper.getHourOfDay(date) + ":" + minute;
     }
 
     public static Date plusDay(Date date, int days) {

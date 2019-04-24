@@ -89,7 +89,7 @@ public class DeletedMessageFragment extends Fragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         mLastAction = ACTION_INIT;
         mStatus = STATUS_INIT;
-        mAdapter = new MessageRecyclerDataAdapter(mContext, new ArrayList<TINNHAN>(), MessageRecyclerDataAdapter.DELETED_MESSAGE);
+        mAdapter = new MessageRecyclerDataAdapter(mContext, new ArrayList<TINNHAN>());
         mIsScrolling = true;
         mDBHelper = new DBHelper(mContext);
         long countRow = mDBHelper.countRow(DBHelper.MESSAGE);

@@ -39,6 +39,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -411,7 +412,12 @@ public class GeneralInfoFragment extends Fragment {
 
     private void attempUpdate(VThongTinChung thongTinChung) {
         if (NetworkUtil.getConnectivityStatus(mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
-            Toast.makeText(mContext, getString(R.string.error_network_disconected), Toast.LENGTH_LONG).show();
+            Toasty.custom(mContext, getString(R.string.error_network_disconected),
+                    getResources().getDrawable(R.drawable.ic_signal_wifi_off_white_24),
+                    getResources().getColor(R.color.colorRed),
+                    getResources().getColor(android.R.color.white),
+                    Toasty.LENGTH_LONG, true, true)
+                    .show();
 
         } else {
             String json = VThongTinChung.toJson(thongTinChung);
@@ -423,6 +429,7 @@ public class GeneralInfoFragment extends Fragment {
     @SuppressLint("StaticFieldLeak")
     public class Task extends AsyncTask<String, Void, Boolean> {
         Response mResponse;
+        String mJson = "";
         String ORDER = "";
 
         @Override
@@ -471,16 +478,17 @@ public class GeneralInfoFragment extends Fragment {
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
             if (aBoolean) {
-                if (mResponse == null)
-                    Toast.makeText(mContext, getString(R.string.error_server_not_response), Toast.LENGTH_LONG).show();
+                if (mResponse == null) {
+                    Toasty.error(mContext, getString(R.string.error_server_not_response), Toast.LENGTH_LONG).show();
+                    return;
+                }
 
                 if (mResponse.code() == NetworkUtil.OK) {
                     try {
-                        String json = mResponse.body() != null ? mResponse.body().string() : "";
-//                        Log.d("DEBUG", "RESPONSE: " + json);
+                        mJson = mResponse.body() != null ? mResponse.body().string() : "";
                         switch (ORDER) {
                             case GET_NATIONS:
-                                List<QuocGia> quocGias = QuocGia.fromJson(json);
+                                List<QuocGia> quocGias = QuocGia.fromJson(mJson);
                                 if (quocGias != null) {
                                     mQuocGiaDs.clear();
                                     mQuocGiaDs.add(new QuocGia(0, "----"));
@@ -493,7 +501,7 @@ public class GeneralInfoFragment extends Fragment {
                                 break;
 
                             case GET_CITIES_BY_NATION:
-                                List<ThanhPho> thanhPhos = ThanhPho.fromJson(json);
+                                List<ThanhPho> thanhPhos = ThanhPho.fromJson(mJson);
                                 if (thanhPhos != null) {
                                     mTinhThanhDs.clear();
                                     mTinhThanhDs.add(new ThanhPho(0, "----"));
@@ -504,7 +512,7 @@ public class GeneralInfoFragment extends Fragment {
                                 break;
 
                             case GET_RELIGION:
-                                List<TonGiao> tonGiaos = TonGiao.fromJson(json);
+                                List<TonGiao> tonGiaos = TonGiao.fromJson(mJson);
                                 if (tonGiaos != null) {
                                     mTonGiaoDs.clear();
                                     mTonGiaoDs.add(new TonGiao(0, "----"));
@@ -515,7 +523,7 @@ public class GeneralInfoFragment extends Fragment {
                                 break;
 
                             case GET_PEOPLE:
-                                List<DanToc> danTocs = DanToc.fromJson(json);
+                                List<DanToc> danTocs = DanToc.fromJson(mJson);
                                 if (danTocs != null) {
                                     mDanTocDs.clear();
                                     mDanTocDs.add(new DanToc(0, "----"));
@@ -527,12 +535,12 @@ public class GeneralInfoFragment extends Fragment {
 
                             case DO_UPDATE:
                                 pbUpdateLoading.setVisibility(View.GONE);
-                                VThongTinChung thongTinChung = VThongTinChung.fromJson(json);
+                                VThongTinChung thongTinChung = VThongTinChung.fromJson(mJson);
                                 if (thongTinChung != null) {
                                     mThongTinChung = thongTinChung;
                                     setUpSlidePanel(thongTinChung);
                                     setUpMainPanel(thongTinChung);
-                                    Toast.makeText(mContext, "Đã cập nhật !", Toast.LENGTH_LONG).show();
+                                    Toasty.success(mContext, "Đã cập nhật !", Toast.LENGTH_LONG).show();
                                 }
                                 break;
                         }

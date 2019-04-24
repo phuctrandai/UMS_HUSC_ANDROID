@@ -28,6 +28,7 @@ import android.widget.TextView;
 import com.practice.phuc.ums_husc.Adapter.ReceiverAdapter;
 import com.practice.phuc.ums_husc.Adapter.SearchAccountAdapter;
 import com.practice.phuc.ums_husc.Helper.DBHelper;
+import com.practice.phuc.ums_husc.Helper.DateHelper;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.Model.NGUOINHAN;
@@ -401,7 +402,7 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
     private void sendMessage(String title, String content) {
         mTinNhan.TieuDe = title;
         mTinNhan.NoiDung = content;
-
+        mTinNhan.ThoiDiemGui = DateHelper.toDateTimeString(DateHelper.getCalendar().getTime());
         mTinNhan.NguoiNhans = new NGUOINHAN[mReceiverAdapter.getCount()];
         int i = 0;
         for (TaiKhoan item : mReceiverAdapter.getReceiverList()) {
@@ -411,6 +412,7 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
         }
         Reference.mHasNewSentMessage = true;
         Reference.getListNewSentMessage().add(mTinNhan);
+
         SendMessageTask sendMessageTask = new SendMessageTask(mTinNhan);
         sendMessageTask.execute((String) null);
         this.finish();

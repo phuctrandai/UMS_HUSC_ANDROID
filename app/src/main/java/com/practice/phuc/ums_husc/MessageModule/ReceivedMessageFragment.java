@@ -86,7 +86,7 @@ public class ReceivedMessageFragment extends Fragment
         mLastAction = ACTION_INIT;
         mStatus = STATUS_INIT;
         mDBHelper = new DBHelper(mContext);
-        mAdapter = new MessageRecyclerDataAdapter(mContext, new ArrayList<TINNHAN>(), MessageRecyclerDataAdapter.RECEIVED_MESSAGE);
+        mAdapter = new MessageRecyclerDataAdapter(mContext, new ArrayList<TINNHAN>());
         mIsScrolling = true;
         long countRow = mDBHelper.countRow(DBHelper.MESSAGE);
         if (countRow > 0) {
@@ -100,7 +100,7 @@ public class ReceivedMessageFragment extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_received_message, container, false);
+        View view = inflater.inflate(R.layout.content_fragment_message, container, false);
         mRvMessage = view.findViewById(R.id.rv_message);
         mLoadMoreLayout = view.findViewById(R.id.load_more_layout);
         mIsViewDestroyed = false;
@@ -140,6 +140,19 @@ public class ReceivedMessageFragment extends Fragment
         showErrorSnackbar(false, mErrorMessage);
         showUndoSnackbar(false, null);
         super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (Reference.mHasNewReceivedMessage) {
+            List<TINNHAN> list = Reference.getListNewReceivedMessage();
+            for (TINNHAN item : list)
+                mAdapter.insertItem(item, 0);
+            Reference.clearListNewReceivedMessage();
+            Reference.mHasNewReceivedMessage = false;
+        }
     }
 
     @Override

@@ -103,6 +103,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onDestroy() {
         MyFireBaseMessagingService.mContext = null;
         MessageTaskHelper.getInstance().destroy();
+        Reference.clearListNewSentMessage();
+        Reference.clearListNewReceivedMessage();
+        Reference.clearListNewThongBao();
         super.onDestroy();
     }
 

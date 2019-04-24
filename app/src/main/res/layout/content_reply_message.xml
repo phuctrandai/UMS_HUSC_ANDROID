@@ -142,7 +142,8 @@
             android:paddingTop="@dimen/bigger_padding"
             android:paddingBottom="@dimen/big_padding"
             android:scrollbarStyle="insideOverlay"
-            android:textSize="@dimen/normal_text"
+            android:textColor="@color/colorBlack"
+            android:textSize="@dimen/big_text"
             tools:ignore="HardcodedText,LabelFor,UnusedAttribute" />
     </RelativeLayout>
 </ScrollView>
