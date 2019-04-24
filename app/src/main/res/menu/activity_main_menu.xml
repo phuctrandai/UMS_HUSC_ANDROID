@@ -13,17 +13,24 @@
         android:icon="@drawable/ic_refresh_white_24"
         android:orderInCategory="101"
         android:title="@string/action_refresh_resume"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_searchMessage"
+        android:icon="@drawable/ic_search_white_24"
+        android:orderInCategory="102"
+        android:title="Tìm kiếm"
+        app:showAsAction="ifRoom"
+        tools:ignore="HardcodedText" />
     <item
         android:id="@+id/action_newMessage"
         android:icon="@drawable/ic_pen_white_24"
-        android:orderInCategory="102"
+        android:orderInCategory="103"
         android:title="Tin nhắn mới"
         app:showAsAction="ifRoom"
         tools:ignore="HardcodedText,UnusedAttribute" />
     <item
         android:id="@+id/action_selectSemester"
-        android:orderInCategory="103"
+        android:orderInCategory="104"
         android:title="@string/action_selectSemester"
         app:showAsAction="never" />
 </menu>

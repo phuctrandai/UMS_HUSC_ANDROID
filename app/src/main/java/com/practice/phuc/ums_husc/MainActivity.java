@@ -31,7 +31,6 @@ import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.MessageModule.DetailMessageActivity;
 import com.practice.phuc.ums_husc.MessageModule.MessageFragment;
-import com.practice.phuc.ums_husc.MessageModule.SendMessageActivity;
 import com.practice.phuc.ums_husc.NewsModule.DetailNewsActivity;
 import com.practice.phuc.ums_husc.NewsModule.MainFragment;
 import com.practice.phuc.ums_husc.ResumeModule.ResumeFragment;
@@ -155,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         menu.findItem(R.id.action_goToToday).setVisible(isScheduleFrag);
         menu.findItem(R.id.action_refreshResume).setVisible(isResumeFrag);
         menu.findItem(R.id.action_newMessage).setVisible(isMessageFrag);
+        menu.findItem(R.id.action_searchMessage).setVisible(isMessageFrag);
         menu.findItem(R.id.action_selectSemester).setVisible(!(isMessageFrag || isResumeFrag || isChangePassFrag || isSettingFrag));
 
         return true;
@@ -164,28 +164,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case R.id.action_goToToday:
-                ScheduleFragment scheduleFragment = (ScheduleFragment) fragmentManager.findFragmentByTag(ScheduleFragment.class.getName());
-                if (scheduleFragment != null) {
-                    scheduleFragment.goToToday();
-                }
-                return true;
-
-            case R.id.action_refreshResume:
-                ResumeFragment resumeFragment = (ResumeFragment) fragmentManager.findFragmentByTag(ResumeFragment.class.getName());
-                if (resumeFragment != null) {
-                    resumeFragment.onRefresh();
-                }
-                return true;
-
             case R.id.action_selectSemester:
                 showSelectSemesterDialog();
-                return true;
-
-            case R.id.action_newMessage:
-                Intent intent = new Intent(this, SendMessageActivity.class);
-                intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE_NEW, true);
-                startActivity(intent);
                 return true;
 
             default:

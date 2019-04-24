@@ -13,6 +13,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -88,7 +89,7 @@ public class ResumeFragment extends Fragment {
         mViewPager = view.findViewById(R.id.vp_resume);
         mViewPager.setOffscreenPageLimit(mResumePagerAdapter.getCount());
         mIsViewDestroyed = false;
-
+        setHasOptionsMenu(true);
         return view;
     }
 
@@ -120,9 +121,18 @@ public class ResumeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
-    public void onRefresh() {
-        showProgress(true);
-        attempGetData();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_refreshResume:
+                showProgress(true);
+                attempGetData();
+                return true;
+
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -3,8 +3,6 @@ package com.practice.phuc.ums_husc.Adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,17 +15,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.Helper.DateHelper;
-import com.practice.phuc.ums_husc.Helper.MessageTaskHelper;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.Helper.StringHelper;
 import com.practice.phuc.ums_husc.MessageModule.DetailMessageActivity;
-import com.practice.phuc.ums_husc.Model.NGUOINHAN;
 import com.practice.phuc.ums_husc.Model.TINNHAN;
 import com.practice.phuc.ums_husc.R;
 
 import java.util.List;
-
-import static com.practice.phuc.ums_husc.Helper.StringHelper.isNullOrEmpty;
 
 public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecyclerDataAdapter.DataViewHolder> {
 
@@ -62,15 +56,15 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
         viewHolder.tvThoiDiemGui.setText(thoiGianDangStr);
         viewHolder.tvNguoiGuiLabel.setText(StringHelper.getFirstCharToCap(hoTenNguoiGui));
 
-        String maTaiKhoan = Reference.getAccountId(mContext);
-        final NGUOINHAN nguoiNhan = tinnhan.getNguoiNhanTrongDanhSach(maTaiKhoan);
+//        String maTaiKhoan = Reference.getAccountId(mContext);
+//        final NGUOINHAN nguoiNhan = tinnhan.getNguoiNhanTrongDanhSach(maTaiKhoan);
 
-        if (nguoiNhan != null && isNullOrEmpty(nguoiNhan.ThoiDiemXem)) {
-            viewHolder.tvTieuDe.setTypeface(null, Typeface.BOLD);
-            viewHolder.tvNguoiGui.setTypeface(null, Typeface.BOLD);
-            viewHolder.tvThoiDiemGui.setTypeface(null, Typeface.BOLD);
-            viewHolder.tvThoiDiemGui.setTextColor(mContext.getResources().getColor(R.color.colorBlack));
-        }
+//        if (nguoiNhan != null && isNullOrEmpty(nguoiNhan.ThoiDiemXem)) {
+//            viewHolder.tvTieuDe.setTypeface(null, Typeface.BOLD);
+//            viewHolder.tvNguoiGui.setTypeface(null, Typeface.BOLD);
+//            viewHolder.tvThoiDiemGui.setTypeface(null, Typeface.BOLD);
+//            viewHolder.tvThoiDiemGui.setTextColor(mContext.getResources().getColor(R.color.colorBlack));
+//        }
 
         viewHolder.setItemClickListener(new ItemClickListener() {
             @Override
@@ -79,20 +73,20 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
                 intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, TINNHAN.toJson(tinnhan));
                 mContext.startActivity(intent);
 
-                if (nguoiNhan != null && isNullOrEmpty(nguoiNhan.ThoiDiemXem)) {
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            nguoiNhan.ThoiDiemXem = DateHelper.toDateTimeString(DateHelper.getCalendar().getTime());
-                            viewHolder.tvTieuDe.setTypeface(null, Typeface.NORMAL);
-                            viewHolder.tvNguoiGui.setTypeface(null, Typeface.NORMAL);
-                            viewHolder.tvThoiDiemGui.setTypeface(null, Typeface.NORMAL);
-                            viewHolder.tvThoiDiemGui.setTextColor(mContext.getResources().getColor(R.color.colorDarkerGrey));
-                            MessageTaskHelper.getInstance().updateSeenTime(Integer.parseInt(tinnhan.MaTinNhan),
-                                    Reference.getStudentId(mContext), Reference.getAccountPassword(mContext));
-                        }
-                    }, 1000);
-                }
+//                if (nguoiNhan != null && isNullOrEmpty(nguoiNhan.ThoiDiemXem)) {
+//                    MessageTaskHelper.getInstance().updateSeenTime(Integer.parseInt(tinnhan.MaTinNhan),
+//                            Reference.getStudentId(mContext), Reference.getAccountPassword(mContext));
+//                    new Handler().postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            nguoiNhan.ThoiDiemXem = DateHelper.toDateTimeString(DateHelper.getCalendar().getTime());
+//                            viewHolder.tvTieuDe.setTypeface(null, Typeface.NORMAL);
+//                            viewHolder.tvNguoiGui.setTypeface(null, Typeface.NORMAL);
+//                            viewHolder.tvThoiDiemGui.setTypeface(null, Typeface.NORMAL);
+//                            viewHolder.tvThoiDiemGui.setTextColor(mContext.getResources().getColor(R.color.colorDarkerGrey));
+//                        }
+//                    }, 1000);
+//                }
             }
         });
     }
@@ -148,6 +142,11 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
     @Override
     public int getItemCount() {
         return mTinNhanList == null ? 0 : mTinNhanList.size();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 
     @Override

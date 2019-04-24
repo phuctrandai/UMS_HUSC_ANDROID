@@ -1,6 +1,7 @@
 package com.practice.phuc.ums_husc.MessageModule;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.R;
 
 public class MessageFragment extends Fragment {
@@ -39,8 +41,8 @@ public class MessageFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_message, container, false);
-
         bindUI(view);
+        setHasOptionsMenu(true);
 
         if (!mIsCreatedView) {
             loadFragment(ReceivedMessageFragment.newInstance(mContext));
@@ -48,6 +50,21 @@ public class MessageFragment extends Fragment {
         }
 
         return view;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_newMessage:
+                Intent intent = new Intent(mContext, SendMessageActivity.class);
+                intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE_NEW, true);
+                startActivity(intent);
+                return true;
+
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void bindUI(View view) {

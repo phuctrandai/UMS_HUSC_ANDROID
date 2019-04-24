@@ -110,6 +110,8 @@
             android:background="@null"
             android:hint="Tiêu đề tin nhắn"
             android:importantForAutofill="no"
+            android:inputType="textCapSentences|textMultiLine"
+            android:layerType="software"
             android:paddingTop="@dimen/normal_padding"
             android:paddingBottom="@dimen/normal_padding"
             android:textColor="@android:color/black"

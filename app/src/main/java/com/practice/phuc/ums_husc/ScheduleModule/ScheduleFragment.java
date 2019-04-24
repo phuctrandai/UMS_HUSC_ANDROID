@@ -8,6 +8,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -59,7 +60,7 @@ public class ScheduleFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_schedule, container, false);
         mViewPager = view.findViewById(R.id.vp_schedule);
         mTabLayout = view.findViewById(R.id.tabs_schedule);
-
+        setHasOptionsMenu(true);
         setUpFragments();
         return view;
     }
@@ -68,6 +69,23 @@ public class ScheduleFragment extends Fragment {
     public void onDestroyView() {
         mWeeksTabAdapter.clearFragment();
         super.onDestroyView();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_goToToday:
+                if (mTabLayout != null) {
+                    TabLayout.Tab tab = mTabLayout.getTabAt(mCurrentWeekPos);
+                    if (mTabLayout.getSelectedTabPosition() != mCurrentWeekPos && tab != null)
+                        tab.select();
+                }
+                return true;
+
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private int countTotalWeek() {
@@ -97,7 +115,7 @@ public class ScheduleFragment extends Fragment {
                     WeekFragment.newInstance(mContext, startDateOfWeek, endDateOfWeek, mClassList)
                     , weekTitle
             );
-            startDateOfWeek = DateHelper.plusDay(endDateOfWeek,1);
+            startDateOfWeek = DateHelper.plusDay(endDateOfWeek, 1);
             endDateOfWeek = DateHelper.plusDay(startDateOfWeek, 6);
         }
         mViewPager.setAdapter(mWeeksTabAdapter);
@@ -169,13 +187,5 @@ public class ScheduleFragment extends Fragment {
                 "21/01/2019", "27/04/2019", DateHelper.TUESDAY
         );
         mClassList.add(l);
-    }
-
-    public void goToToday() {
-        if (mTabLayout != null) {
-            TabLayout.Tab tab = mTabLayout.getTabAt(mCurrentWeekPos);
-            if (mTabLayout.getSelectedTabPosition() != mCurrentWeekPos && tab != null)
-                tab.select();
-        }
     }
 }
