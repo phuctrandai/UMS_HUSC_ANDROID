@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.practice.phuc.ums_husc.Helper.FireBaseIDTask;
+import com.practice.phuc.ums_husc.Helper.MessageTaskHelper;
 import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.MessageModule.DetailMessageActivity;
@@ -101,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onDestroy() {
         MyFireBaseMessagingService.mContext = null;
+        MessageTaskHelper.getInstance().destroy();
         super.onDestroy();
     }
 

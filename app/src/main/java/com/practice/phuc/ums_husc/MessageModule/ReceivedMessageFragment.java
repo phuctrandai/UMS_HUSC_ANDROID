@@ -77,12 +77,16 @@ public class ReceivedMessageFragment extends Fragment
     private RecyclerView mRvMessage;
     private LinearLayout mLoadMoreLayout;
 
+    public void onInsertMessage(TINNHAN tinNhan, int position) {
+        mAdapter.insertItem(tinNhan, position);
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         mLastAction = ACTION_INIT;
         mStatus = STATUS_INIT;
         mDBHelper = new DBHelper(mContext);
-        mAdapter = new MessageRecyclerDataAdapter(mContext, new ArrayList<TINNHAN>());
+        mAdapter = new MessageRecyclerDataAdapter(mContext, new ArrayList<TINNHAN>(), MessageRecyclerDataAdapter.RECEIVED_MESSAGE);
         mIsScrolling = true;
         long countRow = mDBHelper.countRow(DBHelper.MESSAGE);
         if (countRow > 0) {
@@ -199,17 +203,18 @@ public class ReceivedMessageFragment extends Fragment
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
-        if (viewHolder instanceof MessageRecyclerDataAdapter.DataViewHolder) {
+        if (!(viewHolder instanceof MessageRecyclerDataAdapter.DataViewHolder)) return;
 
-            final TINNHAN deletedItem = mAdapter.getDataSet().get(viewHolder.getAdapterPosition());
+        if (direction == ItemTouchHelper.LEFT) {
             final int deletedIndex = viewHolder.getAdapterPosition();
+            final TINNHAN deletedItem = mAdapter.getDataSet().get(deletedIndex);
 
             mAdapter.removeItem(deletedIndex);
             MessageTaskHelper.getInstance().insertAttempDeleteMessage(deletedItem);
 
             MessageFragment parentFrag = (MessageFragment) ReceivedMessageFragment.this.getParentFragment();
             final DeletedMessageFragment deletedMessageFragment = (DeletedMessageFragment) Objects.requireNonNull(parentFrag)
-                            .getChildFragment(DeletedMessageFragment.class.getName());
+                    .getChildFragment(DeletedMessageFragment.class.getName());
             if (deletedMessageFragment != null) {
                 deletedMessageFragment.onInsertMessage(deletedItem, 0);
             }
@@ -220,7 +225,6 @@ public class ReceivedMessageFragment extends Fragment
                 public void run() {
                     MessageTaskHelper.getInstance().attempDelete(deletedItem.MaTinNhan,
                             Reference.getStudentId(mContext), Reference.getAccountPassword(mContext));
-                    Log.e("DEBUG", "Attemp Delete");
                 }
             };
             handler.postDelayed(runnable, 3500);
@@ -337,10 +341,14 @@ public class ReceivedMessageFragment extends Fragment
     private void refreshData(List<TINNHAN> list) {
         if (list != null) {
 
-            if (mLastAction == ACTION_REFRESH || mLastAction == ACTION_INIT)
-                mAdapter.changeDataSet(list);
+            if (mLastAction == ACTION_REFRESH || mLastAction == ACTION_INIT) {
 
-            else if (mLastAction == ACTION_LOAD_MORE && list.size() > 0)
+                if (MessageTaskHelper.getInstance().getAttempRestoreReceivedMessage().size() > 0)
+                    for (TINNHAN item : MessageTaskHelper.getInstance().getAttempRestoreReceivedMessage()) {
+                        if (!list.contains(item)) list.add(0, item);
+                    }
+                mAdapter.changeDataSet(list);
+            } else if (mLastAction == ACTION_LOAD_MORE && list.size() > 0)
                 mAdapter.insertItemRange(list, mAdapter.getItemCount(), ITEM_PER_PAGE);
         }
     }

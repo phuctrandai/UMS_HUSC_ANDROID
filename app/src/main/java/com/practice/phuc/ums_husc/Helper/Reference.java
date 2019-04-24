@@ -39,6 +39,8 @@ public final class Reference {
 
     private static final String FOREVER_DELETE_TIN_NHAN_API = "api/SinhVien/TinNhan/XoaVinhVien/";
 
+    private static final String RESTORE_DELETED_TIN_NHAN_API = "api/SinhVien/TinNhan/KhoiPhuc/";
+
     private static final String REPLY_TIN_NHAN_API = "api/SinhVien/TraLoiTinNhan/";
 
     private static final String SEARCH_TAI_KHOAN = "api/SinhVien/TaiKhoan/?order=";
@@ -121,6 +123,13 @@ public final class Reference {
 
     public static String getForeverDeleteTinNhanApiUrl(String maSinhVien, String matKhau, String id) {
         return HOST + FOREVER_DELETE_TIN_NHAN_API +
+                "?masinhvien=" + maSinhVien +
+                "&matkhau=" + matKhau +
+                "&id=" + id;
+    }
+
+    public static String getRestoreDeletedTinNhanApiUrl(String maSinhVien, String matKhau, String id) {
+        return HOST + RESTORE_DELETED_TIN_NHAN_API +
                 "?masinhvien=" + maSinhVien +
                 "&matkhau=" + matKhau +
                 "&id=" + id;

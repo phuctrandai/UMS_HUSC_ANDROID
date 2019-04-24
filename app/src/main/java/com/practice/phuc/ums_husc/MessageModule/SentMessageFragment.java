@@ -76,12 +76,16 @@ public class SentMessageFragment extends Fragment
     private RecyclerView mRvMessage;
     private LinearLayout mLoadMoreLayout;
 
+    public void onInsertMessage(TINNHAN tinNhan, int position) {
+        mAdapter.insertItem(tinNhan, position);
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         mLastAction = ACTION_INIT;
         mStatus = STATUS_INIT;
         mDBHelper = new DBHelper(mContext);
-        mAdapter = new MessageRecyclerDataAdapter(mContext, new ArrayList<TINNHAN>());
+        mAdapter = new MessageRecyclerDataAdapter(mContext, new ArrayList<TINNHAN>(), MessageRecyclerDataAdapter.SENT_MESSAGE);
         mIsScrolling = true;
         long countRow = mDBHelper.countRow(DBHelper.MESSAGE);
         if (countRow > 0) {
@@ -199,7 +203,10 @@ public class SentMessageFragment extends Fragment
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
-        if (viewHolder instanceof MessageRecyclerDataAdapter.DataViewHolder) {
+        if (!(viewHolder instanceof MessageRecyclerDataAdapter.DataViewHolder))
+            return;
+
+        if (direction == ItemTouchHelper.LEFT) {
 
             final TINNHAN deletedItem = mAdapter.getDataSet().get(viewHolder.getAdapterPosition());
             final int deletedIndex = viewHolder.getAdapterPosition();
@@ -336,10 +343,15 @@ public class SentMessageFragment extends Fragment
     private void refreshData(List<TINNHAN> list) {
         if (list != null) {
 
-            if (mLastAction == ACTION_REFRESH || mLastAction == ACTION_INIT)
+            if (mLastAction == ACTION_REFRESH || mLastAction == ACTION_INIT) {
+
+                if (MessageTaskHelper.getInstance().getAttempRestoreSentMessage().size() > 0)
+                    for (TINNHAN item : MessageTaskHelper.getInstance().getAttempRestoreSentMessage()) {
+                        if (!list.contains(item)) list.add(0, item);
+                    }
                 mAdapter.changeDataSet(list);
 
-            else if (mLastAction == ACTION_LOAD_MORE && list.size() > 0)
+            } else if (mLastAction == ACTION_LOAD_MORE && list.size() > 0)
                 mAdapter.insertItemRange(list, mAdapter.getItemCount(), ITEM_PER_PAGE);
         }
     }
