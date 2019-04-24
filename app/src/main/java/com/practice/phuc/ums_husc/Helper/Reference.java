@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.practice.phuc.ums_husc.Model.THONGBAO;
+import com.practice.phuc.ums_husc.Model.TINNHAN;
 import com.practice.phuc.ums_husc.R;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public final class Reference {
 
     private static final String LOAD_NOI_DUNG_TIN_NHAN_API = "api/SinhVien/TinNhan/NoiDung/";
 
-    private static final String UPDATE_THOI_DIEM_XEM_TIN_NHAN_API = "api/SinhVien/CapNhatThoiDiemXem/";
+    private static final String UPDATE_THOI_DIEM_XEM_TIN_NHAN_API = "api/SinhVien/TinNhan/CapNhatThoiDiemXem/";
 
     private static final String ATTEMP_DELETE_TIN_NHAN_API = "api/SinhVien/TinNhan/XoaTamThoi/";
 
@@ -163,28 +164,52 @@ public final class Reference {
                 + "&token=" + token;
     }
 
-    static String MESSAGE_NOTIFICATION = "message_notification";
-    static String NEWS_NOTIFICATION = "news_notification";
-    static String SCHEDULE_NOTIFICATION = "schedule_notification";
-    public static String SEND_MESSAGE_NOTIFICATION = "send_message_notification";
+    static final String MESSAGE_NOTIFICATION = "message_notification";
+    static final String NEWS_NOTIFICATION = "news_notification";
+    static final String SCHEDULE_NOTIFICATION = "schedule_notification";
+    public static final String SEND_MESSAGE_NOTIFICATION = "send_message_notification";
 
     public static boolean mHasNewNews = false;
     private static List<THONGBAO> mListNewThongBao = null;
     public static List<THONGBAO> getmListNewThongBao() {
-        if (mListNewThongBao == null) {
-            mListNewThongBao = new ArrayList<>();
-        }
+        if (mListNewThongBao == null) mListNewThongBao = new ArrayList<>();
         return mListNewThongBao;
     }
+    public static void clearListNewThongBao() {
+        if (mListNewThongBao != null) mListNewThongBao.clear();
+    }
 
-    public static String BUNDLE_EXTRA_NEWS = "news";
-    public static String BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI = "launch_from_noti";
+    public static boolean mHasNewReceivedMessage = false;
+    private static List<TINNHAN> mListNewReceivedMessage = null;
+    public static List<TINNHAN> getListNewReceivedMessage() {
+        if (mListNewReceivedMessage == null)
+            mListNewReceivedMessage = new ArrayList<>();
+        return mListNewReceivedMessage;
+    }
+    public static void clearListNewReceivedMessage() {
+        if (mListNewReceivedMessage != null) mListNewReceivedMessage.clear();
+    }
 
-    public static String BUNDLE_EXTRA_MESSAGE = "message";
+    public static boolean mHasNewSentMessage = false;
+    private static List<TINNHAN> mListNewSentMessage = null;
+    public static List<TINNHAN> getListNewSentMessage() {
+        if (mListNewSentMessage == null)
+            mListNewSentMessage = new ArrayList<>();
+        return mListNewSentMessage;
+    }
+    public static void clearListNewSentMessage() {
+        if (mListNewSentMessage != null)
+            mListNewSentMessage.clear();
+    }
+
+    public static final String BUNDLE_EXTRA_NEWS = "news";
+    public static final String BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI = "launch_from_noti";
+
+    public static final String BUNDLE_EXTRA_MESSAGE = "message";
     public static final String BUNDLE_EXTRA_MESSAGE_REPLY = "reply";
     public static final String BUNDLE_EXTRA_MESSAGE_FORWARD = "forward";
     public static final String BUNDLE_EXTRA_MESSAGE_NEW = "new";
-    public static String BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI = "launch_from_noti";
+    public static final String BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI = "launch_from_noti";
 
     public static String getStudentId(Context context) {
         SharedPreferences sp = context.getSharedPreferences(context.getString(R.string.share_pre_key_account_info), MODE_PRIVATE);

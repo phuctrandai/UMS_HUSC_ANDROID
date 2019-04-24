@@ -13,15 +13,11 @@ public class TaiKhoan {
     public String HoTen;
     public String MaSinhVien;
 
+    public TaiKhoan() {}
+
     public TaiKhoan(String maTaiKhoan, String hoTen) {
         MaTaiKhoan = maTaiKhoan;
         HoTen = hoTen;
-    }
-
-    public TaiKhoan(String maTaiKhoan, String hoTen, String maSinhVien) {
-        MaTaiKhoan = maTaiKhoan;
-        HoTen = hoTen;
-        MaSinhVien = maSinhVien;
     }
 
     public static List<TaiKhoan> fromJson(String json) {
