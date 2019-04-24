@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorWhite"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:paddingStart="@dimen/big_padding"
+    android:paddingTop="@dimen/normal_padding"
+    android:paddingEnd="@dimen/big_padding"
+    android:paddingBottom="@dimen/normal_padding"
+    tools:ignore="UnusedAttribute">
+
+    <ImageView
+        android:id="@+id/iv_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/small_margin"
+        android:layout_marginEnd="@dimen/big_margin"
+        android:src="@drawable/ic_chat_black_24"
+        android:tint="@color/colorGrey"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/tv_tieuDe"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/iv_logo"
+        android:text="Tiêu đề"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/big_text"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/tv_nguoiGui"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_tieuDe"
+        android:layout_toEndOf="@id/iv_logo"
+        android:text="Người gửi"
+        android:textColor="@color/colorDarkGrey"
+        android:textSize="@dimen/small_text"
+        tools:ignore="HardcodedText" />
+</RelativeLayout>

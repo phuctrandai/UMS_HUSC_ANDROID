@@ -2,6 +2,7 @@ package com.practice.phuc.ums_husc.MessageModule;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -86,7 +87,9 @@ public class ReceivedMessageFragment extends Fragment
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.action_searchMessage:
-                Log.d("DEBUG", "SEARCH MESSAGE");
+                SearchMessageActivity.setSuggestions(mAdapter.getDataSet());
+                Intent intent = new Intent(mContext, SearchMessageActivity.class);
+                startActivity(intent);
                 return true;
 
             default:

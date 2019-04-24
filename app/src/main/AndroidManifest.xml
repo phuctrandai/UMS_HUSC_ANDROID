@@ -18,7 +18,7 @@
             android:name=".LoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".NewsModule.DetailNewsActivity"
             android:label="@string/title_activity_detail_news"
@@ -33,9 +33,14 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             tools:ignore="InnerclassSeparator" />
-        <activity android:name=".MessageModule.SendMessageActivity"
-            android:screenOrientation="portrait"
+        <activity
+            android:name=".MessageModule.SendMessageActivity"
             android:label="@string/title_activity_reply_message"
+            android:screenOrientation="portrait"
+            tools:ignore="InnerclassSeparator" />
+        <activity
+            android:name=".MessageModule.SearchMessageActivity"
+            android:screenOrientation="portrait"
             tools:ignore="InnerclassSeparator" />
         <activity
             android:name=".MainActivity"
@@ -59,10 +64,11 @@
             </intent-filter>
         </service>
 
-        <receiver android:name=".Helper.ScheduleReceiver"
+        <receiver
+            android:name=".Helper.ScheduleReceiver"
             tools:ignore="ExportedReceiver,InnerclassSeparator">
             <intent-filter>
-                <action android:name="com.practice.phuc.ums_husc.Helper.ScheduleReceiver"/>
+                <action android:name="com.practice.phuc.ums_husc.Helper.ScheduleReceiver" />
             </intent-filter>
         </receiver>
 
