@@ -54,7 +54,7 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
         viewHolder.tvNguoiGui.setText(hoTenNguoiGui);
         viewHolder.tvNguoiNhan.setText(tenNguoiNhanCollapse);
         viewHolder.tvThoiDiemGui.setText(thoiGianDangStr);
-        viewHolder.tvNguoiGuiLabel.setText(StringHelper.getFirstCharToCap(hoTenNguoiGui));
+        viewHolder.tvNguoiGuiLabel.setText(StringHelper.getFirstCharToCap(tieuDe));
 
 //        String maTaiKhoan = Reference.getAccountId(mContext);
 //        final NGUOINHAN nguoiNhan = tinnhan.getNguoiNhanTrongDanhSach(maTaiKhoan);

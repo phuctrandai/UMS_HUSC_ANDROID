@@ -91,7 +91,7 @@ public class DeletedMessageFragment extends Fragment
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.action_searchMessage:
-                SearchMessageActivity.setSuggestions(mAdapter.getDataSet());
+                SearchMessageActivity.setSuggestions(mAdapter.getDataSet(), SearchMessageActivity.SEARCH_DELETED);
                 Intent intent = new Intent(mContext, SearchMessageActivity.class);
                 startActivity(intent);
                 return true;

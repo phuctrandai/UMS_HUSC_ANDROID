@@ -9,7 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.practice.phuc.ums_husc.Helper.DateHelper;
 import com.practice.phuc.ums_husc.Helper.Reference;
+import com.practice.phuc.ums_husc.Helper.StringHelper;
 import com.practice.phuc.ums_husc.MessageModule.DetailMessageActivity;
 import com.practice.phuc.ums_husc.Model.TINNHAN;
 import com.practice.phuc.ums_husc.R;
@@ -35,6 +37,11 @@ public class MessageSuggestionsAdapter extends RecyclerView.Adapter<MessageSugge
         notifyDataSetChanged();
     }
 
+    public void onNotifyInsertMore(List<TINNHAN> newResult) {
+        mSuggestions.addAll(newResult);
+        notifyItemRangeChanged(getItemCount(), newResult.size());
+    }
+
     public void onFilter(String query) {
         mSuggestions.clear();
         if (!query.equals("")) {
@@ -49,8 +56,17 @@ public class MessageSuggestionsAdapter extends RecyclerView.Adapter<MessageSugge
 
     @Override
     public void onBindViewHolder(@NonNull SuggestionHolder holder, int i) {
+        String thoiDiemGui = mSuggestions.get(i).ThoiDiemGui;
+        String thoiDiemGuiStr = thoiDiemGui;
+        if (thoiDiemGui.length() > 16) {
+            String ngayDang = DateHelper.formatYMDToDMY(thoiDiemGui.substring(0, 10));
+            String gioDang = thoiDiemGui.substring(11, 16);
+            thoiDiemGuiStr = ngayDang + " " + gioDang;
+        }
+        holder.tvThoiDiemGui.setText(thoiDiemGuiStr);
         holder.tvTieuDe.setText(mSuggestions.get(i).TieuDe);
         holder.tvNguoiGui.setText(mSuggestions.get(i).HoTenNguoiGui);
+        holder.tvLogo.setText(StringHelper.getFirstCharToCap(mSuggestions.get(i).TieuDe));
         holder.setItemClickListener(new ItemClickListener() {
             @Override
             public void onItemClickListener(View view, int position, boolean isLongClick) {
@@ -77,12 +93,16 @@ public class MessageSuggestionsAdapter extends RecyclerView.Adapter<MessageSugge
     static class SuggestionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView tvTieuDe;
         private TextView tvNguoiGui;
+        private TextView tvThoiDiemGui;
+        private TextView tvLogo;
 
         private SuggestionHolder(@NonNull View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             tvNguoiGui = itemView.findViewById(R.id.tv_nguoiGui);
             tvTieuDe = itemView.findViewById(R.id.tv_tieuDe);
+            tvThoiDiemGui = itemView.findViewById(R.id.tv_thoiDiemGui);
+            tvLogo = itemView.findViewById(R.id.iv_logo);
         }
 
         ItemClickListener itemClickListener;
