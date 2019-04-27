@@ -43,9 +43,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
 
-    private String currentFragment;
     private FragmentManager fragmentManager;
     private int currentNavItem;
+    private String currentFragment;
     private String mPrevFragment;
 
     @Override
@@ -61,8 +61,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         } else {
             initAll();
-            initFragmentManager();
             showAccountInfo();
+            fragmentManager = getSupportFragmentManager();
 
             boolean mIsLaunchFromNewsNoti = getIntent().getBooleanExtra(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, false);
             boolean mIsLaunchFromMessageNoti = getIntent().getBooleanExtra(Reference.BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, false);
@@ -284,19 +284,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    private void initFragmentManager() {
-        fragmentManager = getSupportFragmentManager();
-//        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
-//            @Override
-//            public void onBackStackChanged() {
-//                Fragment fragment = fragmentManager.findFragmentById(R.id.frame_layout);
-//                if (fragment != null) {
-//                    updateByFragmentTag(fragment.getTag());
-//                }
-//            }
-//        });
-    }
-
     private void initFragment(Fragment fragment) {
         currentNavItem = R.id.nav_news;
         currentFragment = fragment.getClass().getName();
@@ -351,7 +338,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 deleteTokenForAccount();
 
-                clearAllNotification();
+                NotificationManager nm = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
+                nm.cancelAll();
 
                 SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE).edit();
                 editor.remove(getString(R.string.pre_key_account_id));
@@ -376,11 +364,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
-    }
-
-    private void clearAllNotification() {
-        NotificationManager nm = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
-        nm.cancelAll();
     }
 
     private void deleteTokenForAccount() {

@@ -63,10 +63,12 @@ public class MessageSuggestionsAdapter extends RecyclerView.Adapter<MessageSugge
             String gioDang = thoiDiemGui.substring(11, 16);
             thoiDiemGuiStr = ngayDang + " " + gioDang;
         }
+        String tenNguoiNhanCollapse = mSuggestions.get(i).getTenNguoiNhanCollapse();
         holder.tvThoiDiemGui.setText(thoiDiemGuiStr);
         holder.tvTieuDe.setText(mSuggestions.get(i).TieuDe);
         holder.tvNguoiGui.setText(mSuggestions.get(i).HoTenNguoiGui);
-        holder.tvLogo.setText(StringHelper.getFirstCharToCap(mSuggestions.get(i).TieuDe));
+        holder.tvNguoiNhan.setText(tenNguoiNhanCollapse);
+        holder.tvNguoiGuiLabel.setText(StringHelper.getFirstCharToCap(mSuggestions.get(i).TieuDe));
         holder.setItemClickListener(new ItemClickListener() {
             @Override
             public void onItemClickListener(View view, int position, boolean isLongClick) {
@@ -81,7 +83,7 @@ public class MessageSuggestionsAdapter extends RecyclerView.Adapter<MessageSugge
     @NonNull
     @Override
     public SuggestionHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.item_message_suggestion, viewGroup, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.item_message, viewGroup, false);
         return new SuggestionHolder(view);
     }
 
@@ -92,17 +94,19 @@ public class MessageSuggestionsAdapter extends RecyclerView.Adapter<MessageSugge
 
     static class SuggestionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView tvTieuDe;
-        private TextView tvNguoiGui;
         private TextView tvThoiDiemGui;
-        private TextView tvLogo;
+        private TextView tvNguoiGui;
+        private TextView tvNguoiGuiLabel;
+        private TextView tvNguoiNhan;
 
         private SuggestionHolder(@NonNull View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
-            tvNguoiGui = itemView.findViewById(R.id.tv_nguoiGui);
             tvTieuDe = itemView.findViewById(R.id.tv_tieuDe);
+            tvNguoiGui = itemView.findViewById(R.id.tv_nguoiGui);
             tvThoiDiemGui = itemView.findViewById(R.id.tv_thoiDiemGui);
-            tvLogo = itemView.findViewById(R.id.iv_logo);
+            tvNguoiGuiLabel = itemView.findViewById(R.id.tv_nguoiGuiLabel);
+            tvNguoiNhan = itemView.findViewById(R.id.tv_nguoiNhan);
         }
 
         ItemClickListener itemClickListener;

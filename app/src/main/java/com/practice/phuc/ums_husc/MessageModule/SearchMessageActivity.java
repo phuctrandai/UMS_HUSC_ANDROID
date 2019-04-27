@@ -29,8 +29,8 @@ import okhttp3.Response;
 public class SearchMessageActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
     public static final int ITEM_PER_PAGE = 50;
     public static final int SEARCH_RECEIVED = 1;
-    public static final int SEARCH_SENT = 2;
     public static final int SEARCH_DELETED = 3;
+    public static final int SEARCH_SENT = 2;
     public static int mMessageType;
 
     private static List<TINNHAN> mSuggestions = new ArrayList<>();
@@ -92,6 +92,7 @@ public class SearchMessageActivity extends AppCompatActivity implements SearchVi
         final SearchView mSearchView = (SearchView) mSearch.getActionView();
         mSearchView.setOnQueryTextListener(this);
         mSearchView.setQueryHint("Tìm kiếm...");
+
         return super.onCreateOptionsMenu(menu);
     }
 
