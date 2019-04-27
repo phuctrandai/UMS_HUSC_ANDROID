@@ -36,15 +36,17 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
         if (remoteMessage.getData().size() > 0) {
             String messageType = remoteMessage.getData().get("type");
 
+            String accountId = Reference.getAccountId(this);
+
             if (messageType != null && messageType.equals(Reference.NEWS_NOTIFICATION)) {
                 boolean isAllow = mSharedPreferences.getBoolean(getString(R.string.share_pre_key_news), true);
-                if (isAllow) {
+                if (isAllow && (!accountId.equals(""))) {
                     riseNotification(createNewsNotification(remoteMessage));
                 }
 
             } else if (messageType != null && messageType.equals(Reference.MESSAGE_NOTIFICATION)) {
                 boolean isAllow = mSharedPreferences.getBoolean(getString(R.string.share_pre_key_receive_message), true);
-                if (isAllow) {
+                if (isAllow && (!accountId.equals(""))) {
                     riseNotification(createMessageNotification(remoteMessage));
                 }
             }

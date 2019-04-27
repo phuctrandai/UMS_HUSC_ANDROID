@@ -20,6 +20,13 @@ public class TINNHAN {
     public TINNHAN() {
     }
 
+    public TINNHAN(String tieuDe, String hoTenNguoiGui) {
+        TieuDe = tieuDe;
+        HoTenNguoiGui = hoTenNguoiGui;
+    }
+
+
+
     /*##### Helper method #####*/
 
     public NGUOINHAN getNguoiNhanTrongDanhSach(String maNguoiNhan) {

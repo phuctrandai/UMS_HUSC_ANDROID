@@ -2,6 +2,7 @@ package com.practice.phuc.ums_husc.MessageModule;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -81,6 +83,21 @@ public class SentMessageFragment extends Fragment
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_searchMessage:
+                SearchMessageActivity.setSuggestions(mAdapter.getDataSet(), SearchMessageActivity.SEARCH_SENT);
+                Intent intent = new Intent(mContext, SearchMessageActivity.class);
+                startActivity(intent);
+                return true;
+
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         mLastAction = ACTION_INIT;
         mStatus = STATUS_INIT;
@@ -104,7 +121,7 @@ public class SentMessageFragment extends Fragment
         mRvMessage = view.findViewById(R.id.rv_message);
         mLoadMoreLayout = view.findViewById(R.id.load_more_layout);
         mIsViewDestroyed = false;
-
+        setHasOptionsMenu(true);
         setUpRecyclerView();
         setUpSwipeRefreshLayout(view);
 
