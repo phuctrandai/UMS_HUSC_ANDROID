@@ -1,11 +1,13 @@
 package com.practice.phuc.ums_husc;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -22,21 +24,29 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.practice.phuc.ums_husc.Helper.FireBaseIDTask;
 import com.practice.phuc.ums_husc.Helper.MessageTaskHelper;
 import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
+import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
+import com.practice.phuc.ums_husc.Helper.StringHelper;
 import com.practice.phuc.ums_husc.MessageModule.DetailMessageActivity;
 import com.practice.phuc.ums_husc.MessageModule.MessageFragment;
 import com.practice.phuc.ums_husc.NewsModule.DetailNewsActivity;
 import com.practice.phuc.ums_husc.NewsModule.MainFragment;
 import com.practice.phuc.ums_husc.ResumeModule.ResumeFragment;
 import com.practice.phuc.ums_husc.ScheduleModule.ScheduleFragment;
+import com.practice.phuc.ums_husc.ViewModel.VHocKy;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+
+import es.dmoral.toasty.Toasty;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private NavigationView navigationView;
@@ -47,6 +57,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private int currentNavItem;
     private String currentFragment;
     private String mPrevFragment;
+    private List<VHocKy> semesters;
+    private ArrayAdapter<VHocKy> semesterAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         } else {
             initAll();
+            initSemsterDialog();
             showAccountInfo();
             fragmentManager = getSupportFragmentManager();
 
@@ -305,8 +318,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String hoTen = sharedPreferences.getString(getString(R.string.pre_key_student_name), "");
         String khoaHoc = sharedPreferences.getString(getString(R.string.pre_key_course), "");
         String nganhHoc = sharedPreferences.getString(getString(R.string.pre_key_majors), "");
-        int index = sharedPreferences.getInt(getString(R.string.pre_key_semester), 0);
-        String hocKi = semesters[index].toString();
+        String hocKi = sharedPreferences.getString("semester_string", "");
 
         tvMaSinhVien.setText(maSinhVien);
         tvHoTen.setText(hoTen);
@@ -324,7 +336,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String maSinhVien = Reference.getStudentId(this);
         String matKhau = Reference.getAccountPassword(this);
 
-        return (maSinhVien != null) && (matKhau != null);
+        return (!StringHelper.isNullOrEmpty(maSinhVien)) && (!StringHelper.isNullOrEmpty(matKhau));
     }
 
     private void logOut() {
@@ -415,23 +427,62 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void showSelectSemesterDialog() {
-        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
-        int selectedSemesterIndex = sharedPreferences.getInt(getString(R.string.pre_key_semester), 0);
+    private int selectedSemesterIndex;
+    private int attempSelectedSemesterIndex;
 
+    private void initSemsterDialog() {
+        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
+        String semesterId = sharedPreferences.getString(getString(R.string.pre_key_semester), null);
+        int index = Integer.parseInt(semesterId != null ? semesterId : "0");
+
+        semesters = new ArrayList<>();
+        semesters.add(new VHocKy("12", "2", "5", "2018", "2019"));
+        semesters.add(new VHocKy("11", "1", "5", "2018", "2019"));
+        semesters.add(new VHocKy("10", "3", "4", "2017", "2018"));
+        semesters.add(new VHocKy("9", "2", "4", "2017", "2018"));
+        semesters.add(new VHocKy("8", "1", "4", "2017", "2018"));
+        semesters.add(new VHocKy("7", "3", "3", "2016", "2017"));
+        semesters.add(new VHocKy("6", "2", "3", "2016", "2017"));
+        semesters.add(new VHocKy("5", "1", "3", "2016", "2017"));
+        semesters.add(new VHocKy("3", "3", "1", "2015", "2016"));
+        semesters.add(new VHocKy("2", "2", "1", "2015", "2016"));
+        semesters.add(new VHocKy("1", "1", "1", "2015", "2016"));
+        semesterAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_single_choice, semesters);
+
+        for (int i = 0; i < semesters.size(); i++) {
+            if (semesters.get(i).MaHocKy.equals(semesterId)) {
+                index = i;
+                break;
+            }
+        }
+        selectedSemesterIndex = index;
+    }
+
+    private void showSelectSemesterDialog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getString(R.string.action_selectSemester));
-        builder.setSingleChoiceItems(semesters, selectedSemesterIndex, new DialogInterface.OnClickListener() {
+        builder.setSingleChoiceItems(semesterAdapter, selectedSemesterIndex, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int index) {
-                saveSelectedSemester(index);
-                ((TextView) findViewById(R.id.tv_hocKiNamHoc)).setText(semesters[index]);
+                attempSelectedSemesterIndex = index;
+                String hocKy = Objects.requireNonNull(semesterAdapter.getItem(index)).toString();
+                ((TextView) findViewById(R.id.tv_hocKiNamHoc)).setText(hocKy);
                 findViewById(R.id.tv_hocKiNamHoc).refreshDrawableState();
             }
         });
         builder.setPositiveButton("Tác nghiệp", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                Toast.makeText(MainActivity.this,
-                        "Tác nghiệp thành công !", Toast.LENGTH_SHORT).show();
+                if (NetworkUtil.getConnectivityStatus(MainActivity.this) == NetworkUtil.TYPE_NOT_CONNECTED) {
+                    Toasty.custom(MainActivity.this, getString(R.string.error_network_disconected),
+                            getResources().getDrawable(R.drawable.ic_signal_wifi_off_white_24),
+                            getResources().getColor(R.color.colorRed),
+                            getResources().getColor(android.R.color.white),
+                            Toasty.LENGTH_SHORT, true, true)
+                            .show();
+                    return;
+                }
+
+                String maHocKyStr = Objects.requireNonNull(semesterAdapter.getItem(selectedSemesterIndex)).MaHocKy;
+                new TacNghiepTask(maHocKyStr).execute();
             }
         });
         builder.setNegativeButton("Thôi", null);
@@ -439,23 +490,53 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         alert.show();
     }
 
-    private void saveSelectedSemester(int id) {
+    private void saveSelectedSemester(String id) {
         SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE).edit();
-        editor.putInt(getString(R.string.pre_key_semester), id);
+        editor.putString(getString(R.string.pre_key_semester), id);
         editor.apply();
+        selectedSemesterIndex = attempSelectedSemesterIndex;
     }
 
-    final CharSequence[] semesters = {
-            "Học kì 2 (2018-2019)",
-            "Học kì 1 (2018-2019)",
-            "Học kì hè (2017-2018)",
-            "Học kì 2 (2017-2018)",
-            "Học kì 1 (2017-2018)",
-            "Học kì hè (2016-2017)",
-            "Học kì 2 (2016-2017)",
-            "Học kì 1 (2016-2017)",
-            "Học kì hè (2015-2016)",
-            "Học kì 2 (2015-2016)",
-            "Học kì 1 (2015-2016)"
-    };
+    @SuppressLint("StaticFieldLeak")
+    private class TacNghiepTask extends AsyncTask<String, Void, Boolean> {
+        String responseMessage;
+        String maHocKy;
+
+        TacNghiepTask(String maHocKy) { this.maHocKy = maHocKy; }
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            String url = Reference.HOST + "api/sinhvien/hocky/tacnghiep" +
+                    "?masinhvien=" + Reference.getStudentId(MainActivity.this) +
+                    "&matkhau=" + Reference.getAccountPassword(MainActivity.this) +
+                    "&mahocky=" + maHocKy;
+            Response response = NetworkUtil.makeRequest(url, false, null);
+
+            if (response == null) {
+                responseMessage = "Không tìm thấy máy chủ";
+                return false;
+            }
+
+            if (response.code() == NetworkUtil.OK) {
+                responseMessage = "Tác nghiệp thành công";
+                return true;
+            }
+
+            responseMessage = "Có lỗi xảy ra, thử lại sau";
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+
+            if (aBoolean) {
+                Toasty.success(MainActivity.this, responseMessage, Toasty.LENGTH_SHORT).show();
+                saveSelectedSemester(maHocKy);
+
+            } else {
+                Toasty.error(MainActivity.this, responseMessage, Toasty.LENGTH_SHORT).show();
+            }
+        }
+    }
 }

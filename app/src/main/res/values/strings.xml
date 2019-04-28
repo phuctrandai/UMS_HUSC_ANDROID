@@ -25,7 +25,7 @@
     <string name="navigation_drawer_open">Mở menu</string>
     <string name="navigation_drawer_close">Đóng menu</string>
     <string name="action_goToToday">Đến ngày hiện tại</string>
-    <string name="action_selectSemester">Chọn học kì và ngành học tác nghiệp</string>
+    <string name="action_selectSemester">Chọn học kì tác nghiệp</string>
 
     <!-- Navigation drawer menu -->
     <string name="title_nav_news">Thông báo và tin tức</string>

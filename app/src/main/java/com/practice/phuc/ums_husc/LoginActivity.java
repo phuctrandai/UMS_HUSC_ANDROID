@@ -23,7 +23,7 @@ import com.practice.phuc.ums_husc.Helper.FireBaseIDTask;
 import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
-import com.practice.phuc.ums_husc.ViewModel.VThongTinCaNhan;
+import com.practice.phuc.ums_husc.ViewModel.ThongTinCaNhan;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
@@ -37,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
     private Response mResponseLogin = null;
     private SharedPreferences mSharedPreferences = null;
     private UserLoginTask mAuthTask;
-    private JsonAdapter<VThongTinCaNhan> mJsonAdapter;
+    private JsonAdapter<ThongTinCaNhan> mJsonAdapter;
     private boolean mIsViewDestroyed;
 
     private LinearLayout mRootLayout;
@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
         initLoginForm();
 
         Moshi moshi = new Moshi.Builder().build();
-        Type usersType = Types.newParameterizedType(VThongTinCaNhan.class);
+        Type usersType = Types.newParameterizedType(ThongTinCaNhan.class);
         mJsonAdapter = moshi.adapter(usersType);
         mSharedPreferences = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
     }
@@ -200,9 +200,9 @@ public class LoginActivity extends AppCompatActivity {
                     try {
                         if (mResponseLogin.body() != null) {
                             String thongTinCaNhanJson = mResponseLogin.body().string();
-                            VThongTinCaNhan vThongTinCaNhan = mJsonAdapter.fromJson(thongTinCaNhanJson);
+                            ThongTinCaNhan thongTinCaNhan = mJsonAdapter.fromJson(thongTinCaNhanJson);
 
-                            saveAccountInfo(vThongTinCaNhan, mMaSinhVien, mMatKhau);
+                            saveAccountInfo(thongTinCaNhan, mMaSinhVien, mMatKhau);
                             saveTokenForAccount();
 
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -242,16 +242,18 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void saveAccountInfo(VThongTinCaNhan vThongTinCaNhan, String maSinhVien, String matKhau) {
+    private void saveAccountInfo(ThongTinCaNhan thongTinCaNhan, String maSinhVien, String matKhau) {
         if (maSinhVien.contains("t"))
             maSinhVien = maSinhVien.replace('t', 'T');
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putString(getString(R.string.pre_key_account_id), vThongTinCaNhan.MaTaiKhoan);
-        editor.putString(getString(R.string.pre_key_student_name), vThongTinCaNhan.HoTen);
-        editor.putString(getString(R.string.pre_key_majors), vThongTinCaNhan.TenNganh);
-        editor.putString(getString(R.string.pre_key_course), vThongTinCaNhan.KhoaHoc);
-        editor.putString(getString(R.string.pre_key_student_id), maSinhVien);
+        editor.putString(getString(R.string.pre_key_account_id), thongTinCaNhan.MaTaiKhoan);
+        editor.putString(getString(R.string.pre_key_student_name), thongTinCaNhan.HoTen);
+        editor.putString(getString(R.string.pre_key_majors), thongTinCaNhan.TenNganh);
+        editor.putString(getString(R.string.pre_key_course), thongTinCaNhan.KhoaHoc);
         editor.putString(getString(R.string.pre_key_password), matKhau);
+        editor.putString(getString(R.string.pre_key_student_id), maSinhVien);
+        editor.putString(getString(R.string.pre_key_semester), thongTinCaNhan.HocKyTacNghiep.MaHocKy);
+        editor.putString("semester_string", thongTinCaNhan.HocKyTacNghiep.toString());
         editor.apply();
     }
 
