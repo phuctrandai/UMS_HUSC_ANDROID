@@ -1,6 +1,5 @@
 package com.practice.phuc.ums_husc.ScheduleModule;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,8 +14,8 @@ import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.Adapter.DayOfWeekAdapter;
 import com.practice.phuc.ums_husc.Helper.DateHelper;
-import com.practice.phuc.ums_husc.Model.LOPHOCPHAN;
 import com.practice.phuc.ums_husc.R;
+import com.practice.phuc.ums_husc.ViewModel.ThoiKhoaBieu;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -31,12 +30,12 @@ public class WeekFragment extends Fragment {
     private TextView mTvEndDateOfWeek;
     private Date mStartDateOfWeek;
     private Date mEndDateOfWeek;
-    private List<LOPHOCPHAN> mClassList;
+    private List<ThoiKhoaBieu> mClassList; // Danh sach lop hoc trong tuan nay
 
     public WeekFragment() {
     }
 
-    public static WeekFragment newInstance(Context context, Date startDateOfWeek, Date endDateOfWeek, List<LOPHOCPHAN> classList) {
+    public static WeekFragment newInstance(Context context, Date startDateOfWeek, Date endDateOfWeek, List<ThoiKhoaBieu> classList) {
         WeekFragment df = new WeekFragment();
         df.mContext = context;
         df.mClassList = classList;
@@ -47,16 +46,13 @@ public class WeekFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-//        Log.d("DEBUG", "On Create Fragment Date: " + mDebugTitle);
         mDayOfWeekAdapter = new DayOfWeekAdapter(mContext, mClassList, mStartDateOfWeek, mEndDateOfWeek);
         super.onCreate(savedInstanceState);
     }
 
-    @SuppressLint("SetTextI18n")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-//        Log.d("DEBUG", "On Create View Fragment Date: " + mDebugTitle);
         View view = inflater.inflate(R.layout.fragment_week, container, false);
         mRvDayOfWeek = view.findViewById(R.id.rv_dayOfWeek);
         mTvStartDateOfWeek = view.findViewById(R.id.tv_startDateOfWeeek);
@@ -66,12 +62,6 @@ public class WeekFragment extends Fragment {
         setUpRecyclerView();
 
         return view;
-    }
-
-    @Override
-    public void onDestroy() {
-//        Log.d("DEBUG", "On Destroy Fragment Date: " + mDebugTitle);
-        super.onDestroy();
     }
 
     private void setUpStartEndDate() {
@@ -93,7 +83,7 @@ public class WeekFragment extends Fragment {
         mDayOfWeekAdapter.setNowIsInThisWeek(isBetween);
         mRvDayOfWeek.setAdapter(mDayOfWeekAdapter);
 
-        if (isBetween) { // Neu thuoc, lam sang ngay nay len
+        if (isBetween) {
             int toDayOfWeek = DateHelper.getCalendar().get(Calendar.DAY_OF_WEEK);
             if (toDayOfWeek == 1)
                 mRvDayOfWeek.scrollToPosition(6);

@@ -8,21 +8,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.practice.phuc.ums_husc.Model.LOPHOCPHAN;
 import com.practice.phuc.ums_husc.R;
+import com.practice.phuc.ums_husc.ViewModel.ThoiKhoaBieu;
 
 import java.util.List;
 
 public class SessionOfDayAdapter extends RecyclerView.Adapter<SessionOfDayAdapter.DataViewHolder> {
 
     private Context mContext;
-    private List<LOPHOCPHAN> mClassesOfSession; // Danh sach lop hoc co tiet vao buoi nay
+    private List<ThoiKhoaBieu> mClassesOfSession; // Danh sach lop hoc co tiet vao buoi nay
 
     SessionOfDayAdapter(Context context) {
         mContext = context;
     }
 
-    void setClassesOfSession(List<LOPHOCPHAN> classes) {
+    void setClassesOfSession(List<ThoiKhoaBieu> classes) {
         if (mClassesOfSession != null)
             mClassesOfSession.clear();
 
@@ -38,14 +38,14 @@ public class SessionOfDayAdapter extends RecyclerView.Adapter<SessionOfDayAdapte
 
     @Override
     public void onBindViewHolder(@NonNull DataViewHolder viewHolder, int i) {
-        LOPHOCPHAN currentClass = mClassesOfSession.get(i);
-        viewHolder.tvSubject.setText(currentClass.getTenLopHocPhan());
-        viewHolder.tvRoom.setText(currentClass.getPhongHoc());
-        viewHolder.tvTeacher.setText(currentClass.getGiaoVien());
-        String timeStr = "Tiết " + currentClass.getTietBatDau() + " - " +
-                currentClass.getTietKetThuc() + " ( " +
-                getLessionStartTimeStr(currentClass.getTietBatDau()) + " - " +
-                getLessionEndTimeStr(currentClass.getTietKetThuc()) + " )";
+        ThoiKhoaBieu currentClass = mClassesOfSession.get(i);
+        viewHolder.tvSubject.setText(currentClass.TenLopHocPhan);
+        viewHolder.tvRoom.setText(currentClass.TenPhong);
+        viewHolder.tvTeacher.setText(currentClass.HoVaTen);
+        String timeStr = "Tiết " + currentClass.TietHocBatDau + " - " +
+                currentClass.TietHocKetThuc + " ( " +
+                getLessionStartTimeStr(currentClass.TietHocBatDau) + " - " +
+                getLessionEndTimeStr(currentClass.TietHocKetThuc) + " )";
         viewHolder.tvTime.setText(timeStr);
     }
 

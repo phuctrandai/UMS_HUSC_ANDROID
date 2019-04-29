@@ -12,14 +12,14 @@ public class ThoiKhoaBieu {
     public String MaLopHocPhan;
     public String TenLopHocPhan;
     public String TenPhong;
-    public String TietHocBatDau;
-    public String TietHocKetThuc;
+    public int TietHocBatDau;
+    public int TietHocKetThuc;
     public String PhongHoc;
     public String HoVaTen;
     public String NgayHoc;
     public String MaSinhVien;
     public String HocKy;
-    public String NgayTrongTuan;
+    public int NgayTrongTuan;
 
     public static List<ThoiKhoaBieu> fromJsonToList(String json) {
         Moshi moshi = new Moshi.Builder().build();

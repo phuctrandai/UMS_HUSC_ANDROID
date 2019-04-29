@@ -2,6 +2,7 @@ package com.practice.phuc.ums_husc.Helper;
 
 import android.os.AsyncTask;
 
+import com.practice.phuc.ums_husc.ScheduleModule.ScheduleFragment;
 import com.practice.phuc.ums_husc.ViewModel.ThoiKhoaBieu;
 
 import java.io.IOException;
@@ -67,7 +68,7 @@ public class ScheduleTaskHelper {
                 List<ThoiKhoaBieu> thoiKhoaBieus = ThoiKhoaBieu.fromJsonToList(json);
 
                 if (thoiKhoaBieus != null && thoiKhoaBieus.size() > 0) {
-
+                    ScheduleFragment.thoiKhoaBieus = thoiKhoaBieus;
                 }
             }
         }

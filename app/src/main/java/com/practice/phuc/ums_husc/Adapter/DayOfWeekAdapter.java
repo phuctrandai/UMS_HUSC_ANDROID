@@ -12,8 +12,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.Helper.DateHelper;
-import com.practice.phuc.ums_husc.Model.LOPHOCPHAN;
 import com.practice.phuc.ums_husc.R;
+import com.practice.phuc.ums_husc.ViewModel.ThoiKhoaBieu;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,8 +31,6 @@ import static com.practice.phuc.ums_husc.Helper.DateHelper.THURSDAY;
 import static com.practice.phuc.ums_husc.Helper.DateHelper.TUESDAY;
 import static com.practice.phuc.ums_husc.Helper.DateHelper.WEDNESDAY;
 import static com.practice.phuc.ums_husc.Helper.DateHelper.getDate;
-import static com.practice.phuc.ums_husc.Helper.DateHelper.isBetweenTwoDate;
-import static com.practice.phuc.ums_husc.Helper.DateHelper.stringToDate;
 import static com.practice.phuc.ums_husc.Helper.DateHelper.toShortDateString;
 
 public class DayOfWeekAdapter extends Adapter<DayOfWeekAdapter.DataViewHolder> {
@@ -46,16 +44,16 @@ public class DayOfWeekAdapter extends Adapter<DayOfWeekAdapter.DataViewHolder> {
     private Date mEndDateOfWeek;
     private Date mTodate;
 
-    private List<LOPHOCPHAN> mClassList; // Danh sach cac lop hoc
-    private List<LOPHOCPHAN> mMondayClassList;
-    private List<LOPHOCPHAN> mTuesdayClassList;
-    private List<LOPHOCPHAN> mWednesdayClassList;
-    private List<LOPHOCPHAN> mThursdayClassList;
-    private List<LOPHOCPHAN> mFridayClassList;
-    private List<LOPHOCPHAN> mSaturdayClassList;
-    private List<LOPHOCPHAN> mSundayClassList;
+    private List<ThoiKhoaBieu> mClassList; // Danh sach cac lop hoc
+    private List<ThoiKhoaBieu> mMondayClassList;
+    private List<ThoiKhoaBieu> mTuesdayClassList;
+    private List<ThoiKhoaBieu> mWednesdayClassList;
+    private List<ThoiKhoaBieu> mThursdayClassList;
+    private List<ThoiKhoaBieu> mFridayClassList;
+    private List<ThoiKhoaBieu> mSaturdayClassList;
+    private List<ThoiKhoaBieu> mSundayClassList;
 
-    public DayOfWeekAdapter(Context context, List<LOPHOCPHAN> classList, Date startDateOfWeek, Date endDateOfWeek) {
+    public DayOfWeekAdapter(Context context, List<ThoiKhoaBieu> classList, Date startDateOfWeek, Date endDateOfWeek) {
         mContext = context;
         mStartDateOfWeek = startDateOfWeek;
         mEndDateOfWeek = endDateOfWeek;
@@ -75,13 +73,6 @@ public class DayOfWeekAdapter extends Adapter<DayOfWeekAdapter.DataViewHolder> {
 
     public void setNowIsInThisWeek(boolean value) {
         mNowIsInThisWeek = value;
-    }
-
-    @NonNull
-    @Override
-    public DataViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_day_of_week, viewGroup, false);
-        return new DataViewHolder(itemView);
     }
 
     @Override
@@ -138,8 +129,8 @@ public class DayOfWeekAdapter extends Adapter<DayOfWeekAdapter.DataViewHolder> {
         }
     }
 
-    private void setUpSessionAdapter(List<LOPHOCPHAN> classList, int dateOfWeek) {
-        mTodate = DateHelper.getDate(mStartDateOfWeek, dateOfWeek);
+    private void setUpSessionAdapter(List<ThoiKhoaBieu> classList, int dateOfWeek) {
+        mTodate = getDate(mStartDateOfWeek, dateOfWeek);
         mMorningAdapter.setClassesOfSession(getClassesOnThisSession(classList, MORNING));
         mAfternoonAdapter.setClassesOfSession(getClassesOnThisSession(classList, AFTERNOON));
         mEveningAdapter.setClassesOfSession(getClassesOnThisSession(classList, EVENING));
@@ -153,49 +144,50 @@ public class DayOfWeekAdapter extends Adapter<DayOfWeekAdapter.DataViewHolder> {
         recyclerView.setAdapter(adapter);
     }
 
-    @Override // Co bay ngay trong tuan
-    public int getItemCount() {
-        return 7;
-    }
+    private List<ThoiKhoaBieu> getClassesOnThisDay(int dayOfWeek) {
+        List<ThoiKhoaBieu> l = new ArrayList<>();
 
-    private List<LOPHOCPHAN> getClassesOnThisDay(int dayOfWeek) {
-        List<LOPHOCPHAN> l = new ArrayList<>();
-        Date startDate, endDate;
-
-        for (LOPHOCPHAN item : mClassList) {
-            startDate = stringToDate(item.getNgayBatDau(), "dd/MM/yyyy");
-            endDate = stringToDate(item.getNgayKetThuc(), "dd/MM/yyyy");
-            if ((item.getNgayTrongTuan() == dayOfWeek)
-            && isBetweenTwoDate(startDate, endDate, getDate(mStartDateOfWeek, dayOfWeek))) {
+        for (ThoiKhoaBieu item : mClassList)
+            if (item.NgayTrongTuan == dayOfWeek)
                 l.add(item);
-            }
-        }
         return l;
     }
 
-    private List<LOPHOCPHAN> getClassesOnThisSession(List<LOPHOCPHAN> classes, int sessionOfDay) {
-        List<LOPHOCPHAN> l = new ArrayList<>();
+    private List<ThoiKhoaBieu> getClassesOnThisSession(List<ThoiKhoaBieu> classes, int sessionOfDay) {
+        List<ThoiKhoaBieu> l = new ArrayList<>();
         switch (sessionOfDay) {
             case MORNING:
-                for (LOPHOCPHAN item : classes) {
-                    if (1 <= item.getTietBatDau() && item.getTietBatDau() <= 4)
+                for (ThoiKhoaBieu item : classes) {
+                    if (1 <= item.TietHocBatDau && item.TietHocKetThuc <= 4)
                         l.add(item);
                 }
                 break;
             case AFTERNOON:
-                for (LOPHOCPHAN item : classes) {
-                    if (5 <= item.getTietBatDau() && item.getTietBatDau() <= 8)
+                for (ThoiKhoaBieu item : classes) {
+                    if (5 <= item.TietHocBatDau && item.TietHocKetThuc <= 8)
                         l.add(item);
                 }
                 break;
             case EVENING:
-                for (LOPHOCPHAN item : classes) {
-                    if (9 <= item.getTietBatDau() && item.getTietBatDau() <= 12)
+                for (ThoiKhoaBieu item : classes) {
+                    if (9 <= item.TietHocBatDau && item.TietHocKetThuc <= 12)
                         l.add(item);
                 }
                 break;
         }
         return l;
+    }
+
+    @Override
+    public int getItemCount() {
+        return 7;
+    }
+
+    @NonNull
+    @Override
+    public DataViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_day_of_week, viewGroup, false);
+        return new DataViewHolder(itemView);
     }
 
     static class DataViewHolder extends RecyclerView.ViewHolder {

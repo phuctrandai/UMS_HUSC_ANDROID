@@ -46,15 +46,6 @@ public class WeeksTabAdapter extends FragmentStatePagerAdapter {
         return POSITION_NONE;
     }
 
-    public List<Fragment> getFragmentList() {
-        return mFragmentList;
-    }
-
-    public void removeFragment(Fragment fragment, int position) {
-        mFragmentList.remove(position);
-        mFragmentTitleList.remove(position);
-    }
-
     public void clearFragment() {
         mFragmentList.clear();
         mFragmentTitleList.clear();
