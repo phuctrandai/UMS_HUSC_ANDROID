@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -23,18 +22,17 @@ import com.practice.phuc.ums_husc.Helper.FireBaseIDTask;
 import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
+import com.practice.phuc.ums_husc.Helper.ScheduleTaskHelper;
 import com.practice.phuc.ums_husc.ViewModel.ThongTinCaNhan;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 
 import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity {
-    private Response mResponseLogin = null;
     private SharedPreferences mSharedPreferences = null;
     private UserLoginTask mAuthTask;
     private JsonAdapter<ThongTinCaNhan> mJsonAdapter;
@@ -122,7 +120,7 @@ public class LoginActivity extends AppCompatActivity {
             mTxtStudentId.setError(getString(R.string.error_truong_bat_buoc));
             focusView = mTxtStudentId;
             cancel = true;
-        } else if (!isMaSinhVienValid(maSinhVien)) {
+        } else if (!(maSinhVien.contains("T") || maSinhVien.contains("t"))) {
             mTxtStudentId.setError(getString(R.string.error_ma_sinh_vien_khong_hop_le));
             focusView = mTxtStudentId;
             cancel = true;
@@ -130,7 +128,7 @@ public class LoginActivity extends AppCompatActivity {
             mTxtPassword.setError(getString(R.string.error_truong_bat_buoc));
             focusView = mTxtPassword;
             cancel = true;
-        } else if (!isPasswordValid(matKhau)) {
+        } else if (!(matKhau.length() >= 6)) {
             mTxtPassword.setError(getString(R.string.error_mat_khau_qua_ngan));
             focusView = mTxtPassword;
             cancel = true;
@@ -145,14 +143,6 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private boolean isMaSinhVienValid(String maSinhVien) {
-        return maSinhVien.contains("T") || maSinhVien.contains("t");
-    }
-
-    private boolean isPasswordValid(String password) {
-        return password.length() >= 6;
-    }
-
     @SuppressLint("StaticFieldLeak")
     public class UserLoginTask extends AsyncTask<String, Void, Boolean> {
 
@@ -163,6 +153,11 @@ public class LoginActivity extends AppCompatActivity {
             mMaSinhVien = email;
             mMatKhau = password;
         }
+
+        private ThongTinCaNhan thongTinCaNhan;
+        private Response mResponseLogin;
+        private String mErrorMessage;
+        private String mJson;
 
         @Override
         protected void onPreExecute() {
@@ -177,8 +172,39 @@ public class LoginActivity extends AppCompatActivity {
                 Thread.sleep(1000);
                 mResponseLogin = onlineLogin(mMaSinhVien, mMatKhau);
 
+                if (mResponseLogin == null) {
+                    mErrorMessage = getString(R.string.error_server_not_response);
+                    return false;
+                }
+
+                if (mResponseLogin.code() == NetworkUtil.OK) {
+                    mJson = mResponseLogin.body() != null ? mResponseLogin.body().string() : "";
+                    thongTinCaNhan = mJsonAdapter.fromJson(mJson);
+
+                    if (thongTinCaNhan == null) {
+                        mErrorMessage = "Có lỗi xảy ra, thử lại sau";
+                        return false;
+
+                    } else {
+                        ScheduleTaskHelper.getInstance().fetchSchedule(mMaSinhVien, mMatKhau,
+                                Integer.parseInt(thongTinCaNhan.HocKyTacNghiep.MaHocKy));
+                        return true;
+                    }
+                }
+
+                if (mResponseLogin.code() == NetworkUtil.NOT_FOUND) {
+                    mErrorMessage = getString(R.string.error_time_out);
+                    return false;
+                }
+
+                if(mResponseLogin.code() == NetworkUtil.BAD_REQUEST) {
+                    mErrorMessage = getString(R.string.error_login_failed);
+                    return false;
+                }
+
             } catch (Exception e) {
                 mResponseLogin = null;
+                mErrorMessage = "Có lỗi bất ngờ xảy ra, thử lại sau";
                 e.printStackTrace();
                 return false;
             }
@@ -189,55 +215,18 @@ public class LoginActivity extends AppCompatActivity {
         protected void onPostExecute(final Boolean success) {
             if (mAuthTask == null || mIsViewDestroyed) return;
 
-            if (mResponseLogin == null) {
-                Snackbar.make(mRootLayout, R.string.error_server_not_response
-                        , Snackbar.LENGTH_LONG).show();
-                return;
-            }
-
             if (success) {
-                if (mResponseLogin.code() == NetworkUtil.OK) {
-                    try {
-                        if (mResponseLogin.body() != null) {
-                            String thongTinCaNhanJson = mResponseLogin.body().string();
-                            ThongTinCaNhan thongTinCaNhan = mJsonAdapter.fromJson(thongTinCaNhanJson);
+                saveAccountInfo(thongTinCaNhan, mMaSinhVien, mMatKhau);
+                saveTokenForAccount();
 
-                            saveAccountInfo(thongTinCaNhan, mMaSinhVien, mMatKhau);
-                            saveTokenForAccount();
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+                LoginActivity.this.finish();
 
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            LoginActivity.this.finish();
-                        }
-                        return;
-                    } catch (IOException e) {
-                        Snackbar.make(mRootLayout, R.string.error_not_handle,
-                                Snackbar.LENGTH_LONG).show();
-                        e.printStackTrace();
-                        return;
-                    }
-
-                } else if (mResponseLogin.code() == NetworkUtil.NOT_FOUND) {
-                    Snackbar.make(mRootLayout, R.string.error_time_out,
-                            Snackbar.LENGTH_LONG).show();
-
-                } else if (mResponseLogin.code() == NetworkUtil.BAD_REQUEST) {
-                    Snackbar.make(mRootLayout, R.string.error_login_failed,
-                            Snackbar.LENGTH_LONG).show();
-                    mTxtPassword.requestFocus();
-
-                }
-                Log.d("DEBUG", "Login: " + mResponseLogin.code());
-                try {
-                    assert mResponseLogin.body() != null;
-                    Log.d("DEBUG", "Login: " + mResponseLogin.body().string());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             } else {
-                Snackbar.make(mRootLayout, R.string.error_not_handle,
-                        Snackbar.LENGTH_LONG).show();
+                Snackbar.make(mRootLayout, mErrorMessage, Snackbar.LENGTH_LONG).show();
             }
+
             showProgress(false);
         }
     }

@@ -37,6 +37,8 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String MESSAGE_RECEIVER = "message_receiver";
     private static final String MESSAGE_SEEN_TIME = "message_seen_time";
 
+
+
     public DBHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         try (SQLiteDatabase db = getWritableDatabase()) {

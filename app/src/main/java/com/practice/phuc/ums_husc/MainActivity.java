@@ -21,6 +21,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -348,7 +349,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                deleteTokenForAccount();
+                String maSinhVien = Reference.getStudentId(MainActivity.this);
+                String token = getSharedPreferences(getString(R.string.share_pre_key_firebase), MODE_PRIVATE)
+                        .getString(getString(R.string.pre_key_token), null);
+                FireBaseIDTask.deleteTokenFromAccount(maSinhVien, token);
 
                 NotificationManager nm = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
                 nm.cancelAll();
@@ -376,13 +380,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
-    }
-
-    private void deleteTokenForAccount() {
-        String maSinhVien = Reference.getStudentId(this);
-        String token = getSharedPreferences(getString(R.string.share_pre_key_firebase), MODE_PRIVATE)
-                .getString(getString(R.string.pre_key_token), null);
-        FireBaseIDTask.deleteTokenFromAccount(maSinhVien, token);
     }
 
     private void confirmExit() {
@@ -481,7 +478,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     return;
                 }
 
-                String maHocKyStr = Objects.requireNonNull(semesterAdapter.getItem(selectedSemesterIndex)).MaHocKy;
+                String maHocKyStr = Objects.requireNonNull(semesterAdapter.getItem(attempSelectedSemesterIndex)).MaHocKy;
                 new TacNghiepTask(maHocKyStr).execute();
             }
         });
@@ -511,7 +508,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     "&matkhau=" + Reference.getAccountPassword(MainActivity.this) +
                     "&mahocky=" + maHocKy;
             Response response = NetworkUtil.makeRequest(url, false, null);
-
+            Log.d("DEBUG", url);
             if (response == null) {
                 responseMessage = "Không tìm thấy máy chủ";
                 return false;
