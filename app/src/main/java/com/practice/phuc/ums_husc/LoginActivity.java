@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,6 +22,7 @@ import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.Helper.ScheduleTaskHelper;
+import com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper;
 import com.practice.phuc.ums_husc.ViewModel.ThongTinCaNhan;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -33,7 +33,6 @@ import java.lang.reflect.Type;
 import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity {
-    private SharedPreferences mSharedPreferences = null;
     private UserLoginTask mAuthTask;
     private JsonAdapter<ThongTinCaNhan> mJsonAdapter;
     private boolean mIsViewDestroyed;
@@ -80,7 +79,6 @@ public class LoginActivity extends AppCompatActivity {
         Moshi moshi = new Moshi.Builder().build();
         Type usersType = Types.newParameterizedType(ThongTinCaNhan.class);
         mJsonAdapter = moshi.adapter(usersType);
-        mSharedPreferences = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
     }
 
     private void bindUI() {
@@ -186,7 +184,7 @@ public class LoginActivity extends AppCompatActivity {
                         return false;
 
                     } else {
-                        ScheduleTaskHelper.getInstance().fetchSchedule(mMaSinhVien, mMatKhau,
+                        ScheduleTaskHelper.getInstance().fetchSchedule(LoginActivity.this, mMaSinhVien, mMatKhau,
                                 Integer.parseInt(thongTinCaNhan.HocKyTacNghiep.MaHocKy));
                         return true;
                     }
@@ -197,7 +195,7 @@ public class LoginActivity extends AppCompatActivity {
                     return false;
                 }
 
-                if(mResponseLogin.code() == NetworkUtil.BAD_REQUEST) {
+                if (mResponseLogin.code() == NetworkUtil.BAD_REQUEST) {
                     mErrorMessage = getString(R.string.error_login_failed);
                     return false;
                 }
@@ -234,20 +232,21 @@ public class LoginActivity extends AppCompatActivity {
     private void saveAccountInfo(ThongTinCaNhan thongTinCaNhan, String maSinhVien, String matKhau) {
         if (maSinhVien.contains("t"))
             maSinhVien = maSinhVien.replace('t', 'T');
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putString(getString(R.string.pre_key_account_id), thongTinCaNhan.MaTaiKhoan);
-        editor.putString(getString(R.string.pre_key_student_name), thongTinCaNhan.HoTen);
-        editor.putString(getString(R.string.pre_key_majors), thongTinCaNhan.TenNganh);
-        editor.putString(getString(R.string.pre_key_course), thongTinCaNhan.KhoaHoc);
-        editor.putString(getString(R.string.pre_key_password), matKhau);
-        editor.putString(getString(R.string.pre_key_student_id), maSinhVien);
-        editor.putString(getString(R.string.pre_key_semester), thongTinCaNhan.HocKyTacNghiep.MaHocKy);
-        editor.putString("semester_string", thongTinCaNhan.HocKyTacNghiep.toString());
-        editor.apply();
+        SharedPreferenceHelper instance = SharedPreferenceHelper.getInstance();
+        instance.setSharedPref(this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.ACCOUNT_ID, thongTinCaNhan.MaTaiKhoan);
+        instance.setSharedPref(this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.ACCOUNT_NAME, thongTinCaNhan.HoTen);
+        instance.setSharedPref(this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.STUDENT_MAJORS, thongTinCaNhan.TenNganh);
+        instance.setSharedPref(this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.STUDENT_COURSE, thongTinCaNhan.KhoaHoc);
+        instance.setSharedPref(this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.ACCOUNT_PASSWORD, matKhau);
+        instance.setSharedPref(this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.STUDENT_ID, maSinhVien);
+        instance.setSharedPref(this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.STUDENT_SEMSTER, thongTinCaNhan.HocKyTacNghiep.MaHocKy);
+        instance.setSharedPref(this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.STUDENT_SEMSTER_STR, thongTinCaNhan.HocKyTacNghiep.toString());
     }
 
     private void saveTokenForAccount() {
-        final String maSinhVien = Reference.getStudentId(this);
+        final String maSinhVien = SharedPreferenceHelper.getInstance().getSharedPrefStr(
+                this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.STUDENT_ID, ""
+        );
         String token = MyFireBaseMessagingService.getToken(this);
         FireBaseIDTask.saveTokenForAccount(maSinhVien, token);
     }

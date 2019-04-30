@@ -1,8 +1,9 @@
 package com.practice.phuc.ums_husc.Helper;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.AsyncTask;
 
-import com.practice.phuc.ums_husc.ScheduleModule.ScheduleFragment;
 import com.practice.phuc.ums_husc.ViewModel.ThoiKhoaBieu;
 
 import java.io.IOException;
@@ -11,6 +12,8 @@ import java.util.List;
 import okhttp3.Response;
 
 public class ScheduleTaskHelper {
+
+    private DBHelper mDBHelper;
 
     private ScheduleTaskHelper() {
     }
@@ -22,12 +25,13 @@ public class ScheduleTaskHelper {
         return instance;
     }
 
-    public void fetchSchedule(String maSinhVien, String matKhau, int maHocKy){
+    public void fetchSchedule(Context context, String maSinhVien, String matKhau, int maHocKy){
+        mDBHelper = new DBHelper(context);
         new ScheduleTask(maSinhVien, matKhau, maHocKy).execute((String) null);
     }
 
-
-    private static class ScheduleTask extends AsyncTask<String, Void, Boolean> {
+    @SuppressLint("StaticFieldLeak")
+    private class ScheduleTask extends AsyncTask<String, Void, Boolean> {
         private int maHocKy;
         private String maSinhVien;
         private String matKhau;
@@ -68,7 +72,8 @@ public class ScheduleTaskHelper {
                 List<ThoiKhoaBieu> thoiKhoaBieus = ThoiKhoaBieu.fromJsonToList(json);
 
                 if (thoiKhoaBieus != null && thoiKhoaBieus.size() > 0) {
-                    ScheduleFragment.thoiKhoaBieus = thoiKhoaBieus;
+                    mDBHelper.deleteAllRecord(DBHelper.SCHEDULE);
+                    mDBHelper.insertSchedule(thoiKhoaBieus);
                 }
             }
         }

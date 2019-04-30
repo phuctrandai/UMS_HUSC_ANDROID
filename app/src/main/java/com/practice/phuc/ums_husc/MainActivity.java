@@ -1,13 +1,10 @@
 package com.practice.phuc.ums_husc;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -21,18 +18,17 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.practice.phuc.ums_husc.Helper.DBHelper;
 import com.practice.phuc.ums_husc.Helper.FireBaseIDTask;
 import com.practice.phuc.ums_husc.Helper.MessageTaskHelper;
 import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
-import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
+import com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper;
 import com.practice.phuc.ums_husc.Helper.StringHelper;
 import com.practice.phuc.ums_husc.MessageModule.DetailMessageActivity;
 import com.practice.phuc.ums_husc.MessageModule.MessageFragment;
@@ -40,14 +36,8 @@ import com.practice.phuc.ums_husc.NewsModule.DetailNewsActivity;
 import com.practice.phuc.ums_husc.NewsModule.MainFragment;
 import com.practice.phuc.ums_husc.ResumeModule.ResumeFragment;
 import com.practice.phuc.ums_husc.ScheduleModule.ScheduleFragment;
-import com.practice.phuc.ums_husc.ViewModel.VHocKy;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-
-import es.dmoral.toasty.Toasty;
-import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private NavigationView navigationView;
@@ -58,8 +48,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private int currentNavItem;
     private String currentFragment;
     private String mPrevFragment;
-    private List<VHocKy> semesters;
-    private ArrayAdapter<VHocKy> semesterAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         } else {
             initAll();
-            initSemsterDialog();
             showAccountInfo();
             fragmentManager = getSupportFragmentManager();
 
@@ -142,6 +129,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 || currentFragment.equals(ResumeFragment.class.getName())
                 || currentFragment.equals(ChangePasswordFragment.class.getName())) {
 
+            if (currentFragment.equals(SettingFragment.class.getName())) {
+                View headerView = navigationView.getHeaderView(0);
+                TextView tvHocKiNamHoc = headerView.findViewById(R.id.tv_hocKiNamHoc);
+                String hocKi = SharedPreferenceHelper.getInstance()
+                        .getSharedPrefStr(this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.STUDENT_SEMSTER_STR, "");
+                tvHocKiNamHoc.setText(hocKi);
+                tvHocKiNamHoc.refreshDrawableState();
+            }
+
             if (mPrevFragment.equals(MainFragment.class.getName()))
                 replaceFragment(MainFragment.newInstance(this));
 
@@ -162,30 +158,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         boolean isScheduleFrag = currentFragment.equals(ScheduleFragment.class.getName());
         boolean isResumeFrag = currentFragment.equals(ResumeFragment.class.getName());
         boolean isMessageFrag = currentFragment.equals(MessageFragment.class.getName());
-        boolean isChangePassFrag = currentFragment.equals(ChangePasswordFragment.class.getName());
-        boolean isSettingFrag = currentFragment.equals(SettingFragment.class.getName());
 
         menu.findItem(R.id.action_goToToday).setVisible(isScheduleFrag);
         menu.findItem(R.id.action_refreshResume).setVisible(isResumeFrag);
         menu.findItem(R.id.action_newMessage).setVisible(isMessageFrag);
         menu.findItem(R.id.action_searchMessage).setVisible(isMessageFrag);
-        menu.findItem(R.id.action_selectSemester).setVisible(!(isMessageFrag || isResumeFrag || isChangePassFrag || isSettingFrag));
-
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.action_selectSemester:
-                showSelectSemesterDialog();
-                return true;
-
-            default:
-                break;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -314,12 +292,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView tvNganhHoc = headerView.findViewById(R.id.tv_nganhHoc);
         TextView tvHocKiNamHoc = headerView.findViewById(R.id.tv_hocKiNamHoc);
 
-        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
-        String maSinhVien = sharedPreferences.getString(getString(R.string.pre_key_student_id), "");
-        String hoTen = sharedPreferences.getString(getString(R.string.pre_key_student_name), "");
-        String khoaHoc = sharedPreferences.getString(getString(R.string.pre_key_course), "");
-        String nganhHoc = sharedPreferences.getString(getString(R.string.pre_key_majors), "");
-        String hocKi = sharedPreferences.getString("semester_string", "");
+        String maSinhVien = SharedPreferenceHelper.getInstance()
+                .getSharedPrefStr(this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.STUDENT_ID, "");
+        String hoTen = SharedPreferenceHelper.getInstance()
+                .getSharedPrefStr(this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.ACCOUNT_NAME, "");
+        String khoaHoc = SharedPreferenceHelper.getInstance()
+                .getSharedPrefStr(this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.STUDENT_COURSE, "");
+        String nganhHoc = SharedPreferenceHelper.getInstance()
+                .getSharedPrefStr(this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.STUDENT_MAJORS, "");
+        String hocKi = SharedPreferenceHelper.getInstance()
+                .getSharedPrefStr(this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.STUDENT_SEMSTER_STR, "");
 
         tvMaSinhVien.setText(maSinhVien);
         tvHoTen.setText(hoTen);
@@ -334,8 +316,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private boolean localLogin() {
-        String maSinhVien = Reference.getStudentId(this);
-        String matKhau = Reference.getAccountPassword(this);
+        String maSinhVien = SharedPreferenceHelper.getInstance()
+                .getSharedPrefStr(this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.STUDENT_ID, "");
+        String matKhau = SharedPreferenceHelper.getInstance()
+                .getSharedPrefStr(this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.ACCOUNT_PASSWORD, "");
 
         return (!StringHelper.isNullOrEmpty(maSinhVien)) && (!StringHelper.isNullOrEmpty(matKhau));
     }
@@ -348,25 +332,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
-                String maSinhVien = Reference.getStudentId(MainActivity.this);
-                String token = getSharedPreferences(getString(R.string.share_pre_key_firebase), MODE_PRIVATE)
-                        .getString(getString(R.string.pre_key_token), null);
+                // Delete firbase token
+                String maSinhVien = SharedPreferenceHelper.getInstance()
+                        .getSharedPrefStr(MainActivity.this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.STUDENT_ID, "");
+                String token = SharedPreferenceHelper.getInstance()
+                        .getSharedPrefStr(MainActivity.this, "FIREBASE", "TOKEN", "");
                 FireBaseIDTask.deleteTokenFromAccount(maSinhVien, token);
-
+                // Clear all notification
                 NotificationManager nm = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
                 nm.cancelAll();
-
-                SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE).edit();
-                editor.remove(getString(R.string.pre_key_account_id));
-                editor.remove(getString(R.string.pre_key_student_id));
-                editor.remove(getString(R.string.pre_key_password));
-                editor.remove(getString(R.string.pre_key_student_name));
-                editor.remove(getString(R.string.pre_key_majors));
-                editor.remove(getString(R.string.pre_key_course));
-                editor.remove(getString(R.string.pre_key_semester));
-                editor.apply();
-
+                // Delete account info
+                getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE).edit().clear().apply();
+                // Delete schedule
+                DBHelper dbHelper = new DBHelper(MainActivity.this);
+                dbHelper.deleteAllRecord(DBHelper.SCHEDULE);
+                dbHelper.deleteAllRecord(DBHelper.NEWS);
+                // Start login screen
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
                 MainActivity.this.finish();
@@ -421,119 +402,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
             Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
-    }
-
-    private int selectedSemesterIndex;
-    private int attempSelectedSemesterIndex;
-
-    private void initSemsterDialog() {
-        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
-        String semesterId = sharedPreferences.getString(getString(R.string.pre_key_semester), null);
-        int index = Integer.parseInt(semesterId != null ? semesterId : "0");
-
-        semesters = new ArrayList<>();
-        semesters.add(new VHocKy("12", "2", "5", "2018", "2019"));
-        semesters.add(new VHocKy("11", "1", "5", "2018", "2019"));
-        semesters.add(new VHocKy("10", "3", "4", "2017", "2018"));
-        semesters.add(new VHocKy("9", "2", "4", "2017", "2018"));
-        semesters.add(new VHocKy("8", "1", "4", "2017", "2018"));
-        semesters.add(new VHocKy("7", "3", "3", "2016", "2017"));
-        semesters.add(new VHocKy("6", "2", "3", "2016", "2017"));
-        semesters.add(new VHocKy("5", "1", "3", "2016", "2017"));
-        semesters.add(new VHocKy("3", "3", "1", "2015", "2016"));
-        semesters.add(new VHocKy("2", "2", "1", "2015", "2016"));
-        semesters.add(new VHocKy("1", "1", "1", "2015", "2016"));
-        semesterAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_single_choice, semesters);
-
-        for (int i = 0; i < semesters.size(); i++) {
-            if (semesters.get(i).MaHocKy.equals(semesterId)) {
-                index = i;
-                break;
-            }
-        }
-        selectedSemesterIndex = index;
-    }
-
-    private void showSelectSemesterDialog() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(getString(R.string.action_selectSemester));
-        builder.setSingleChoiceItems(semesterAdapter, selectedSemesterIndex, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int index) {
-                attempSelectedSemesterIndex = index;
-                String hocKy = Objects.requireNonNull(semesterAdapter.getItem(index)).toString();
-                ((TextView) findViewById(R.id.tv_hocKiNamHoc)).setText(hocKy);
-                findViewById(R.id.tv_hocKiNamHoc).refreshDrawableState();
-            }
-        });
-        builder.setPositiveButton("Tác nghiệp", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                if (NetworkUtil.getConnectivityStatus(MainActivity.this) == NetworkUtil.TYPE_NOT_CONNECTED) {
-                    Toasty.custom(MainActivity.this, getString(R.string.error_network_disconected),
-                            getResources().getDrawable(R.drawable.ic_signal_wifi_off_white_24),
-                            getResources().getColor(R.color.colorRed),
-                            getResources().getColor(android.R.color.white),
-                            Toasty.LENGTH_SHORT, true, true)
-                            .show();
-                    return;
-                }
-
-                String maHocKyStr = Objects.requireNonNull(semesterAdapter.getItem(attempSelectedSemesterIndex)).MaHocKy;
-                new TacNghiepTask(maHocKyStr).execute();
-            }
-        });
-        builder.setNegativeButton("Thôi", null);
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
-
-    private void saveSelectedSemester(String id) {
-        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE).edit();
-        editor.putString(getString(R.string.pre_key_semester), id);
-        editor.apply();
-        selectedSemesterIndex = attempSelectedSemesterIndex;
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    private class TacNghiepTask extends AsyncTask<String, Void, Boolean> {
-        String responseMessage;
-        String maHocKy;
-
-        TacNghiepTask(String maHocKy) { this.maHocKy = maHocKy; }
-
-        @Override
-        protected Boolean doInBackground(String... strings) {
-            String url = Reference.HOST + "api/sinhvien/hocky/tacnghiep" +
-                    "?masinhvien=" + Reference.getStudentId(MainActivity.this) +
-                    "&matkhau=" + Reference.getAccountPassword(MainActivity.this) +
-                    "&mahocky=" + maHocKy;
-            Response response = NetworkUtil.makeRequest(url, false, null);
-            Log.d("DEBUG", url);
-            if (response == null) {
-                responseMessage = "Không tìm thấy máy chủ";
-                return false;
-            }
-
-            if (response.code() == NetworkUtil.OK) {
-                responseMessage = "Tác nghiệp thành công";
-                return true;
-            }
-
-            responseMessage = "Có lỗi xảy ra, thử lại sau";
-            return false;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            super.onPostExecute(aBoolean);
-
-            if (aBoolean) {
-                Toasty.success(MainActivity.this, responseMessage, Toasty.LENGTH_SHORT).show();
-                saveSelectedSemester(maHocKy);
-
-            } else {
-                Toasty.error(MainActivity.this, responseMessage, Toasty.LENGTH_SHORT).show();
-            }
         }
     }
 }

@@ -28,9 +28,4 @@
         android:title="Tin nhắn mới"
         app:showAsAction="ifRoom"
         tools:ignore="HardcodedText,UnusedAttribute" />
-    <item
-        android:id="@+id/action_selectSemester"
-        android:orderInCategory="104"
-        android:title="@string/action_selectSemester"
-        app:showAsAction="never" />
 </menu>

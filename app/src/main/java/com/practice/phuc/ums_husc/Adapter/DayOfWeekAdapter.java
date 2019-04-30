@@ -11,12 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.practice.phuc.ums_husc.Helper.DateHelper;
 import com.practice.phuc.ums_husc.R;
 import com.practice.phuc.ums_husc.ViewModel.ThoiKhoaBieu;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -39,9 +37,8 @@ public class DayOfWeekAdapter extends Adapter<DayOfWeekAdapter.DataViewHolder> {
     private SessionOfDayAdapter mMorningAdapter;
     private SessionOfDayAdapter mAfternoonAdapter;
     private SessionOfDayAdapter mEveningAdapter;
-    private boolean mNowIsInThisWeek;
+    private int mCurrentDayOfWeek;
     private Date mStartDateOfWeek;
-    private Date mEndDateOfWeek;
     private Date mTodate;
 
     private List<ThoiKhoaBieu> mClassList; // Danh sach cac lop hoc
@@ -53,10 +50,9 @@ public class DayOfWeekAdapter extends Adapter<DayOfWeekAdapter.DataViewHolder> {
     private List<ThoiKhoaBieu> mSaturdayClassList;
     private List<ThoiKhoaBieu> mSundayClassList;
 
-    public DayOfWeekAdapter(Context context, List<ThoiKhoaBieu> classList, Date startDateOfWeek, Date endDateOfWeek) {
+    public DayOfWeekAdapter(Context context, List<ThoiKhoaBieu> classList, Date startDateOfWeek) {
         mContext = context;
         mStartDateOfWeek = startDateOfWeek;
-        mEndDateOfWeek = endDateOfWeek;
         mClassList = classList;
         mMondayClassList = getClassesOnThisDay(MONDAY);
         mTuesdayClassList = getClassesOnThisDay(TUESDAY);
@@ -69,10 +65,11 @@ public class DayOfWeekAdapter extends Adapter<DayOfWeekAdapter.DataViewHolder> {
         mMorningAdapter = new SessionOfDayAdapter(mContext);
         mAfternoonAdapter = new SessionOfDayAdapter(mContext);
         mEveningAdapter = new SessionOfDayAdapter(mContext);
+        mCurrentDayOfWeek = -1;
     }
 
-    public void setNowIsInThisWeek(boolean value) {
-        mNowIsInThisWeek = value;
+    public void setCurrentDayOfWeek(int value) {
+        mCurrentDayOfWeek = value;
     }
 
     @Override
@@ -111,21 +108,15 @@ public class DayOfWeekAdapter extends Adapter<DayOfWeekAdapter.DataViewHolder> {
         setUpSessionRecyclerView(viewHolder.rvSessionMorning, mMorningAdapter);
         setUpSessionRecyclerView(viewHolder.rvSessionAfternoon, mAfternoonAdapter);
         setUpSessionRecyclerView(viewHolder.rvSessionEvening, mEveningAdapter);
-        // Neu hom nay la ngay nay, lam sang ngay nay len
-        setUpToday(viewHolder, i);
-    }
 
-    private void setUpToday(DataViewHolder viewHolder, int i) {
-        if (mNowIsInThisWeek) {
-            int toDayOfWeek = DateHelper.getCalendar().get(Calendar.DAY_OF_WEEK);
-            if ((toDayOfWeek == 1 && i == 6) || toDayOfWeek - 2 == i) {
-                viewHolder.tvDayOfWeek.append(" ( Hôm nay )");
-                viewHolder.tvDayOfWeek.setTextColor(mContext.getResources().getColor(R.color.colorWhite));
-                viewHolder.tvDayOfWeek.setTypeface(null, Typeface.BOLD);
-                viewHolder.tvDayOfMonth.setTextColor(mContext.getResources().getColor(R.color.colorWhite));
-                viewHolder.tvDayOfMonth.setTypeface(null, Typeface.BOLD);
-                viewHolder.layoutTitle.setBackgroundColor(mContext.getResources().getColor(R.color.colorPrimary));
-            }
+        // Neu hom nay la ngay nay, lam sang ngay nay len
+        if (mCurrentDayOfWeek == i) {
+            viewHolder.tvDayOfWeek.append(" ( Hôm nay )");
+            viewHolder.tvDayOfWeek.setTextColor(mContext.getResources().getColor(R.color.colorWhite));
+            viewHolder.tvDayOfWeek.setTypeface(null, Typeface.BOLD);
+            viewHolder.tvDayOfMonth.setTextColor(mContext.getResources().getColor(R.color.colorWhite));
+            viewHolder.tvDayOfMonth.setTypeface(null, Typeface.BOLD);
+            viewHolder.layoutTitle.setBackgroundColor(mContext.getResources().getColor(R.color.colorPrimary));
         }
     }
 

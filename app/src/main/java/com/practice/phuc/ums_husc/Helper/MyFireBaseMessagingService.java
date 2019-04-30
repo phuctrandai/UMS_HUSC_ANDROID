@@ -5,7 +5,6 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
@@ -20,6 +19,7 @@ import com.practice.phuc.ums_husc.Model.THONGBAO;
 import com.practice.phuc.ums_husc.Model.TINNHAN;
 import com.practice.phuc.ums_husc.NewsModule.DetailNewsActivity;
 import com.practice.phuc.ums_husc.R;
+import com.practice.phuc.ums_husc.SettingFragment;
 
 import java.util.Objects;
 
@@ -31,21 +31,23 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Log.d("DEBUG", "Nhận thông báo - xử lý ở đây !!!");
-        SharedPreferences mSharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE);
 
         if (remoteMessage.getData().size() > 0) {
             String messageType = remoteMessage.getData().get("type");
 
-            String accountId = Reference.getAccountId(this);
+            String accountId = SharedPreferenceHelper.getInstance()
+                    .getSharedPrefStr(this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.ACCOUNT_ID, "");
 
             if (messageType != null && messageType.equals(Reference.NEWS_NOTIFICATION)) {
-                boolean isAllow = mSharedPreferences.getBoolean(getString(R.string.share_pre_key_news), true);
+                boolean isAllow = SharedPreferenceHelper.getInstance()
+                        .getSharedPrefBool(this, SettingFragment.SHARED_SETTING, SettingFragment.SHARED_PRE_NEWS_NOTI, true);
                 if (isAllow && (!accountId.equals(""))) {
                     riseNotification(createNewsNotification(remoteMessage));
                 }
 
             } else if (messageType != null && messageType.equals(Reference.MESSAGE_NOTIFICATION)) {
-                boolean isAllow = mSharedPreferences.getBoolean(getString(R.string.share_pre_key_receive_message), true);
+                boolean isAllow = SharedPreferenceHelper.getInstance()
+                        .getSharedPrefBool(this, SettingFragment.SHARED_SETTING, SettingFragment.SHARED_PRE_MESSAGE_NOTI, true);
                 if (isAllow && (!accountId.equals(""))) {
                     riseNotification(createMessageNotification(remoteMessage));
                 }

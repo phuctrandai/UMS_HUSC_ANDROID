@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.practice.phuc.ums_husc.Model.THONGBAO;
 import com.practice.phuc.ums_husc.Model.TINNHAN;
 import com.practice.phuc.ums_husc.ViewModel.TaiKhoan;
+import com.practice.phuc.ums_husc.ViewModel.ThoiKhoaBieu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,17 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String MESSAGE_RECEIVER = "message_receiver";
     private static final String MESSAGE_SEEN_TIME = "message_seen_time";
 
-
+    public static final String SCHEDULE = "schedule";
+    private static final String CLASS_ID = "class_id";
+    private static final String CLASS_NAME = "class_name";
+    private static final String ROOM_NAME = "room_name";
+    private static final String ROOM_ID = "room_id";
+    private static final String START_HOUR = "start_hour";
+    private static final String END_HOUR = "end_hour";
+    private static final String DATE = "date";
+    private static final String DAY_OF_WEEK = "day_of_week";
+    private static final String TEACHER = "teacher";
+    private static final String SEMESTER = "semester";
 
     public DBHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -45,6 +56,7 @@ public class DBHelper extends SQLiteOpenHelper {
             createNewsTable(db);
             createMessageTable(db);
             createAccountTable(db);
+            createScheduleTable(db);
         }
     }
 
@@ -53,6 +65,7 @@ public class DBHelper extends SQLiteOpenHelper {
         createNewsTable(db);
         createMessageTable(db);
         createAccountTable(db);
+        createScheduleTable(db);
     }
 
     @Override
@@ -60,7 +73,88 @@ public class DBHelper extends SQLiteOpenHelper {
         DB_VERSION = oldVersion + 1;
         db.execSQL("DROP TABLE IF EXISTS " + NEWS);
         db.execSQL("DROP TABLE IF EXISTS " + MESSAGE);
+        db.execSQL("DROP TABLE IF EXISTS " + ACCOUNT);
+        db.execSQL("DROP TABLE IF EXISTS " + SCHEDULE);
         onCreate(db);
+    }
+
+    /*
+     * Method for schedule table
+     */
+    private void createScheduleTable(SQLiteDatabase db){
+        String CREATE_SCHEDULE_TABLE = "CREATE TABLE IF NOT EXISTS " + SCHEDULE + "("
+                + CLASS_ID + " TEXT,"
+                + CLASS_NAME + " TEXT,"
+                + ROOM_ID + " TEXT,"
+                + ROOM_NAME + " TEXT,"
+                + START_HOUR + " INTEGER,"
+                + END_HOUR + " INTEGER,"
+                + DATE + " TEXT,"
+                + DAY_OF_WEEK + " INTEGER,"
+                + TEACHER + " TEXT,"
+                + SEMESTER + " TEXT" + ")";
+        db.execSQL(CREATE_SCHEDULE_TABLE);
+    }
+
+    public List<ThoiKhoaBieu> getSchedule() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        List<ThoiKhoaBieu> list = new ArrayList<>();
+        ThoiKhoaBieu thoiKhoaBieu;
+        Cursor cursor = db.rawQuery("SELECT * FROM " + SCHEDULE
+                + " ORDER BY datetime("+ DATE +")", null);
+        while (cursor.moveToNext()){
+            thoiKhoaBieu = new ThoiKhoaBieu();
+            thoiKhoaBieu.MaLopHocPhan = cursor.getString(cursor.getColumnIndex(CLASS_ID));
+            thoiKhoaBieu.TenLopHocPhan = cursor.getString(cursor.getColumnIndex(CLASS_NAME));
+            thoiKhoaBieu.NgayHoc = cursor.getString(cursor.getColumnIndex(DATE));
+            thoiKhoaBieu.NgayTrongTuan = cursor.getInt(cursor.getColumnIndex(DAY_OF_WEEK));
+            thoiKhoaBieu.TietHocBatDau = cursor.getInt(cursor.getColumnIndex(START_HOUR));
+            thoiKhoaBieu.TietHocKetThuc = cursor.getInt(cursor.getColumnIndex(END_HOUR));
+            thoiKhoaBieu.TenPhong = cursor.getString(cursor.getColumnIndex(ROOM_NAME));
+            thoiKhoaBieu.PhongHoc = cursor.getString(cursor.getColumnIndex(ROOM_ID));
+            thoiKhoaBieu.HoVaTen = cursor.getString(cursor.getColumnIndex(TEACHER));
+            thoiKhoaBieu.HocKy = cursor.getString(cursor.getColumnIndex(SEMESTER));
+            list.add(thoiKhoaBieu);
+        }
+        cursor.close();
+        db.close();
+        return list;
+    }
+
+    public void insertSchedule(ThoiKhoaBieu thoiKhoaBieu) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(CLASS_ID, thoiKhoaBieu.MaLopHocPhan);
+        values.put(CLASS_NAME, thoiKhoaBieu.TenLopHocPhan);
+        values.put(ROOM_NAME, thoiKhoaBieu.TenPhong);
+        values.put(ROOM_ID, thoiKhoaBieu.PhongHoc);
+        values.put(START_HOUR, thoiKhoaBieu.TietHocBatDau);
+        values.put(END_HOUR, thoiKhoaBieu.TietHocKetThuc);
+        values.put(DATE, thoiKhoaBieu.NgayHoc);
+        values.put(DAY_OF_WEEK, thoiKhoaBieu.NgayTrongTuan);
+        values.put(TEACHER, thoiKhoaBieu.HoVaTen);
+        values.put(SEMESTER, thoiKhoaBieu.HocKy);
+        db.insert(SCHEDULE, null, values);
+        db.close();
+    }
+
+    public void insertSchedule(List<ThoiKhoaBieu> list) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        for(ThoiKhoaBieu thoiKhoaBieu : list) {
+            ContentValues values = new ContentValues();
+            values.put(CLASS_ID, thoiKhoaBieu.MaLopHocPhan);
+            values.put(CLASS_NAME, thoiKhoaBieu.TenLopHocPhan);
+            values.put(ROOM_NAME, thoiKhoaBieu.TenPhong);
+            values.put(ROOM_ID, thoiKhoaBieu.PhongHoc);
+            values.put(START_HOUR, thoiKhoaBieu.TietHocBatDau);
+            values.put(END_HOUR, thoiKhoaBieu.TietHocKetThuc);
+            values.put(DATE, thoiKhoaBieu.NgayHoc);
+            values.put(DAY_OF_WEEK, thoiKhoaBieu.NgayTrongTuan);
+            values.put(TEACHER, thoiKhoaBieu.HoVaTen);
+            values.put(SEMESTER, thoiKhoaBieu.HocKy);
+            db.insert(SCHEDULE, null, values);
+        }
+        db.close();
     }
 
     /*

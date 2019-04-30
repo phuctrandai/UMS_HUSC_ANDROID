@@ -46,7 +46,7 @@ public class WeekFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        mDayOfWeekAdapter = new DayOfWeekAdapter(mContext, mClassList, mStartDateOfWeek, mEndDateOfWeek);
+        mDayOfWeekAdapter = new DayOfWeekAdapter(mContext, mClassList, mStartDateOfWeek);
         super.onCreate(savedInstanceState);
     }
 
@@ -80,15 +80,16 @@ public class WeekFragment extends Fragment {
         Date now = DateHelper.getCalendar().getTime(); // Kiem tra ngay hien tai co thuoc tuan nay khong
         boolean isBetween = DateHelper.isBetweenTwoDate(mStartDateOfWeek, mEndDateOfWeek, now);
 
-        mDayOfWeekAdapter.setNowIsInThisWeek(isBetween);
-        mRvDayOfWeek.setAdapter(mDayOfWeekAdapter);
-
-        if (isBetween) {
+        int nowIndex = 0;
+        if (isBetween) { // Neu thuoc tuan nay, scoll xuong ngay hien tai
             int toDayOfWeek = DateHelper.getCalendar().get(Calendar.DAY_OF_WEEK);
             if (toDayOfWeek == 1)
-                mRvDayOfWeek.scrollToPosition(6);
+                nowIndex = 6;
             else
-                mRvDayOfWeek.scrollToPosition(toDayOfWeek - 2);
+                nowIndex = toDayOfWeek - 2;
+            mDayOfWeekAdapter.setCurrentDayOfWeek(nowIndex);
         }
+        mRvDayOfWeek.setAdapter(mDayOfWeekAdapter);
+        mRvDayOfWeek.scrollToPosition(nowIndex);
     }
 }
