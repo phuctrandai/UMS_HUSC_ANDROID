@@ -231,9 +231,15 @@ public class ScheduleFragment extends Fragment {
         if (classList == null || classList.size() == 0)
             return DateHelper.getTheFirstDateOfWeek(DateHelper.getCalendar().getTime());
 
-        String ngayBatDauStr = classList.get(0).NgayHoc.substring(0, 10);
+        String ngayBatDauStr = classList.get(0).NgayHoc;
+
+        if (ngayBatDauStr.length() > 10) {
+            ngayBatDauStr = ngayBatDauStr.substring(0, 10);
+        }
+
         ngayBatDauStr = DateHelper.formatYMDToDMY(ngayBatDauStr);
         Date date = DateHelper.stringToDate(ngayBatDauStr, "dd/MM/yyyy");
+
         date = DateHelper.getTheFirstDateOfWeek(date);
         return date;
     }
@@ -242,8 +248,14 @@ public class ScheduleFragment extends Fragment {
         if (classList == null || classList.size() == 0)
             return DateHelper.getCalendar().getTime();
 
-        String ngayKetThucStr = classList.get(classList.size() - 1).NgayHoc.substring(0, 10);
+        String ngayKetThucStr = classList.get(classList.size() - 1).NgayHoc;
+
+        if (ngayKetThucStr.length() > 10) {
+            ngayKetThucStr = ngayKetThucStr.substring(0, 10);
+        }
+
         ngayKetThucStr = DateHelper.formatYMDToDMY(ngayKetThucStr);
+
         return DateHelper.stringToDate(ngayKetThucStr, "dd/MM/yyyy");
     }
 

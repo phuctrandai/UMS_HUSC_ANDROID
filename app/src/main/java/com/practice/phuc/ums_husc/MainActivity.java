@@ -18,12 +18,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.Helper.DBHelper;
+import com.practice.phuc.ums_husc.Helper.DateHelper;
 import com.practice.phuc.ums_husc.Helper.FireBaseIDTask;
 import com.practice.phuc.ums_husc.Helper.MessageTaskHelper;
 import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
@@ -36,7 +38,10 @@ import com.practice.phuc.ums_husc.NewsModule.DetailNewsActivity;
 import com.practice.phuc.ums_husc.NewsModule.MainFragment;
 import com.practice.phuc.ums_husc.ResumeModule.ResumeFragment;
 import com.practice.phuc.ums_husc.ScheduleModule.ScheduleFragment;
+import com.practice.phuc.ums_husc.ViewModel.ThoiKhoaBieu;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -193,6 +198,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             break;
                         case R.id.nav_sign_out:
                             logOut();
+                            break;
+                        case R.id.nav_app_info:
+
                             break;
                         default:
                             break;

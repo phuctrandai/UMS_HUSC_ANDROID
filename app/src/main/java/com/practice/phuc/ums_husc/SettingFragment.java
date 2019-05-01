@@ -80,7 +80,7 @@ public class SettingFragment extends PreferenceFragmentCompat {
                 SharedPreferenceHelper.getInstance()
                         .setSharedPref(mContext, SHARED_SETTING, SHARED_PRE_TIMETABLE_ALARM, (boolean) newValue);
                 if ((boolean) newValue) {
-                    ScheduleDailyNotification.setReminder(mContext, 1, ScheduleReceiver.class, 24, 0);
+                    ScheduleDailyNotification.setReminder(mContext, 1, ScheduleReceiver.class, 0, 0);
 
                 } else {
 

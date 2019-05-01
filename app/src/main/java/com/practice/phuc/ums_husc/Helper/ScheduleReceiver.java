@@ -5,10 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.practice.phuc.ums_husc.Model.LOPHOCPHAN;
+import com.practice.phuc.ums_husc.ViewModel.ThoiKhoaBieu;
 
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class ScheduleReceiver extends BroadcastReceiver {
@@ -17,24 +17,20 @@ public class ScheduleReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.d("DEBUG", "ALARM !!!!!!!!!!!");
 
-        /*TODO: Get classes from DB*/
-        List<LOPHOCPHAN> todayClasses = new ArrayList<>();
-        LOPHOCPHAN l = new LOPHOCPHAN(
-                "2018-2019.1.TIN4063.001", "Phần mềm mã nguồn mở - Nhóm 1",
-                "Lab 5_CNTT", 5, 7, "Nguyễn Dũng",
-                "20/01/2019", "10/05/2019", DateHelper.MONDAY
-        );
-        todayClasses.add(l);
+        DBHelper mDBHelper = new DBHelper(context);
+        Date now = DateHelper.getCalendar().getTime();
+        int dayOfMonth = DateHelper.getDayOfMonth(now);
+        int month = DateHelper.getMonth(now);
+        int year = DateHelper.getYear(now);
+        String dayOfMonthStr = dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth + "";
+        String monthStr = month < 10 ? "0" + month : month + "";
+        String dateStr = year + "-" + monthStr + "-" + dayOfMonthStr;
+        List<ThoiKhoaBieu> todayClasses = mDBHelper.getSchedule(dateStr);
 
-        l = new LOPHOCPHAN(
-                "2018-2019.1.TIN4133.001", "Quản trị dự án phần mềm - Nhóm 1",
-                "Lab 2_CNTT", 2, 4, "Nguyễn Mậu Hân",
-                "20/01/2019", "03/05/2019", DateHelper.MONDAY
-        );
-        todayClasses.add(l);
-
-        ScheduleDailyNotification.riseNotification(
-                context, ((int) (Calendar.getInstance().getTimeInMillis() / 1000)),
-                ScheduleDailyNotification.createScheduleNotification(context, todayClasses));
+        if (todayClasses.size() > 0) {
+            ScheduleDailyNotification.riseNotification(
+                    context, ((int) (Calendar.getInstance().getTimeInMillis() / 1000)),
+                    ScheduleDailyNotification.createScheduleNotification(context, todayClasses));
+        }
     }
 }

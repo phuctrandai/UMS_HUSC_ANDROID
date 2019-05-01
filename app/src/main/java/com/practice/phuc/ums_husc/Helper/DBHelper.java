@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.practice.phuc.ums_husc.Model.THONGBAO;
 import com.practice.phuc.ums_husc.Model.TINNHAN;
@@ -81,7 +82,7 @@ public class DBHelper extends SQLiteOpenHelper {
     /*
      * Method for schedule table
      */
-    private void createScheduleTable(SQLiteDatabase db){
+    private void createScheduleTable(SQLiteDatabase db) {
         String CREATE_SCHEDULE_TABLE = "CREATE TABLE IF NOT EXISTS " + SCHEDULE + "("
                 + CLASS_ID + " TEXT,"
                 + CLASS_NAME + " TEXT,"
@@ -101,8 +102,35 @@ public class DBHelper extends SQLiteOpenHelper {
         List<ThoiKhoaBieu> list = new ArrayList<>();
         ThoiKhoaBieu thoiKhoaBieu;
         Cursor cursor = db.rawQuery("SELECT * FROM " + SCHEDULE
-                + " ORDER BY datetime("+ DATE +")", null);
-        while (cursor.moveToNext()){
+                + " ORDER BY datetime(" + DATE + ")", null);
+        while (cursor.moveToNext()) {
+            thoiKhoaBieu = new ThoiKhoaBieu();
+            thoiKhoaBieu.MaLopHocPhan = cursor.getString(cursor.getColumnIndex(CLASS_ID));
+            thoiKhoaBieu.TenLopHocPhan = cursor.getString(cursor.getColumnIndex(CLASS_NAME));
+            thoiKhoaBieu.NgayHoc = cursor.getString(cursor.getColumnIndex(DATE));
+            thoiKhoaBieu.NgayTrongTuan = cursor.getInt(cursor.getColumnIndex(DAY_OF_WEEK));
+            thoiKhoaBieu.TietHocBatDau = cursor.getInt(cursor.getColumnIndex(START_HOUR));
+            thoiKhoaBieu.TietHocKetThuc = cursor.getInt(cursor.getColumnIndex(END_HOUR));
+            thoiKhoaBieu.TenPhong = cursor.getString(cursor.getColumnIndex(ROOM_NAME));
+            thoiKhoaBieu.PhongHoc = cursor.getString(cursor.getColumnIndex(ROOM_ID));
+            thoiKhoaBieu.HoVaTen = cursor.getString(cursor.getColumnIndex(TEACHER));
+            thoiKhoaBieu.HocKy = cursor.getString(cursor.getColumnIndex(SEMESTER));
+            list.add(thoiKhoaBieu);
+        }
+        cursor.close();
+        db.close();
+        return list;
+    }
+
+    public List<ThoiKhoaBieu> getSchedule(String date) {
+        Log.d("DEBUG", "getSchedule() called with: date = [" + date + "]");
+        SQLiteDatabase db = this.getWritableDatabase();
+        List<ThoiKhoaBieu> list = new ArrayList<>();
+        ThoiKhoaBieu thoiKhoaBieu;
+        Cursor cursor = db.rawQuery("SELECT * FROM " + SCHEDULE
+                + " WHERE " + DATE + " LIKE " + "'%" + date + "'"
+                + " ORDER BY datetime(" + DATE + ")", null);
+        while (cursor.moveToNext()) {
             thoiKhoaBieu = new ThoiKhoaBieu();
             thoiKhoaBieu.MaLopHocPhan = cursor.getString(cursor.getColumnIndex(CLASS_ID));
             thoiKhoaBieu.TenLopHocPhan = cursor.getString(cursor.getColumnIndex(CLASS_NAME));
@@ -140,7 +168,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public void insertSchedule(List<ThoiKhoaBieu> list) {
         SQLiteDatabase db = this.getWritableDatabase();
-        for(ThoiKhoaBieu thoiKhoaBieu : list) {
+        for (ThoiKhoaBieu thoiKhoaBieu : list) {
+            String ngayBatDauStr = thoiKhoaBieu.NgayHoc.substring(0, 10);
+
             ContentValues values = new ContentValues();
             values.put(CLASS_ID, thoiKhoaBieu.MaLopHocPhan);
             values.put(CLASS_NAME, thoiKhoaBieu.TenLopHocPhan);
@@ -148,7 +178,7 @@ public class DBHelper extends SQLiteOpenHelper {
             values.put(ROOM_ID, thoiKhoaBieu.PhongHoc);
             values.put(START_HOUR, thoiKhoaBieu.TietHocBatDau);
             values.put(END_HOUR, thoiKhoaBieu.TietHocKetThuc);
-            values.put(DATE, thoiKhoaBieu.NgayHoc);
+            values.put(DATE, ngayBatDauStr);
             values.put(DAY_OF_WEEK, thoiKhoaBieu.NgayTrongTuan);
             values.put(TEACHER, thoiKhoaBieu.HoVaTen);
             values.put(SEMESTER, thoiKhoaBieu.HocKy);

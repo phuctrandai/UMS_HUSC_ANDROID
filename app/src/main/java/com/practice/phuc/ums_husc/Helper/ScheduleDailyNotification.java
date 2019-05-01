@@ -11,8 +11,8 @@ import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
 
-import com.practice.phuc.ums_husc.Model.LOPHOCPHAN;
 import com.practice.phuc.ums_husc.R;
+import com.practice.phuc.ums_husc.ViewModel.ThoiKhoaBieu;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -25,8 +25,8 @@ public class ScheduleDailyNotification {
     public static void setReminder(Context context, int requestCode, Class<?> cls, int hour, int min) {
         Calendar calendar = Calendar.getInstance();
         Calendar setcalendar = Calendar.getInstance();
-        setcalendar.set(Calendar.HOUR_OF_DAY, hour);
-        setcalendar.set(Calendar.MINUTE, min);
+        setcalendar.set(Calendar.HOUR_OF_DAY, 16);
+        setcalendar.set(Calendar.MINUTE, 50);
         setcalendar.set(Calendar.SECOND, 0);
 
         if (setcalendar.before(calendar))
@@ -73,25 +73,25 @@ public class ScheduleDailyNotification {
         return mBuilder;
     }
 
-    static Notification createScheduleNotification(Context context, List<LOPHOCPHAN> classes) {
+    static Notification createScheduleNotification(Context context, List<ThoiKhoaBieu> classes) {
         Date now = DateHelper.getCalendar().getTime();
         String today = DateHelper.getDayOfWeekStr(now) + " ngày " + DateHelper.toShortDateString(now);
         StringBuilder schedule = new StringBuilder();
 
         for (int i = 0; i < classes.size(); i++) {
-            LOPHOCPHAN item = classes.get(i);
+            schedule.append("\n");
+            ThoiKhoaBieu item = classes.get(i);
             String no = i + 1 + ". ";
             schedule.append(no);
-            schedule.append(item.getTenLopHocPhan());
-            schedule.append("\n     Phòng : ");
-            schedule.append(item.getPhongHoc());
-            schedule.append("\n     Tiết : ");
-            schedule.append(item.getTietBatDau());
+            schedule.append(item.TenLopHocPhan);
+            schedule.append("\n * Phòng : ");
+            schedule.append(item.TenPhong);
+            schedule.append("\n * Tiết : ");
+            schedule.append(item.TietHocBatDau);
             schedule.append(" - ");
-            schedule.append(item.getTietKetThuc());
-            schedule.append("\n     Giáo viên : ");
-            schedule.append(item.getGiaoVien());
-            schedule.append("\n");
+            schedule.append(item.TietHocKetThuc);
+            schedule.append("\n * Giáo viên : ");
+            schedule.append(item.HoVaTen);
         }
 
         NotificationCompat.Builder builder = createNotificationCompatBuilder(context);
