@@ -28,7 +28,8 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             tools:ignore="InnerclassSeparator" />
-        <activity android:name=".ScheduleModule.ScheduleAlarmActivity"
+        <activity
+            android:name=".ScheduleModule.ScheduleAlarmActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             tools:ignore="InnerclassSeparator" />
@@ -78,6 +79,10 @@
         </service>
 
         <receiver
+            android:name=".ScheduleModule.DailyReceiver"
+            tools:ignore="InnerclassSeparator" />
+
+        <receiver
             android:name=".ScheduleModule.ScheduleReceiver"
             tools:ignore="ExportedReceiver,InnerclassSeparator">
             <intent-filter>
@@ -85,11 +90,13 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".ScheduleModule.WakeUpAlarmReceiver"
+        <receiver
+            android:name=".ScheduleModule.WakeUpAlarmReceiver"
             android:enabled="true"
             tools:ignore="InnerclassSeparator">
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>

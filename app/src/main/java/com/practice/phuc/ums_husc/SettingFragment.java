@@ -1,6 +1,7 @@
 package com.practice.phuc.ums_husc;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,9 +13,9 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.SwitchPreferenceCompat;
 import android.view.View;
 
-import com.practice.phuc.ums_husc.ScheduleModule.ScheduleDailyNotification;
-import com.practice.phuc.ums_husc.ScheduleModule.ScheduleReceiver;
 import com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper;
+import com.practice.phuc.ums_husc.ScheduleModule.DailyReceiver;
+import com.practice.phuc.ums_husc.ScheduleModule.ScheduleDailyNotification;
 import com.practice.phuc.ums_husc.ScheduleModule.SelectingSemesterActivity;
 
 public class SettingFragment extends PreferenceFragmentCompat {
@@ -80,18 +81,11 @@ public class SettingFragment extends PreferenceFragmentCompat {
                 SharedPreferenceHelper.getInstance()
                         .setSharedPref(mContext, SHARED_SETTING, SHARED_PRE_TIMETABLE_ALARM, (boolean) newValue);
                 if ((boolean) newValue) {
-                    ScheduleDailyNotification.setReminder(mContext, 1, ScheduleReceiver.class, 18, 0);
-                    ScheduleDailyNotification.setReminder(mContext, 2, ScheduleReceiver.class, 19, 0);
-                    ScheduleDailyNotification.setReminder(mContext, 3, ScheduleReceiver.class, 20, 0);
-                    ScheduleDailyNotification.setReminder(mContext, 4, ScheduleReceiver.class, 21, 0);
-                    ScheduleDailyNotification.setReminder(mContext, 5, ScheduleReceiver.class, 22, 8);
+                    ScheduleDailyNotification.setReminder(mContext, 1501, DailyReceiver.class,
+                            AlarmManager.INTERVAL_DAY, 0, 0);
 
                 } else {
-
-                    for (int i = 1; i <= 5; i++) {
-                        ScheduleDailyNotification.cancelReminder(mContext, i, ScheduleReceiver.class);
-                    }
-
+                    ScheduleDailyNotification.cancelReminder(mContext, 1501, DailyReceiver.class);
                 }
                 return true;
             }

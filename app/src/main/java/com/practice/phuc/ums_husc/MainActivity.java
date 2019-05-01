@@ -24,6 +24,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.Helper.DBHelper;
+import com.practice.phuc.ums_husc.Helper.DateHelper;
+import com.practice.phuc.ums_husc.ScheduleModule.DailyReceiver;
 import com.practice.phuc.ums_husc.Service.FireBaseIDTask;
 import com.practice.phuc.ums_husc.MessageModule.MessageTaskHelper;
 import com.practice.phuc.ums_husc.Service.MyFireBaseMessagingService;
@@ -197,7 +199,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             logOut();
                             break;
                         case R.id.nav_app_info:
-
+                            int h = DateHelper.getHourOfDay(DateHelper.getCalendar().getTime());
+                            int m = DateHelper.getMinute(DateHelper.getCalendar().getTime()) + 1;
+                            ScheduleDailyNotification.setReminder(MainActivity.this, 1997, ScheduleReceiver.class,
+                                    -1, h, m);
                             break;
                         default:
                             break;
@@ -213,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void replaceFragment(Fragment fragment) {
         String fragmentTag = fragment.getClass().getName();
         FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
 
         updateByFragmentTag(fragmentTag);
 
@@ -356,9 +361,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 dbHelper.deleteAllRecord(DBHelper.SCHEDULE);
                 dbHelper.deleteAllRecord(DBHelper.NEWS);
                 // Cancel alarm
-                for (int i = 1; i <= 4; i++) {
-                    ScheduleDailyNotification.cancelReminder(MainActivity.this, i, ScheduleReceiver.class);
-                }
+                ScheduleDailyNotification.cancelReminder(MainActivity.this, 1501, DailyReceiver.class);
                 // Start login screen
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);

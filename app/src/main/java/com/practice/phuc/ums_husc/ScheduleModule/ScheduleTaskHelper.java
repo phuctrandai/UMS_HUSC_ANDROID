@@ -1,6 +1,7 @@
 package com.practice.phuc.ums_husc.ScheduleModule;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.content.Context;
 import android.os.AsyncTask;
 
@@ -79,11 +80,8 @@ public class ScheduleTaskHelper {
                 if (thoiKhoaBieus != null && thoiKhoaBieus.size() > 0) {
                     mDBHelper.deleteAllRecord(DBHelper.SCHEDULE);
                     mDBHelper.insertSchedule(thoiKhoaBieus);
-                    ScheduleDailyNotification.setReminder(mContext, 1, ScheduleReceiver.class, 18, 0);
-                    ScheduleDailyNotification.setReminder(mContext, 2, ScheduleReceiver.class, 19, 0);
-                    ScheduleDailyNotification.setReminder(mContext, 3, ScheduleReceiver.class, 20, 0);
-                    ScheduleDailyNotification.setReminder(mContext, 4, ScheduleReceiver.class, 21, 0);
-                    ScheduleDailyNotification.setReminder(mContext, 5, ScheduleReceiver.class, 0, 0);
+                    ScheduleDailyNotification.setReminder(mContext, 1501, DailyReceiver.class,
+                            AlarmManager.INTERVAL_DAY, 0, 0);
                 }
             }
         }

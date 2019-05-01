@@ -24,7 +24,7 @@ import static android.content.Context.ALARM_SERVICE;
 
 public class ScheduleDailyNotification {
 
-    public static void setReminder(Context context, int requestCode, Class<?> cls, int hour, int min) {
+    public static void setReminder(Context context, int requestCode, Class<?> cls, long interval, int hour, int min) {
         Calendar calendar = Calendar.getInstance();
         Calendar setcalendar = Calendar.getInstance();
         setcalendar.set(Calendar.HOUR_OF_DAY, hour);
@@ -45,8 +45,14 @@ public class ScheduleDailyNotification {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode,
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
-        am.setInexactRepeating(AlarmManager.RTC_WAKEUP, setcalendar.getTimeInMillis(),
-                AlarmManager.INTERVAL_DAY, pendingIntent);
+
+        if (interval != -1) {
+            am.setInexactRepeating(AlarmManager.RTC_WAKEUP, setcalendar.getTimeInMillis(),
+                    interval, pendingIntent);
+        } else {
+            am.set(AlarmManager.RTC_WAKEUP, setcalendar.getTimeInMillis(), pendingIntent);
+        }
+
     }
 
     public static void cancelReminder(Context context, int requestCode, Class<?> cls) {
