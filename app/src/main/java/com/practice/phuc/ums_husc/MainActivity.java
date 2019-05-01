@@ -18,18 +18,18 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.Helper.DBHelper;
-import com.practice.phuc.ums_husc.Helper.DateHelper;
 import com.practice.phuc.ums_husc.Helper.FireBaseIDTask;
 import com.practice.phuc.ums_husc.Helper.MessageTaskHelper;
 import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.Helper.Reference;
+import com.practice.phuc.ums_husc.Helper.ScheduleDailyNotification;
+import com.practice.phuc.ums_husc.Helper.ScheduleReceiver;
 import com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper;
 import com.practice.phuc.ums_husc.Helper.StringHelper;
 import com.practice.phuc.ums_husc.MessageModule.DetailMessageActivity;
@@ -38,10 +38,7 @@ import com.practice.phuc.ums_husc.NewsModule.DetailNewsActivity;
 import com.practice.phuc.ums_husc.NewsModule.MainFragment;
 import com.practice.phuc.ums_husc.ResumeModule.ResumeFragment;
 import com.practice.phuc.ums_husc.ScheduleModule.ScheduleFragment;
-import com.practice.phuc.ums_husc.ViewModel.ThoiKhoaBieu;
 
-import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -358,6 +355,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 DBHelper dbHelper = new DBHelper(MainActivity.this);
                 dbHelper.deleteAllRecord(DBHelper.SCHEDULE);
                 dbHelper.deleteAllRecord(DBHelper.NEWS);
+                // Cancel alarm
+                for (int i = 1; i <= 4; i++) {
+                    ScheduleDailyNotification.cancelReminder(MainActivity.this, i, ScheduleReceiver.class);
+                }
                 // Start login screen
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);

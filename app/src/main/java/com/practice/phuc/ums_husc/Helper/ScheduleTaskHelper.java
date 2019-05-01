@@ -27,16 +27,18 @@ public class ScheduleTaskHelper {
 
     public void fetchSchedule(Context context, String maSinhVien, String matKhau, int maHocKy){
         mDBHelper = new DBHelper(context);
-        new ScheduleTask(maSinhVien, matKhau, maHocKy).execute((String) null);
+        new ScheduleTask(context, maSinhVien, matKhau, maHocKy).execute((String) null);
     }
 
     @SuppressLint("StaticFieldLeak")
     private class ScheduleTask extends AsyncTask<String, Void, Boolean> {
+        private Context mContext;
         private int maHocKy;
         private String maSinhVien;
         private String matKhau;
 
-        private ScheduleTask(String maSinhVien, String matKhau, int maHocKy) {
+        private ScheduleTask(Context context, String maSinhVien, String matKhau, int maHocKy) {
+            this.mContext = context;
             this.maSinhVien = maSinhVien;
             this.matKhau = matKhau;
             this.maHocKy = maHocKy;
@@ -74,6 +76,11 @@ public class ScheduleTaskHelper {
                 if (thoiKhoaBieus != null && thoiKhoaBieus.size() > 0) {
                     mDBHelper.deleteAllRecord(DBHelper.SCHEDULE);
                     mDBHelper.insertSchedule(thoiKhoaBieus);
+                    ScheduleDailyNotification.setReminder(mContext, 1, ScheduleReceiver.class, 18, 0);
+                    ScheduleDailyNotification.setReminder(mContext, 2, ScheduleReceiver.class, 19, 0);
+                    ScheduleDailyNotification.setReminder(mContext, 3, ScheduleReceiver.class, 20, 0);
+                    ScheduleDailyNotification.setReminder(mContext, 4, ScheduleReceiver.class, 21, 0);
+                    ScheduleDailyNotification.setReminder(mContext, 5, ScheduleReceiver.class, 0, 0);
                 }
             }
         }

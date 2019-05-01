@@ -25,8 +25,8 @@ public class ScheduleDailyNotification {
     public static void setReminder(Context context, int requestCode, Class<?> cls, int hour, int min) {
         Calendar calendar = Calendar.getInstance();
         Calendar setcalendar = Calendar.getInstance();
-        setcalendar.set(Calendar.HOUR_OF_DAY, 16);
-        setcalendar.set(Calendar.MINUTE, 50);
+        setcalendar.set(Calendar.HOUR_OF_DAY, hour);
+        setcalendar.set(Calendar.MINUTE, min);
         setcalendar.set(Calendar.SECOND, 0);
 
         if (setcalendar.before(calendar))

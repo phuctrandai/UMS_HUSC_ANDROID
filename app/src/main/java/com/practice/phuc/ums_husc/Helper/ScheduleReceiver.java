@@ -32,5 +32,7 @@ public class ScheduleReceiver extends BroadcastReceiver {
                     context, ((int) (Calendar.getInstance().getTimeInMillis() / 1000)),
                     ScheduleDailyNotification.createScheduleNotification(context, todayClasses));
         }
+
+
     }
 }

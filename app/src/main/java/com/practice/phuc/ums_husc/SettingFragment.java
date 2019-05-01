@@ -80,11 +80,14 @@ public class SettingFragment extends PreferenceFragmentCompat {
                 SharedPreferenceHelper.getInstance()
                         .setSharedPref(mContext, SHARED_SETTING, SHARED_PRE_TIMETABLE_ALARM, (boolean) newValue);
                 if ((boolean) newValue) {
-                    ScheduleDailyNotification.setReminder(mContext, 1, ScheduleReceiver.class, 0, 0);
+                    ScheduleDailyNotification.setReminder(mContext, 1, ScheduleReceiver.class, 18, 0);
+                    ScheduleDailyNotification.setReminder(mContext, 2, ScheduleReceiver.class, 19, 0);
+                    ScheduleDailyNotification.setReminder(mContext, 3, ScheduleReceiver.class, 20, 0);
+                    ScheduleDailyNotification.setReminder(mContext, 4, ScheduleReceiver.class, 21, 0);
 
                 } else {
 
-                    for (int i = 0; i < 10; i++) {
+                    for (int i = 1; i <= 4; i++) {
                         ScheduleDailyNotification.cancelReminder(mContext, i, ScheduleReceiver.class);
                     }
 
