@@ -19,7 +19,7 @@ import android.widget.TextView;
 import com.practice.phuc.ums_husc.Helper.CustomSnackbar;
 import com.practice.phuc.ums_husc.Helper.DateHelper;
 import com.practice.phuc.ums_husc.Helper.JustifyTextInTextView;
-import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
+import com.practice.phuc.ums_husc.Service.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.Helper.StringHelper;

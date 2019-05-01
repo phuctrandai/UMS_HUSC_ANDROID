@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -23,6 +25,10 @@
         <activity
             android:name=".ScheduleModule.SelectingSemesterActivity"
             android:label="Chọn học kì tác nghiệp"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            tools:ignore="InnerclassSeparator" />
+        <activity android:name=".ScheduleModule.ScheduleAlarmActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             tools:ignore="InnerclassSeparator" />
@@ -62,7 +68,7 @@
         </activity>
 
         <service
-            android:name=".Helper.MyFireBaseMessagingService"
+            android:name=".Service.MyFireBaseMessagingService"
             android:exported="false"
             android:stopWithTask="false"
             tools:ignore="InnerclassSeparator">
@@ -72,10 +78,20 @@
         </service>
 
         <receiver
-            android:name=".Helper.ScheduleReceiver"
+            android:name=".ScheduleModule.ScheduleReceiver"
             tools:ignore="ExportedReceiver,InnerclassSeparator">
             <intent-filter>
                 <action android:name="com.practice.phuc.ums_husc.Helper.ScheduleReceiver" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".ScheduleModule.WakeUpAlarmReceiver"
+            android:enabled="true"
+            tools:ignore="InnerclassSeparator">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 

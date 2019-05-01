@@ -26,8 +26,6 @@ import android.widget.LinearLayout;
 import com.practice.phuc.ums_husc.Adapter.MessageRecyclerDataAdapter;
 import com.practice.phuc.ums_husc.Helper.CustomSnackbar;
 import com.practice.phuc.ums_husc.Helper.DBHelper;
-import com.practice.phuc.ums_husc.Helper.MessageItemTouchHelper;
-import com.practice.phuc.ums_husc.Helper.MessageTaskHelper;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.Model.TINNHAN;

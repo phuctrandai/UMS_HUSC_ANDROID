@@ -1,9 +1,11 @@
-package com.practice.phuc.ums_husc.Helper;
+package com.practice.phuc.ums_husc.MessageModule;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.practice.phuc.ums_husc.Helper.NetworkUtil;
+import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.Model.TINNHAN;
 
 import java.util.ArrayList;
@@ -38,21 +40,21 @@ public class MessageTaskHelper {
     private List<TINNHAN> mAttempRestoreSentMessage;
     private List<TINNHAN> mAttempRestoreReceivedMessage;
 
-    public List<TINNHAN> getAttempDeletemessage() {
+    List<TINNHAN> getAttempDeletemessage() {
         return mAttempDeleteMessage;
     }
-    public List<TINNHAN> getAttempRestoreSentMessage() {
+    List<TINNHAN> getAttempRestoreSentMessage() {
         return mAttempRestoreSentMessage;
     }
-    public List<TINNHAN> getAttempRestoreReceivedMessage() {
+    List<TINNHAN> getAttempRestoreReceivedMessage() {
         return mAttempRestoreReceivedMessage;
     }
 
-    public void insertAttempDeleteMessage(TINNHAN message) {
+    void insertAttempDeleteMessage(TINNHAN message) {
         mAttempDeleteMessage.add(message);
     }
 
-    public void removeAttempDeleteMessage(TINNHAN message) {
+    void removeAttempDeleteMessage(TINNHAN message) {
         for (int i = 0; i < mAttempDeleteMessage.size(); i++) {
             if (mAttempDeleteMessage.get(i).MaTinNhan.equals(message.MaTinNhan)) {
                 mAttempDeleteMessage.remove(i);
@@ -70,7 +72,7 @@ public class MessageTaskHelper {
         }
     }
 
-    public void insertAttempRestoreSentMessage(TINNHAN message) {
+    void insertAttempRestoreSentMessage(TINNHAN message) {
         mAttempRestoreSentMessage.add(message);
     }
 
@@ -83,7 +85,7 @@ public class MessageTaskHelper {
         }
     }
 
-    public void insertAttempRestoreReceivedMessage(TINNHAN message) {
+    void insertAttempRestoreReceivedMessage(TINNHAN message) {
         mAttempRestoreReceivedMessage.add(message);
     }
 
@@ -96,13 +98,13 @@ public class MessageTaskHelper {
         }
     }
 
-    public void updateSeenTime(int messageId, String maSinhVien, String matKhau) {
+    void updateSeenTime(int messageId, String maSinhVien, String matKhau) {
         String url = Reference.getUpdateThoiDiemXemTinNhanApiUrl(maSinhVien, matKhau, String.valueOf(messageId));
 
         new Task(Task.DO_UPDATE_SEEN_TIME).execute(url);
     }
 
-    public void attempDelete(String messageId, String maSinhVien, String matKhau) {
+    void attempDelete(String messageId, String maSinhVien, String matKhau) {
         int count = MessageTaskHelper.getInstance().mAttempDeleteMessage.size();
 
         if (count > 0) {
@@ -114,14 +116,14 @@ public class MessageTaskHelper {
         }
     }
 
-    public void foreverDelete(String messageId, String maSinhVien, String matKhau) {
+    void foreverDelete(String messageId, String maSinhVien, String matKhau) {
         String url = Reference.getForeverDeleteTinNhanApiUrl(maSinhVien, matKhau, messageId);
         Log.e("DEBUG", "Request to server: " + url);
 
         new Task(Task.DO_FOREVER_DELETE).execute(url);
     }
 
-    public void restore(String messageId, String maSinhVien, String matKhau) {
+    void restore(String messageId, String maSinhVien, String matKhau) {
         String url = Reference.getRestoreDeletedTinNhanApiUrl(maSinhVien, matKhau, messageId);
         Log.e("DEBUG", "Request to server: " + url);
 

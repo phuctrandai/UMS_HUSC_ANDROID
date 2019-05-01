@@ -1,9 +1,12 @@
-package com.practice.phuc.ums_husc.Helper;
+package com.practice.phuc.ums_husc.ScheduleModule;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.practice.phuc.ums_husc.Helper.DBHelper;
+import com.practice.phuc.ums_husc.Helper.NetworkUtil;
+import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.ViewModel.ThoiKhoaBieu;
 
 import java.io.IOException;

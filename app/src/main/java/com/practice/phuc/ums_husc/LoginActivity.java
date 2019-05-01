@@ -17,11 +17,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.practice.phuc.ums_husc.Helper.FireBaseIDTask;
-import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
+import com.practice.phuc.ums_husc.Service.FireBaseIDTask;
+import com.practice.phuc.ums_husc.Service.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
-import com.practice.phuc.ums_husc.Helper.ScheduleTaskHelper;
+import com.practice.phuc.ums_husc.ScheduleModule.ScheduleTaskHelper;
 import com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper;
 import com.practice.phuc.ums_husc.ViewModel.ThongTinCaNhan;
 import com.squareup.moshi.JsonAdapter;

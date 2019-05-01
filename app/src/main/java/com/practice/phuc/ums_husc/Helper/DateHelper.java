@@ -73,7 +73,7 @@ public class DateHelper {
     }
 
     // MM/DD/YYYY hh:mm:ss pm -> DD/MM/YYYY hh:mm pm
-    static String formatDateTimeString(String dateTimeString) {
+    public static String formatDateTimeString(String dateTimeString) {
         String result = "";
         if (dateTimeString != null) {
             String arr[] = dateTimeString.split(" ");

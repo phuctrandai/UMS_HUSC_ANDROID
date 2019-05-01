@@ -12,8 +12,8 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.SwitchPreferenceCompat;
 import android.view.View;
 
-import com.practice.phuc.ums_husc.Helper.ScheduleDailyNotification;
-import com.practice.phuc.ums_husc.Helper.ScheduleReceiver;
+import com.practice.phuc.ums_husc.ScheduleModule.ScheduleDailyNotification;
+import com.practice.phuc.ums_husc.ScheduleModule.ScheduleReceiver;
 import com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper;
 import com.practice.phuc.ums_husc.ScheduleModule.SelectingSemesterActivity;
 
@@ -84,10 +84,11 @@ public class SettingFragment extends PreferenceFragmentCompat {
                     ScheduleDailyNotification.setReminder(mContext, 2, ScheduleReceiver.class, 19, 0);
                     ScheduleDailyNotification.setReminder(mContext, 3, ScheduleReceiver.class, 20, 0);
                     ScheduleDailyNotification.setReminder(mContext, 4, ScheduleReceiver.class, 21, 0);
+                    ScheduleDailyNotification.setReminder(mContext, 5, ScheduleReceiver.class, 22, 8);
 
                 } else {
 
-                    for (int i = 1; i <= 4; i++) {
+                    for (int i = 1; i <= 5; i++) {
                         ScheduleDailyNotification.cancelReminder(mContext, i, ScheduleReceiver.class);
                     }
 

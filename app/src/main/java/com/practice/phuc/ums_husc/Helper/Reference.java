@@ -152,21 +152,21 @@ public final class Reference {
                 + "&matkhau=" + matKhau;
     }
 
-    static String getSaveTokenApiUrl(String maSinhVien, String token) {
+    public static String getSaveTokenApiUrl(String maSinhVien, String token) {
         return Reference.HOST + Reference.SAVE_TOKEN_API
                 + "?masinhvien=" + maSinhVien
                 + "&token=" + token;
     }
 
-    static String getDeleteTokenApiUrl(String maSinhVien, String token) {
+    public static String getDeleteTokenApiUrl(String maSinhVien, String token) {
         return Reference.HOST + Reference.DELETE_TOKEN_API
                 + "?masinhvien=" + maSinhVien
                 + "&token=" + token;
     }
 
-    static final String MESSAGE_NOTIFICATION = "message_notification";
-    static final String NEWS_NOTIFICATION = "news_notification";
-    static final String SCHEDULE_NOTIFICATION = "schedule_notification";
+    public static final String MESSAGE_NOTIFICATION = "message_notification";
+    public static final String NEWS_NOTIFICATION = "news_notification";
+    public static final String SCHEDULE_NOTIFICATION = "schedule_notification";
     public static final String SEND_MESSAGE_NOTIFICATION = "send_message_notification";
 
     public static boolean mHasNewNews = false;

@@ -38,7 +38,7 @@ import okhttp3.Response;
 
 public class ScheduleFragment extends Fragment {
     public static boolean mIsChangeSemester;
-    private boolean mIsFragmentsCreated;
+    public static boolean mIsLastSemester;
 
     private Context mContext;
     private WeeksTabAdapter mWeeksTabAdapter;
@@ -46,7 +46,7 @@ public class ScheduleFragment extends Fragment {
     private TabLayout mTabLayout;
     private ViewGroup mLoadingLayout;
 
-    private boolean mIsSemesterFinished;
+    private boolean mIsFragmentsCreated;
     private int mCurrentWeekPos;
     private List<ThoiKhoaBieu> mClassList;
     private DBHelper mDBHelper;
@@ -63,8 +63,8 @@ public class ScheduleFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         mIsChangeSemester = false;
+        mIsLastSemester = true;
         mIsFragmentsCreated = false;
-        mIsSemesterFinished = false;
         mWeeksTabAdapter = new WeeksTabAdapter(getChildFragmentManager());
         mDBHelper = new DBHelper(mContext);
         super.onCreate(savedInstanceState);
@@ -93,7 +93,7 @@ public class ScheduleFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_goToToday:
-                if (mIsSemesterFinished) {
+                if (!mIsLastSemester) {
                     Toasty.info(mContext, "Học kì này hiện đã kết thúc", Toasty.LENGTH_SHORT).show();
                     return true;
                 }
@@ -145,7 +145,6 @@ public class ScheduleFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == Activity.RESULT_OK) {
-            mIsSemesterFinished = data.getBooleanExtra("isSemesterFinished", false);
             String semesterStr = data.getStringExtra("semesterStr");
 
             MainActivity main = (MainActivity) getActivity();
@@ -153,7 +152,7 @@ public class ScheduleFragment extends Fragment {
             notifySemesterChanged(mDBHelper.getSchedule());
             setUpViewPagerTabLayout();
 
-            if (mIsSemesterFinished)
+            if (!mIsLastSemester)
                 Toasty.info(mContext, "Học kì này hiện đã kết thúc", Toasty.LENGTH_SHORT).show();
         }
     }

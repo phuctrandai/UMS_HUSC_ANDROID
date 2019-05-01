@@ -34,7 +34,7 @@ public class VHocKy {
         return "Học kì " + TenHocKy + " (" + NamBatDau + "-" + NamKetThuc + ")";
     }
 
-    public List<VHocKy> fromJsonToList(String json) {
+    public static List<VHocKy> fromJsonToList(String json) {
         Moshi moshi = new Moshi.Builder().build();
         Type type = Types.newParameterizedType(List.class, VHocKy.class);
         JsonAdapter<List<VHocKy>> adapter = moshi.adapter(type);

@@ -24,12 +24,12 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.Helper.DBHelper;
-import com.practice.phuc.ums_husc.Helper.FireBaseIDTask;
-import com.practice.phuc.ums_husc.Helper.MessageTaskHelper;
-import com.practice.phuc.ums_husc.Helper.MyFireBaseMessagingService;
+import com.practice.phuc.ums_husc.Service.FireBaseIDTask;
+import com.practice.phuc.ums_husc.MessageModule.MessageTaskHelper;
+import com.practice.phuc.ums_husc.Service.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.Helper.Reference;
-import com.practice.phuc.ums_husc.Helper.ScheduleDailyNotification;
-import com.practice.phuc.ums_husc.Helper.ScheduleReceiver;
+import com.practice.phuc.ums_husc.ScheduleModule.ScheduleDailyNotification;
+import com.practice.phuc.ums_husc.ScheduleModule.ScheduleReceiver;
 import com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper;
 import com.practice.phuc.ums_husc.Helper.StringHelper;
 import com.practice.phuc.ums_husc.MessageModule.DetailMessageActivity;

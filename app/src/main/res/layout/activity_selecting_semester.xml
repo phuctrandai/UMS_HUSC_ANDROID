@@ -23,54 +23,54 @@
             app:titleTextColor="@color/colorWhite" />
     </android.support.design.widget.AppBarLayout>
 
-    <RelativeLayout
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/layout_swipeRefresh"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorWhite"
-        android:paddingBottom="@dimen/normal_padding">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@id/btn_tacNghiep"
-            android:layout_alignParentTop="true">
-
-            <ListView
-                android:id="@+id/lv_semester"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:choiceMode="singleChoice"
-                android:divider="@color/colorGrey"
-                android:dividerHeight="1dp" />
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/btn_tacNghiep"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="@dimen/normal_margin"
-            android:background="@drawable/radius_5dp_grey_background"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:text="Tác nghiệp"
-            android:textColor="@color/colorBlack"
-            android:textSize="@dimen/normal_text"
-            tools:ignore="HardcodedText,UnusedAttribute" />
+        android:layout_height="match_parent">
 
         <RelativeLayout
-            android:id="@+id/layout_loading"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#1A000000"
-            android:visibility="gone">
+            android:background="@color/colorWhite"
+            android:paddingBottom="@dimen/normal_padding">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/btn_tacNghiep"
+                android:layout_alignParentTop="true">
+
+                <ListView
+                    android:id="@+id/lv_semester"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:choiceMode="singleChoice"
+                    android:divider="@color/colorGrey"
+                    android:dividerHeight="1dp" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_tacNghiep"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="@dimen/normal_margin"
+                android:background="@drawable/radius_5dp_grey_background"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:text="Tác nghiệp"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="HardcodedText,UnusedAttribute" />
 
             <ProgressBar
                 android:id="@+id/pb_loading"
+                style="@android:style/Widget.Material.Light.ProgressBar.Inverse"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true" />
+                android:layout_alignTop="@id/btn_tacNghiep"
+                android:layout_centerHorizontal="true"
+                android:visibility="gone" />
         </RelativeLayout>
-    </RelativeLayout>
-
+    </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.practice.phuc.ums_husc.Helper;
+package com.practice.phuc.ums_husc.ScheduleModule;
 
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -11,6 +11,8 @@ import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
 
+import com.practice.phuc.ums_husc.Helper.DateHelper;
+import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.R;
 import com.practice.phuc.ums_husc.ViewModel.ThoiKhoaBieu;
 

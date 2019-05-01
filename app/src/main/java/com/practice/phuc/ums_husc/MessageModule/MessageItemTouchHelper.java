@@ -1,4 +1,4 @@
-package com.practice.phuc.ums_husc.Helper;
+package com.practice.phuc.ums_husc.MessageModule;
 
 import android.graphics.Canvas;
 import android.support.annotation.NonNull;
@@ -13,7 +13,7 @@ public class MessageItemTouchHelper extends ItemTouchHelper.SimpleCallback {
     private MessageItemTouchHelperListener listener;
     private int swipeDirs;
 
-    public MessageItemTouchHelper(int dragDirs, int swipeDirs, MessageItemTouchHelperListener listener) {
+    MessageItemTouchHelper(int dragDirs, int swipeDirs, MessageItemTouchHelperListener listener) {
         super(dragDirs, swipeDirs);
         this.listener = listener;
         this.swipeDirs = swipeDirs;
