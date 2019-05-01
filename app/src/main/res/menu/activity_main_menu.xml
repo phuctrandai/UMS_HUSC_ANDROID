@@ -6,25 +6,40 @@
         android:id="@+id/action_goToToday"
         android:icon="@drawable/ic_today_white_24"
         android:orderInCategory="100"
-        android:title="@string/action_goToToday"
-        app:showAsAction="ifRoom" />
+        android:title="Đến ngày hiện tại"
+        app:showAsAction="ifRoom"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/action_selectSemester"
+        android:orderInCategory="101"
+        android:title="Chọn học kì tác nghiệp"
+        app:showAsAction="never"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/action_refreshSchedule"
+        android:icon="@drawable/ic_refresh_white_24"
+        android:orderInCategory="102"
+        android:title="Làm mới thời khóa biểu"
+        app:showAsAction="never"
+        tools:ignore="HardcodedText" />
     <item
         android:id="@+id/action_refreshResume"
         android:icon="@drawable/ic_refresh_white_24"
-        android:orderInCategory="101"
-        android:title="@string/action_refresh_resume"
-        app:showAsAction="ifRoom"/>
+        android:orderInCategory="103"
+        android:title="Làm mới lý lịch"
+        app:showAsAction="ifRoom"
+        tools:ignore="HardcodedText" />
     <item
         android:id="@+id/action_searchMessage"
         android:icon="@drawable/ic_search_white_24"
-        android:orderInCategory="102"
-        android:title="Tìm kiếm"
+        android:orderInCategory="104"
+        android:title="Tìm kiếm tin nhắn"
         app:showAsAction="ifRoom"
         tools:ignore="HardcodedText" />
     <item
         android:id="@+id/action_newMessage"
         android:icon="@drawable/ic_pen_white_24"
-        android:orderInCategory="103"
+        android:orderInCategory="105"
         android:title="Tin nhắn mới"
         app:showAsAction="ifRoom"
         tools:ignore="HardcodedText,UnusedAttribute" />

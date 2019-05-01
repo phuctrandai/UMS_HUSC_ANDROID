@@ -62,9 +62,9 @@ public class DayOfWeekAdapter extends Adapter<DayOfWeekAdapter.DataViewHolder> {
         mSaturdayClassList = getClassesOnThisDay(SATURDAY);
         mSundayClassList = getClassesOnThisDay(SUNDAY);
 
-        mMorningAdapter = new SessionOfDayAdapter(mContext);
-        mAfternoonAdapter = new SessionOfDayAdapter(mContext);
-        mEveningAdapter = new SessionOfDayAdapter(mContext);
+        mMorningAdapter = new SessionOfDayAdapter();
+        mAfternoonAdapter = new SessionOfDayAdapter();
+        mEveningAdapter = new SessionOfDayAdapter();
         mCurrentDayOfWeek = -1;
     }
 

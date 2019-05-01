@@ -297,13 +297,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:background="@drawable/radius_5dp_primary_background"
+                android:background="@drawable/radius_5dp_grey_background"
                 android:elevation="0dp"
                 android:fadingEdge="none"
                 android:fadingEdgeLength="0dp"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:text="Lưu"
-                android:textColor="@color/colorWhite"
+                android:textColor="@color/colorBlack"
                 android:textStyle="bold"
                 tools:ignore="HardcodedText,UnusedAttribute" />
 

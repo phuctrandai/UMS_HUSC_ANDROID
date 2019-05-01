@@ -130,12 +130,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 || currentFragment.equals(ChangePasswordFragment.class.getName())) {
 
             if (currentFragment.equals(SettingFragment.class.getName())) {
-                View headerView = navigationView.getHeaderView(0);
-                TextView tvHocKiNamHoc = headerView.findViewById(R.id.tv_hocKiNamHoc);
-                String hocKi = SharedPreferenceHelper.getInstance()
+                String semesterStr = SharedPreferenceHelper.getInstance()
                         .getSharedPrefStr(this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.STUDENT_SEMSTER_STR, "");
-                tvHocKiNamHoc.setText(hocKi);
-                tvHocKiNamHoc.refreshDrawableState();
+                updateSemester(semesterStr);
             }
 
             if (mPrevFragment.equals(MainFragment.class.getName()))
@@ -160,6 +157,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         boolean isMessageFrag = currentFragment.equals(MessageFragment.class.getName());
 
         menu.findItem(R.id.action_goToToday).setVisible(isScheduleFrag);
+        menu.findItem(R.id.action_refreshSchedule).setVisible(isScheduleFrag);
+        menu.findItem(R.id.action_selectSemester).setVisible(isScheduleFrag);
         menu.findItem(R.id.action_refreshResume).setVisible(isResumeFrag);
         menu.findItem(R.id.action_newMessage).setVisible(isMessageFrag);
         menu.findItem(R.id.action_searchMessage).setVisible(isMessageFrag);
@@ -241,7 +240,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             showDrawerButton(true);
 
         } else if (fragmentTag.equals(ScheduleFragment.class.getName())) {
-            setTitle(getString(R.string.title_nav_timetable));
+            String hocKyStr = SharedPreferenceHelper.getInstance()
+                    .getSharedPrefStr(this,
+                            SharedPreferenceHelper.ACCOUNT_SP,
+                            SharedPreferenceHelper.STUDENT_SEMSTER_STR, "");
+            setTitle(hocKyStr);
             navigationView.setCheckedItem(R.id.nav_timetable);
             currentNavItem = R.id.nav_timetable;
             showDrawerButton(true);
@@ -403,5 +406,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
+    }
+
+    public void updateSemester(String semesterStr) {
+        setTitle(semesterStr);
+        View headerView = navigationView.getHeaderView(0);
+        TextView tvHocKiNamHoc = headerView.findViewById(R.id.tv_hocKiNamHoc);
+        tvHocKiNamHoc.setText(semesterStr);
+        tvHocKiNamHoc.refreshDrawableState();
     }
 }

@@ -18,7 +18,6 @@ import com.practice.phuc.ums_husc.ViewModel.VThongTinLienHe;
 import com.practice.phuc.ums_husc.ViewModel.VThuongTru;
 
 public class ResumePagerAdapter extends FragmentPagerAdapter {
-    private Context mContext;
 
     private VThongTinChung thongTinChung;
     private VThongTinLienHe thongTinLienHe;
@@ -34,9 +33,8 @@ public class ResumePagerAdapter extends FragmentPagerAdapter {
 
     public ResumePagerAdapter(FragmentManager fm, Context context) {
         super(fm);
-        mContext = context;
-        generalInfoFragment = GeneralInfoFragment.newInstance(mContext, thongTinChung);
-        contactResidentFragment = ContactResidentFragment.newInstance(mContext, thongTinLienHe, thuongTru, queQuan);
+        generalInfoFragment = GeneralInfoFragment.newInstance(context, thongTinChung);
+        contactResidentFragment = ContactResidentFragment.newInstance(context, thongTinLienHe, thuongTru, queQuan);
         dacDiemBanThanFragment = DacDiemBanThanFragment.newInstance(dacDiemBanThan);
         lichSuBanThanFragment = LichSuBanThanFragment.newInstance(lichSuBanThan);
     }

@@ -89,7 +89,13 @@ public class WeekFragment extends Fragment {
                 nowIndex = toDayOfWeek - 2;
             mDayOfWeekAdapter.setCurrentDayOfWeek(nowIndex);
         }
+        final int finalNowIndex = nowIndex;
         mRvDayOfWeek.setAdapter(mDayOfWeekAdapter);
-        mRvDayOfWeek.scrollToPosition(nowIndex);
+        mRvDayOfWeek.post(new Runnable() {
+            @Override
+            public void run() {
+                mRvDayOfWeek.scrollToPosition(finalNowIndex);
+            }
+        });
     }
 }

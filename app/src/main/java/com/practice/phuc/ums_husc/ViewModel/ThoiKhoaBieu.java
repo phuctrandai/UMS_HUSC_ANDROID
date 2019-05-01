@@ -22,6 +22,8 @@ public class ThoiKhoaBieu {
     public int NgayTrongTuan;
 
     public static List<ThoiKhoaBieu> fromJsonToList(String json) {
+        if (json == null) return null;
+
         Moshi moshi = new Moshi.Builder().build();
         Type type = Types.newParameterizedType(List.class, ThoiKhoaBieu.class);
         JsonAdapter<List<ThoiKhoaBieu>> adapter = moshi.adapter(type);

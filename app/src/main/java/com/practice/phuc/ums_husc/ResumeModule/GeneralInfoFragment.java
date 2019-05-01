@@ -416,7 +416,7 @@ public class GeneralInfoFragment extends Fragment {
                     getResources().getDrawable(R.drawable.ic_signal_wifi_off_white_24),
                     getResources().getColor(R.color.colorRed),
                     getResources().getColor(android.R.color.white),
-                    Toasty.LENGTH_LONG, true, true)
+                    Toasty.LENGTH_SHORT, true, true)
                     .show();
 
         } else {
@@ -479,7 +479,7 @@ public class GeneralInfoFragment extends Fragment {
             super.onPostExecute(aBoolean);
             if (aBoolean) {
                 if (mResponse == null) {
-                    Toasty.error(mContext, getString(R.string.error_server_not_response), Toast.LENGTH_LONG).show();
+                    Toasty.error(mContext, getString(R.string.error_server_not_response), Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -540,7 +540,7 @@ public class GeneralInfoFragment extends Fragment {
                                     mThongTinChung = thongTinChung;
                                     setUpSlidePanel(thongTinChung);
                                     setUpMainPanel(thongTinChung);
-                                    Toasty.success(mContext, "Đã cập nhật !", Toast.LENGTH_LONG).show();
+                                    Toasty.success(mContext, "Đã cập nhật !", Toast.LENGTH_SHORT).show();
                                 }
                                 break;
                         }

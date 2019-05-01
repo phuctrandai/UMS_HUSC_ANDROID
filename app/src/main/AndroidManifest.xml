@@ -20,6 +20,12 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".ScheduleModule.SelectingSemesterActivity"
+            android:label="Chọn học kì tác nghiệp"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            tools:ignore="InnerclassSeparator" />
+        <activity
             android:name=".NewsModule.DetailNewsActivity"
             android:label="@string/title_activity_detail_news"
             android:launchMode="singleTop"

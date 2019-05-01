@@ -1,6 +1,5 @@
 package com.practice.phuc.ums_husc.Adapter;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,11 +14,9 @@ import java.util.List;
 
 public class SessionOfDayAdapter extends RecyclerView.Adapter<SessionOfDayAdapter.DataViewHolder> {
 
-    private Context mContext;
     private List<ThoiKhoaBieu> mClassesOfSession; // Danh sach lop hoc co tiet vao buoi nay
 
-    SessionOfDayAdapter(Context context) {
-        mContext = context;
+    SessionOfDayAdapter() {
     }
 
     void setClassesOfSession(List<ThoiKhoaBieu> classes) {

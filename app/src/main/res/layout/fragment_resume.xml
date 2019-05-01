@@ -81,8 +81,8 @@
                 android:id="@+id/tabs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:theme="@style/CustomTabLayout"
-                android:background="@color/colorWhite"/>
+                android:background="@color/colorWhite"
+                android:theme="@style/CustomTabLayout" />
         </android.support.design.widget.AppBarLayout>
 
         <android.support.v4.view.ViewPager
@@ -112,7 +112,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/prompt_dang_kiem_tra_thong_tin" />
+            android:text="@string/prompt_dang_kiem_tra_thong_tin"
+            android:textColor="@color/colorBlack"
+            android:textSize="@dimen/normal_text" />
     </RelativeLayout>
 
 </RelativeLayout>

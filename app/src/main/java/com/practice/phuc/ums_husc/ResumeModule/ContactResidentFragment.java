@@ -637,7 +637,7 @@ public class ContactResidentFragment extends Fragment {
             super.onPostExecute(aBoolean);
             if (aBoolean) {
                 if (mResponse == null) {
-                    Toasty.error(mContext, getString(R.string.error_server_not_response), Toast.LENGTH_LONG).show();
+                    Toasty.error(mContext, getString(R.string.error_server_not_response), Toast.LENGTH_SHORT).show();
                     return;
                 }
 

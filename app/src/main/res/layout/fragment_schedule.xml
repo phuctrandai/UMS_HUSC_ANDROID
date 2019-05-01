@@ -1,37 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/layout_resume"
+    android:id="@+id/layout_root_schedule"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:visibility="visible">
+    android:layout_height="match_parent">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/appbar_schedule"
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/layout_schedule"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        android:elevation="0dp"
-        app:elevation="0dp">
+        android:layout_height="match_parent"
+        android:visibility="visible">
 
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tabs_schedule"
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar_schedule"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:tabTextAppearance="@style/TimeTableTabLayoutTextAppearance"
-            app:tabTextColor="#80FFFFFF"
-            app:tabBackground="@drawable/radius_primary_background"
-            app:tabGravity="fill"
-            app:tabIndicatorHeight="0dp"
-            app:tabMode="scrollable"
-            app:tabPaddingEnd="@dimen/normal_padding"
-            app:tabPaddingStart="@dimen/normal_padding"
-            app:tabSelectedTextColor="#FFFFFF" />
-    </android.support.design.widget.AppBarLayout>
+            android:background="@android:color/white"
+            android:elevation="0dp"
+            app:elevation="0dp">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/vp_schedule"
-        android:layout_width="match_parent"
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tabs_schedule"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:tabBackground="@drawable/radius_primary_background"
+                app:tabGravity="fill"
+                app:tabIndicatorHeight="0dp"
+                app:tabMode="scrollable"
+                app:tabPaddingEnd="@dimen/normal_padding"
+                app:tabPaddingStart="@dimen/normal_padding"
+                app:tabSelectedTextColor="#FFFFFF"
+                app:tabTextAppearance="@style/TimeTableTabLayoutTextAppearance"
+                app:tabTextColor="#80FFFFFF" />
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/vp_schedule"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+    </android.support.design.widget.CoordinatorLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_loading"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-</android.support.design.widget.CoordinatorLayout>
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="90dp"
+        android:background="@drawable/radius_white_background"
+        android:elevation="3dp"
+        android:padding="@dimen/small_padding"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/pb_loading"
+            style="@android:style/Widget.Material.ProgressBar"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@android:color/transparent"
+            android:maxWidth="32dp"
+            android:maxHeight="32dp" />
+    </LinearLayout>
+</RelativeLayout>
