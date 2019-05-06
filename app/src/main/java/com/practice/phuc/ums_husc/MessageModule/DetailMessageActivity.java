@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -245,9 +246,18 @@ public class DetailMessageActivity extends AppCompatActivity {
     }
 
     private void showMessageBody(final TINNHAN tinNhan) {
-
+        tvNoiDung.setAlpha(0f);
         String htmlContent = "<div style='text-align: justify'>" + tinNhan.NoiDung + "</div>";
         tvNoiDung.loadData(htmlContent, "text/html; charset=UTF-8", null);
+        tvNoiDung.refreshDrawableState();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                tvNoiDung.setAlpha(1.0f);
+//                tvNoiDung.refreshDrawableState();
+            }
+        }, 1000);
 
         String temp = tinNhan.getTenNguoiNhanCollapse();
         tvNguoiNhan.setText(temp);

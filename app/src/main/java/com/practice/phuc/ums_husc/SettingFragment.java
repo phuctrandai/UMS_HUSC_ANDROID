@@ -98,7 +98,7 @@ public class SettingFragment extends PreferenceFragmentCompat {
                 mSpTimeTableTime.setValue(newValue + "");
                 mSpTimeTableTime.setTitle(title);
                 SharedPreferenceHelper.getInstance()
-                        .setSharedPref(mContext, SHARED_SETTING, SHARED_PRE_TIMETABLE_ALARM_TIME, newValue + "");
+                        .setSharedPref(mContext, SHARED_SETTING, SHARED_PRE_TIMETABLE_ALARM_TIME, Integer.parseInt(newValue + ""));
                 return true;
             }
         });
@@ -154,15 +154,15 @@ public class SettingFragment extends PreferenceFragmentCompat {
                 .getSharedPrefBool(mContext, SHARED_SETTING, SHARED_PRE_SEND_MESSAGE_NOTI, true);
         boolean mSpTimeTableChecked = SharedPreferenceHelper.getInstance()
                 .getSharedPrefBool(mContext, SHARED_SETTING, SHARED_PRE_TIMETABLE_ALARM, true);
-        String mSpTimeTableTimeValue = SharedPreferenceHelper.getInstance()
-                .getSharedPrefStr(mContext, SHARED_SETTING, SHARED_PRE_TIMETABLE_ALARM_TIME, "30");
+        int mSpTimeTableTimeValue = SharedPreferenceHelper.getInstance()
+                .getSharedPrefInt(mContext, SHARED_SETTING, SHARED_PRE_TIMETABLE_ALARM_TIME, 30);
         // Set value from saved value
         mPSemester.setTitle(mSemesterString);
         mSpNews.setChecked(mSpNewsChecked);
         mSpMessage.setChecked(mSpMessageChecked);
         mSpSendMessage.setChecked(mSpSendMessageChecked);
         mSpTimeTable.setChecked(mSpTimeTableChecked);
-        mSpTimeTableTime.setValue(mSpTimeTableTimeValue);
+        mSpTimeTableTime.setValue(mSpTimeTableTimeValue + "");
         mSpTimeTableTime.setEnabled(mSpTimeTableChecked);
         String title = "Nhắc tôi trước giờ học " + mSpTimeTableTimeValue + " phút";
         mSpTimeTableTime.setTitle(title);

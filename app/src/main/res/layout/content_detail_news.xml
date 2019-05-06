@@ -24,16 +24,20 @@
             android:layout_marginEnd="@dimen/big_margin"
             android:layout_marginBottom="@dimen/small_margin"
             android:text="Tiêu đề thông báo"
+            android:transitionName="news_title"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/big_text" />
+            android:textSize="@dimen/big_text"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/tv_thoiGianDang"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/big_margin"
-            android:text="12/03/2019 08:05"
-            android:textSize="@dimen/small_text" />
+            android:text="Không xác định"
+            android:textColor="@color/colorDarkerGrey"
+            android:textSize="@dimen/normal_text"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -42,7 +46,8 @@
             android:drawableStart="@drawable/ic_access_time_grey_12"
             android:drawablePadding="@dimen/tiny_padding"
             android:text="Thời điểm đăng tin"
-            android:textSize="@dimen/tiny_text" />
+            android:textSize="@dimen/tiny_text"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:layout_marginStart="@dimen/big_margin"

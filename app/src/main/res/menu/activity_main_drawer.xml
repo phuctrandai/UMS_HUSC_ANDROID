@@ -19,7 +19,8 @@
 
     </group>
 
-    <item android:title="Cá nhân">
+    <item android:title="Cá nhân"
+        tools:ignore="HardcodedText">
         <menu>
             <item
                 android:id="@+id/nav_resume"
@@ -40,7 +41,8 @@
         </menu>
     </item>
 
-    <item android:title="Trợ giúp">
+    <item android:title="Trợ giúp"
+        tools:ignore="HardcodedText">
         <menu>
             <item
                 android:id="@+id/nav_app_info"

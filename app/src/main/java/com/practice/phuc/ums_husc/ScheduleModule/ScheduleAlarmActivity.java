@@ -2,13 +2,14 @@ package com.practice.phuc.ums_husc.ScheduleModule;
 
 import android.app.Activity;
 import android.content.Context;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
+import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
+import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -23,50 +24,46 @@ public class ScheduleAlarmActivity extends Activity {
     private int WAKELOCK_TIMEOUT = 5 * 60 * 1000;
 
     private PowerManager.WakeLock mWakeLock;
-    private MediaPlayer mPlayer;
-
+    private Ringtone mRingtone;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule_alarm);
 
-        final Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-
-        // Each element then alternates between vibrate, sleep, vibrate, sleep...
-        long[] pattern = {0, 800, 200, 1000, 300, 1000, 200, 4000};
-
-        if (v.hasVibrator()) {
-            Log.v("Can Vibrate", "YES");
-        } else {
-            Log.v("Can Vibrate", "NO");
-        }
-
-        Button btnTurnOff = findViewById(R.id.btn_turn_off_alarm);
-        btnTurnOff.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mPlayer.stop();
-                v.cancelLongPress();
-                finish();
-            }
-        });
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         //Play alarm tone
         try {
-            Uri toneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Uri toneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM
+                    | RingtoneManager.TYPE_RINGTONE | RingtoneManager.TYPE_NOTIFICATION);
+
             if (toneUri != null) {
-                mPlayer = MediaPlayer.create(getApplicationContext(), toneUri);
-                mPlayer.setDataSource(this, toneUri);
-                mPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
-                mPlayer.setLooping(true);
-                mPlayer.prepare();
-                mPlayer.start();
-                v.vibrate(WAKELOCK_TIMEOUT);
+                mRingtone = RingtoneManager.getRingtone(getApplicationContext(), toneUri);
+                mRingtone.play();
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    v.vibrate(VibrationEffect.createOneShot(WAKELOCK_TIMEOUT, VibrationEffect.DEFAULT_AMPLITUDE));
+                } else {
+                    //deprecated in API 26
+                    v.vibrate(WAKELOCK_TIMEOUT);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        // Dismiss button
+        Button btnTurnOff = findViewById(R.id.btn_turn_off_alarm);
+        btnTurnOff.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mRingtone.stop();
+                v.cancelLongPress();
+                finish();
+                System.exit(0);
+            }
+        });
 
         //Ensure wakelock release
         Runnable releaseWakelock = new Runnable() {

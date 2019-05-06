@@ -13,8 +13,11 @@ import java.util.List;
 import static android.content.Context.MODE_PRIVATE;
 
 public final class Reference {
+    public static String ADDRESS = "192.168.1.106";
 
-    public static final String HOST = "http://192.168.1.106:8082/";
+    public static String PORT = "8082";
+
+    public static String HOST = "http://" + ADDRESS + ":" + PORT + "/";
 
     private static final String LOGIN_API = "api/SinhVien/TaiKhoan/DangNhap/";
 
@@ -56,10 +59,11 @@ public final class Reference {
                 + "&matkhau=" + matKhau;
     }
 
-    public static String getChangePassApiUrl(String maSinhVien, String matKhau) {
+    public static String getChangePassApiUrl(String maSinhVien, String matKhauCu, String matKhauMoi) {
         return Reference.HOST + Reference.CHANGE_PASS_API
                 + "?masinhvien=" + maSinhVien
-                + "&matkhau=" + matKhau;
+                + "&matkhau=" + matKhauCu
+                + "&matkhaumoi=" + matKhauMoi;
     }
 
     public static String getLoadThongBaoApiUrl(String maSinhVien, String matKhau, long currentPage, int itemPerPage) {

@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -16,10 +15,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
+import android.widget.TextView;
 
+import com.practice.phuc.ums_husc.Helper.JustifyTextInTextView;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
+import com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper;
 
 import java.io.IOException;
 
@@ -47,7 +48,6 @@ public class ChangePasswordFragment extends Fragment {
     private EditText mTxtRepPass;
     private Button mBtnChangePass;
     private ProgressBar mProgressBar;
-    private ScrollView mRootLayout;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,11 +64,16 @@ public class ChangePasswordFragment extends Fragment {
         mTxtRepPass = view.findViewById(R.id.txt_rePass);
         mBtnChangePass = view.findViewById(R.id.btn_changePass);
         mProgressBar = view.findViewById(R.id.pb_changePassProgress);
-        mRootLayout = view.findViewById(R.id.change_pass_root_layout);
         mIsDestroyView = false;
 
         mBtnChangePass.setOnClickListener(btnChangePasswordClickListener);
         mProgressBar.bringToFront();
+
+
+        JustifyTextInTextView.justify((TextView) view.findViewById(R.id.tv_caution2));
+        JustifyTextInTextView.justify((TextView) view.findViewById(R.id.tv_caution3));
+        JustifyTextInTextView.justify((TextView) view.findViewById(R.id.tv_caution4));
+        JustifyTextInTextView.justify((TextView) view.findViewById(R.id.tv_caution5));
 
         return view;
     }
@@ -90,6 +95,7 @@ public class ChangePasswordFragment extends Fragment {
         Response mResponse;
         String mErrorMessage;
 
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -100,7 +106,7 @@ public class ChangePasswordFragment extends Fragment {
         protected Boolean doInBackground(String... strings) {
             if (mChangePasswordTask == null) return false;
 
-            mResponse = postChangePass();
+            mResponse = postChangePass(strings[0]);
             try {
                 Thread.sleep(1000);
 
@@ -131,12 +137,12 @@ public class ChangePasswordFragment extends Fragment {
 
             if (success) {
                 if (!mIsDestroyView)
-                    Snackbar.make(mRootLayout, R.string.changePassSuccess, Snackbar.LENGTH_SHORT).show();
+                    Toasty.success(mContext, "Đổi mật khẩu thành công !!!", Toasty.LENGTH_SHORT).show();
                 saveNewPass();
 
             } else {
                 if (!mIsDestroyView)
-                    Snackbar.make(mRootLayout, mErrorMessage, Snackbar.LENGTH_SHORT).show();
+                    Toasty.error(mContext, mErrorMessage, Toasty.LENGTH_SHORT).show();
 
             }
             showProgress(false);
@@ -165,7 +171,8 @@ public class ChangePasswordFragment extends Fragment {
                             .show();
                     showProgress(false);
                 } else {
-                    changePass();
+                    String newPass = mTxtNewPass.getText().toString();
+                    changePass(newPass);
                 }
             }
         }
@@ -222,28 +229,30 @@ public class ChangePasswordFragment extends Fragment {
         return true;
     }
 
-    private void changePass() {
+    private void changePass(String newPass) {
         mChangePasswordTask = new ChangePasswordTask();
-        mChangePasswordTask.execute((String) null);
+        mChangePasswordTask.execute(newPass);
     }
 
-    private Response postChangePass() {
-        SharedPreferences sp = mContext.getSharedPreferences(getString(R.string.share_pre_key_account_info), Context.MODE_PRIVATE);
-        String maSinhVien = sp.getString(getString(R.string.pre_key_student_id), "");
-        String matKhau = sp.getString(getString(R.string.pre_key_password), "");
-        String url = Reference.getChangePassApiUrl(maSinhVien, matKhau);
+    private Response postChangePass(String newPass) {
+        String maSinhVien = SharedPreferenceHelper.getInstance()
+                .getSharedPrefStr(mContext, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.STUDENT_ID, "");
+        String matKhau = SharedPreferenceHelper.getInstance()
+                .getSharedPrefStr(mContext, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.ACCOUNT_PASSWORD, "");
+        String url = Reference.getChangePassApiUrl(maSinhVien, matKhau, newPass);
 
         return NetworkUtil.makeRequest(url, false, null);
     }
 
     private void saveNewPass() {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putString(getString(R.string.pre_key_password), mTxtNewPass.getText().toString());
-        editor.apply();
+        SharedPreferenceHelper.getInstance()
+                .setSharedPref(mContext, SharedPreferenceHelper.ACCOUNT_SP,
+                        SharedPreferenceHelper.ACCOUNT_PASSWORD, mTxtNewPass.getText().toString());
 
         mTxtOldPass.setText("");
         mTxtNewPass.setText("");
         mTxtRepPass.setText("");
+        mTxtRepPass.clearFocus();
     }
 
     private void showProgress(boolean show) {

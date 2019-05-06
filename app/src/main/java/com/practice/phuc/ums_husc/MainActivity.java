@@ -1,6 +1,7 @@
 package com.practice.phuc.ums_husc;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.DialogInterface;
@@ -24,24 +25,24 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.Helper.DBHelper;
-import com.practice.phuc.ums_husc.Helper.DateHelper;
-import com.practice.phuc.ums_husc.ScheduleModule.DailyReceiver;
-import com.practice.phuc.ums_husc.Service.FireBaseIDTask;
-import com.practice.phuc.ums_husc.MessageModule.MessageTaskHelper;
-import com.practice.phuc.ums_husc.Service.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.Helper.Reference;
-import com.practice.phuc.ums_husc.ScheduleModule.ScheduleDailyNotification;
-import com.practice.phuc.ums_husc.ScheduleModule.ScheduleReceiver;
 import com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper;
 import com.practice.phuc.ums_husc.Helper.StringHelper;
 import com.practice.phuc.ums_husc.MessageModule.DetailMessageActivity;
 import com.practice.phuc.ums_husc.MessageModule.MessageFragment;
+import com.practice.phuc.ums_husc.MessageModule.MessageTaskHelper;
 import com.practice.phuc.ums_husc.NewsModule.DetailNewsActivity;
 import com.practice.phuc.ums_husc.NewsModule.MainFragment;
 import com.practice.phuc.ums_husc.ResumeModule.ResumeFragment;
+import com.practice.phuc.ums_husc.ScheduleModule.DailyReceiver;
+import com.practice.phuc.ums_husc.ScheduleModule.ScheduleDailyNotification;
 import com.practice.phuc.ums_husc.ScheduleModule.ScheduleFragment;
+import com.practice.phuc.ums_husc.Service.FireBaseIDTask;
+import com.practice.phuc.ums_husc.Service.MyFireBaseMessagingService;
 
 import java.util.Objects;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private NavigationView navigationView;
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        overridePendingTransition(R.anim.fade_in_half, R.anim.fade_out);
 
         boolean mIsLogined = localLogin();
         if (!mIsLogined) {
@@ -95,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             }
         }
+        configureRemoteServer();
     }
 
     @Override
@@ -199,10 +202,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             logOut();
                             break;
                         case R.id.nav_app_info:
-                            int h = DateHelper.getHourOfDay(DateHelper.getCalendar().getTime());
-                            int m = DateHelper.getMinute(DateHelper.getCalendar().getTime()) + 1;
-                            ScheduleDailyNotification.setReminder(MainActivity.this, 1997, ScheduleReceiver.class,
-                                    -1, h, m);
+                            showAboutDialog();
                             break;
                         default:
                             break;
@@ -218,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void replaceFragment(Fragment fragment) {
         String fragmentTag = fragment.getClass().getName();
         FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 
         updateByFragmentTag(fragmentTag);
 
@@ -329,6 +329,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private boolean localLogin() {
+        if (getSharedPreferences(SharedPreferenceHelper.ACCOUNT_SP, MODE_PRIVATE) == null)
+            return false;
+
         String maSinhVien = SharedPreferenceHelper.getInstance()
                 .getSharedPrefStr(this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.STUDENT_ID, "");
         String matKhau = SharedPreferenceHelper.getInstance()
@@ -426,5 +429,39 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView tvHocKiNamHoc = headerView.findViewById(R.id.tv_hocKiNamHoc);
         tvHocKiNamHoc.setText(semesterStr);
         tvHocKiNamHoc.refreshDrawableState();
+    }
+
+    public void configureRemoteServer() {
+
+        Reference.ADDRESS = SharedPreferenceHelper.getInstance()
+                .getSharedPrefStr(this, "server", "address", Reference.ADDRESS);
+        Reference.PORT = SharedPreferenceHelper.getInstance()
+                .getSharedPrefStr(this, "server", "port", Reference.PORT);
+        Reference.HOST = SharedPreferenceHelper.getInstance()
+                .getSharedPrefStr(this, "server", "host", Reference.HOST);
+
+        navigationView = findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        CircleImageView ivAvatar = headerView.findViewById(R.id.iv_avatar);
+        ivAvatar.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(MainActivity.this, ConfigActivity.class);
+                        MainActivity.this.startActivity(intent);
+                    }
+                }, 500);
+                return true;
+            }
+        });
+    }
+
+    public void showAboutDialog() {
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.custom_dialog_about);
+        dialog.setCancelable(true);
+        dialog.show();
     }
 }

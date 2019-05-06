@@ -37,7 +37,7 @@ public class NewsRecyclerDataAdapter extends RecyclerView.Adapter<NewsRecyclerDa
     }
 
     @Override
-    public void onBindViewHolder(@NonNull NewsRecyclerDataAdapter.DataViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull final NewsRecyclerDataAdapter.DataViewHolder viewHolder, int i) {
         final String tieuDe = thongBaoList.get(i).getTieuDe();
         viewHolder.tvTieuDe.setText(tieuDe);
 
@@ -53,6 +53,7 @@ public class NewsRecyclerDataAdapter extends RecyclerView.Adapter<NewsRecyclerDa
                 Intent intent = new Intent(context, DetailNewsActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 intent.putExtra(Reference.BUNDLE_EXTRA_NEWS, THONGBAO.toJson(thongBaoList.get(position)));
+
                 context.startActivity(intent);
             }
         });

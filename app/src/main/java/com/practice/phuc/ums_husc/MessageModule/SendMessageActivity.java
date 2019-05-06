@@ -87,6 +87,7 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        overridePendingTransition(R.anim.slide_in_bottom, R.anim.fade_out_half);
 
         mCurrentPage = 1;
         ITEM_PER_PAGE = 15;
@@ -163,6 +164,7 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
         }
 
         if (etNoiDung.getText() == null || etNoiDung.getText().toString().equals("")) {
+            overridePendingTransition(R.anim.fade_in_half, R.anim.slide_out_bottom);
             super.onBackPressed();
             return;
         }

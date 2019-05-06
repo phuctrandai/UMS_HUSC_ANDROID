@@ -22,14 +22,14 @@ public class SharedPreferenceHelper {
         return sp.getString(preKey, defValue);
     }
 
-    public int getSharedPrefInt(Context context, String sharedName, String preKey) {
-        SharedPreferences sp = context.getSharedPreferences(sharedName, MODE_PRIVATE);
-        return sp.getInt(preKey, 0);
-    }
-
     public boolean getSharedPrefBool(Context context, String sharedName, String preKey, boolean defValue) {
         SharedPreferences sp = context.getSharedPreferences(sharedName, MODE_PRIVATE);
         return sp.getBoolean(preKey, defValue);
+    }
+
+    public int getSharedPrefInt(Context context, String sharedName, String preKey, int defValue) {
+        SharedPreferences sp = context.getSharedPreferences(sharedName, MODE_PRIVATE);
+        return sp.getInt(preKey, defValue);
     }
 
     public void setSharedPref(Context context, String sharedName, String preKey, String value) {

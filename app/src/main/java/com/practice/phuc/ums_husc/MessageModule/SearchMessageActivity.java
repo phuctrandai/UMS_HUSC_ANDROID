@@ -53,6 +53,7 @@ public class SearchMessageActivity extends AppCompatActivity implements SearchVi
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         mCurrentPage = 1;
         setUpRecylerView();
     }

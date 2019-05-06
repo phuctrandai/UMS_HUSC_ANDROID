@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -14,15 +15,16 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.practice.phuc.ums_husc.Service.FireBaseIDTask;
-import com.practice.phuc.ums_husc.Service.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
-import com.practice.phuc.ums_husc.ScheduleModule.ScheduleTaskHelper;
 import com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper;
+import com.practice.phuc.ums_husc.ScheduleModule.ScheduleTaskHelper;
+import com.practice.phuc.ums_husc.Service.FireBaseIDTask;
+import com.practice.phuc.ums_husc.Service.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.ViewModel.ThongTinCaNhan;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -47,6 +49,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        overridePendingTransition(R.anim.slide_in_bottom, R.anim.fade_out);
+
         mIsViewDestroyed = false;
 
         GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(this);
@@ -54,6 +58,8 @@ public class LoginActivity extends AppCompatActivity {
         initAll();
 
         createNotificationChannel();
+
+        configureRemoteServer();
     }
 
     @Override
@@ -263,7 +269,7 @@ public class LoginActivity extends AppCompatActivity {
         mTxtPassword.setEnabled(!show);
     }
 
-    public void createNotificationChannel() {
+    private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -278,6 +284,31 @@ public class LoginActivity extends AppCompatActivity {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
+    }
+
+    public void configureRemoteServer() {
+
+        Reference.ADDRESS = SharedPreferenceHelper.getInstance()
+                .getSharedPrefStr(this, "server", "address", Reference.ADDRESS);
+        Reference.PORT = SharedPreferenceHelper.getInstance()
+                .getSharedPrefStr(this, "server", "port", Reference.PORT);
+        Reference.HOST = SharedPreferenceHelper.getInstance()
+                .getSharedPrefStr(this, "server", "host", Reference.HOST);
+
+        ImageView ivAvatar = findViewById(R.id.iv_logo);
+        ivAvatar.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(LoginActivity.this, ConfigActivity.class);
+                        startActivity(intent);
+                    }
+                }, 500);
+                return true;
+            }
+        });
     }
 }
 

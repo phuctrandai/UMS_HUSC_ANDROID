@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -17,11 +18,11 @@ import android.widget.TextView;
 import com.practice.phuc.ums_husc.Helper.CustomSnackbar;
 import com.practice.phuc.ums_husc.Helper.DateHelper;
 import com.practice.phuc.ums_husc.Helper.JustifyTextInTextView;
-import com.practice.phuc.ums_husc.Service.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.Model.THONGBAO;
 import com.practice.phuc.ums_husc.R;
+import com.practice.phuc.ums_husc.Service.MyFireBaseMessagingService;
 
 import java.util.Objects;
 
@@ -45,7 +46,6 @@ public class DetailNewsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_news);
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
@@ -206,8 +206,17 @@ public class DetailNewsActivity extends AppCompatActivity {
 
     private void showBodyNews(THONGBAO thongBao) {
         String htmlContent = "<div style='text-align: justify'> " + thongBao.getNoiDung() + " </div>";
+        tvNoiDung.setAlpha(0.0f);
         tvNoiDung.loadData(htmlContent, "text/html; charset=UTF-8", null);
         tvNoiDung.refreshDrawableState();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                tvNoiDung.setAlpha(1.0f);
+//                tvNoiDung.refreshDrawableState();
+            }
+        }, 1000);
     }
 
     private void showNetworkErrorSnackbar(final boolean show) {

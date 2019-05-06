@@ -127,6 +127,8 @@
     <string name="pre_key_semester">semester</string>
     <string name="error_not_handle">Có lỗi bất ngờ xảy ra, vui lòng thử lại sau</string>
 
+    <string name="selecting_semester_caution">Phải chọn đúng học kì tác nghiệp dựa trên các học kì được nhà trường bố trí. Việc nhắc nhở lịch học sẽ dựa trên học kì được tác nghiệp.</string>
+
     <string name="title_activity_reply_message">Trả lời</string>
     <string name="share_pre_key_firebase">FIREBASE</string>
     <string name="pre_key_token">TOKEN</string>

@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.practice.phuc.ums_husc.Helper.DateHelper;
 import com.practice.phuc.ums_husc.Helper.Reference;
@@ -31,8 +32,10 @@ public class ScheduleDailyNotification {
         setcalendar.set(Calendar.MINUTE, min);
         setcalendar.set(Calendar.SECOND, 0);
 
-        if (setcalendar.before(calendar))
+        if (interval != -1 && setcalendar.before(calendar)) {
             setcalendar.add(Calendar.DATE, 1);
+            Log.d("DEBUG", "setReminder: Alarm will schedule for tomorrow !");
+        }
 
         // Enable a receiver
         ComponentName receiver = new ComponentName(context, cls);
@@ -42,15 +45,20 @@ public class ScheduleDailyNotification {
                 PackageManager.DONT_KILL_APP);
 
         Intent intent = new Intent(context, cls);
+
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode,
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
 
-        if (interval != -1) {
+        if (interval == -1) { // Alarm for classes of today
+            if (!setcalendar.before(calendar)) {
+                am.set(AlarmManager.RTC_WAKEUP, setcalendar.getTimeInMillis(), pendingIntent);
+                Log.d("DEBUG", "setReminder: Set alarm for today classes !");
+            }
+        } else { // Alarm as daily service
             am.setInexactRepeating(AlarmManager.RTC_WAKEUP, setcalendar.getTimeInMillis(),
                     interval, pendingIntent);
-        } else {
-            am.set(AlarmManager.RTC_WAKEUP, setcalendar.getTimeInMillis(), pendingIntent);
+            Log.d("DEBUG", "setReminder: Set daily alarm at 00:00 !");
         }
 
     }

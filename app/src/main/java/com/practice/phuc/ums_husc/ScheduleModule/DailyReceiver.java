@@ -7,6 +7,8 @@ import android.util.Log;
 
 import com.practice.phuc.ums_husc.Helper.DBHelper;
 import com.practice.phuc.ums_husc.Helper.DateHelper;
+import com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper;
+import com.practice.phuc.ums_husc.SettingFragment;
 import com.practice.phuc.ums_husc.ViewModel.ThoiKhoaBieu;
 
 import java.util.Calendar;
@@ -17,6 +19,9 @@ public class DailyReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d("DEBUG", "Daily receiver alarm !!!");
+
+        boolean isAllow = SharedPreferenceHelper.getInstance()
+                .getSharedPrefBool(context, SettingFragment.SHARED_SETTING, SettingFragment.SHARED_PRE_TIMETABLE_ALARM, true);
 
         DBHelper mDBHelper = new DBHelper(context);
         Date now = DateHelper.getCalendar().getTime();
@@ -30,18 +35,14 @@ public class DailyReceiver extends BroadcastReceiver {
 
         if (todayClasses.size() > 0) {
 
-            // Alarm
-            int code = 0;
-            for (ThoiKhoaBieu item : todayClasses) {
-                ScheduleDailyNotification.setReminder(context, code, ScheduleReceiver.class,
-                        -1, 7, 10 + code);
-                code++;
-            }
+            ScheduleTaskHelper.getInstance().setTodayReminder(context, todayClasses);
 
             // Push notification
-            ScheduleDailyNotification.riseNotification(
-                    context, ((int) (Calendar.getInstance().getTimeInMillis() / 1000)),
-                    ScheduleDailyNotification.createScheduleNotification(context, todayClasses));
+            if (isAllow) {
+                ScheduleDailyNotification.riseNotification(
+                        context, ((int) (Calendar.getInstance().getTimeInMillis() / 1000)),
+                        ScheduleDailyNotification.createScheduleNotification(context, todayClasses));
+            }
         }
     }
 }
