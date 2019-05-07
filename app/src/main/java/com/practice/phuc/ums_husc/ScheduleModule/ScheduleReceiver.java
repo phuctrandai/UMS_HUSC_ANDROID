@@ -28,8 +28,10 @@ public class ScheduleReceiver extends BroadcastReceiver {
 
 
         if (!StringHelper.isNullOrEmpty(studentId) && isAllow) {
+            String data = intent.getStringExtra("data");
             Intent alarmIntent = new Intent(context, ScheduleAlarmActivity.class);
             alarmIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            alarmIntent.putExtra("data", data);
             context.startActivity(alarmIntent);
         }
     }

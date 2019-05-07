@@ -1,7 +1,6 @@
 package com.practice.phuc.ums_husc;
 
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -81,8 +80,7 @@ public class SettingFragment extends PreferenceFragmentCompat {
                 SharedPreferenceHelper.getInstance()
                         .setSharedPref(mContext, SHARED_SETTING, SHARED_PRE_TIMETABLE_ALARM, (boolean) newValue);
                 if ((boolean) newValue) {
-                    ScheduleDailyNotification.setReminder(mContext, 1501, DailyReceiver.class,
-                            AlarmManager.INTERVAL_DAY, 0, 0);
+                    ScheduleDailyNotification.setDailyReminder(mContext, 1501, DailyReceiver.class,0, 0);
 
                 } else {
                     ScheduleDailyNotification.cancelReminder(mContext, 1501, DailyReceiver.class);

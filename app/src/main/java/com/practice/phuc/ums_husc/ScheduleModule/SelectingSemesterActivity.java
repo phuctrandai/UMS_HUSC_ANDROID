@@ -19,7 +19,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.practice.phuc.ums_husc.Helper.DBHelper;
-import com.practice.phuc.ums_husc.Helper.DateHelper;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
 import com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper;
@@ -28,7 +27,6 @@ import com.practice.phuc.ums_husc.ViewModel.ThoiKhoaBieu;
 import com.practice.phuc.ums_husc.ViewModel.VHocKy;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -219,7 +217,7 @@ public class SelectingSemesterActivity extends AppCompatActivity implements Swip
         protected void onPostExecute(final Boolean aBoolean) {
             super.onPostExecute(aBoolean);
 
-            if (aBoolean) {
+            if (aBoolean && !mCurrentSemesterId.equals(mSelectedItem.MaHocKy)) {
                 mCurrentSemesterId = maHocKy;
                 SharedPreferenceHelper.getInstance().setSharedPref(SelectingSemesterActivity.this, ACCOUNT_SP,
                         SharedPreferenceHelper.STUDENT_SEMSTER, maHocKy);
@@ -238,15 +236,7 @@ public class SelectingSemesterActivity extends AppCompatActivity implements Swip
 
                 if (thoiKhoaBieus != null && thoiKhoaBieus.size() > 0) {
                     dbHelper.insertSchedule(thoiKhoaBieus);
-                    Date now = DateHelper.getCalendar().getTime();
-                    int dayOfMonth = DateHelper.getDayOfMonth(now);
-                    int month = DateHelper.getMonth(now);
-                    int year = DateHelper.getYear(now);
-                    String dayOfMonthStr = dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth + "";
-                    String monthStr = month < 10 ? "0" + month : month + "";
-                    String dateStr = year + "-" + monthStr + "-" + dayOfMonthStr;
-                    List<ThoiKhoaBieu> todayClasses = dbHelper.getSchedule(dateStr);
-                    ScheduleTaskHelper.getInstance().setTodayReminder(SelectingSemesterActivity.this, todayClasses);
+                    ScheduleTaskHelper.getInstance().setTodayReminder(SelectingSemesterActivity.this);
                 }
             }
 

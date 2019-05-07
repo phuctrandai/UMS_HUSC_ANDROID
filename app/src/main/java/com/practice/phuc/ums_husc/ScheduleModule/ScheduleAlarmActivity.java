@@ -1,5 +1,6 @@
 package com.practice.phuc.ums_husc.ScheduleModule;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.media.Ringtone;
@@ -16,24 +17,49 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.R;
+import com.practice.phuc.ums_husc.ViewModel.ThoiKhoaBieu;
 
 public class ScheduleAlarmActivity extends Activity {
-    private String TAG = this.getClass().getSimpleName();
     private int WAKELOCK_TIMEOUT = 5 * 60 * 1000;
-
     private PowerManager.WakeLock mWakeLock;
     private Ringtone mRingtone;
+    private Vibrator mVibrator;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule_alarm);
 
-        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        setUpData();
 
-        //Play alarm tone
+        setUpVibrateRingtone();
+
+        setUpDismissButton();
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void setUpData() {
+        String data = getIntent().getStringExtra("data");
+        ThoiKhoaBieu thoiKhoaBieu = ThoiKhoaBieu.fromJson(data);
+
+        TextView tvSubject = findViewById(R.id.tv_subject);
+        TextView tvStartTime = findViewById(R.id.tv_startTime);
+        TextView tvRoom = findViewById(R.id.tv_room);
+        TextView tvTeacher = findViewById(R.id.tv_teacher);
+
+        tvSubject.setText(thoiKhoaBieu.TenLopHocPhan);
+        tvStartTime.setText("Vào học lúc: " + thoiKhoaBieu.getLessionStartHour() + ":" + thoiKhoaBieu.getLessionStartMinute());
+        tvRoom.setText("Phòng: " + thoiKhoaBieu.TenPhong);
+        tvTeacher.setText("Giảng viên: " + thoiKhoaBieu.HoVaTen);
+    }
+
+    private void setUpVibrateRingtone() {
+        mVibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        long[] pattern = {0, 100, 1000, 300, 200, 100, 500, 200, 100};
+
         try {
             Uri toneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM
                     | RingtoneManager.TYPE_RINGTONE | RingtoneManager.TYPE_NOTIFICATION);
@@ -43,33 +69,23 @@ public class ScheduleAlarmActivity extends Activity {
                 mRingtone.play();
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    v.vibrate(VibrationEffect.createOneShot(WAKELOCK_TIMEOUT, VibrationEffect.DEFAULT_AMPLITUDE));
+                    mVibrator.vibrate(VibrationEffect.createOneShot(WAKELOCK_TIMEOUT, VibrationEffect.DEFAULT_AMPLITUDE));
+
                 } else {
                     //deprecated in API 26
-                    v.vibrate(WAKELOCK_TIMEOUT);
+                    mVibrator.vibrate(pattern, 0);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
-        // Dismiss button
-        Button btnTurnOff = findViewById(R.id.btn_turn_off_alarm);
-        btnTurnOff.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mRingtone.stop();
-                v.cancelLongPress();
-                finish();
-                System.exit(0);
-            }
-        });
-
+    private void setUpDismissButton() {
         //Ensure wakelock release
         Runnable releaseWakelock = new Runnable() {
             @Override
             public void run() {
-
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
@@ -80,8 +96,19 @@ public class ScheduleAlarmActivity extends Activity {
                 }
             }
         };
-
         new Handler().postDelayed(releaseWakelock, WAKELOCK_TIMEOUT);
+
+        // Dismiss button
+        Button btnTurnOff = findViewById(R.id.btn_turn_off_alarm);
+        btnTurnOff.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mRingtone.stop();
+                mVibrator.cancel();
+                finish();
+                System.exit(0);
+            }
+        });
     }
 
     @SuppressWarnings("deprecation")
@@ -98,6 +125,7 @@ public class ScheduleAlarmActivity extends Activity {
         // Acquire wakelock
         PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
         if (mWakeLock == null) {
+            String TAG = "DEBUG:" + getClass().getSimpleName();
             mWakeLock = pm.newWakeLock((PowerManager.FULL_WAKE_LOCK |
                     PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP), TAG);
         }

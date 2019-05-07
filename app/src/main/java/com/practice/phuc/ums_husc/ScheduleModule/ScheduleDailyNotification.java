@@ -25,42 +25,51 @@ import static android.content.Context.ALARM_SERVICE;
 
 public class ScheduleDailyNotification {
 
-    public static void setReminder(Context context, int requestCode, Class<?> cls, long interval, int hour, int min) {
+    static void setOneShotReminder(Context context, int requestCode, int hour, int min, ThoiKhoaBieu data) {
         Calendar calendar = Calendar.getInstance();
         Calendar setcalendar = Calendar.getInstance();
         setcalendar.set(Calendar.HOUR_OF_DAY, hour);
         setcalendar.set(Calendar.MINUTE, min);
         setcalendar.set(Calendar.SECOND, 0);
 
-        if (interval != -1 && setcalendar.before(calendar)) {
-            setcalendar.add(Calendar.DATE, 1);
-            Log.d("DEBUG", "setReminder: Alarm will schedule for tomorrow !");
-        }
+        // Enable a receiver
+        ComponentName receiver = new ComponentName(context, ScheduleReceiver.class);
+        PackageManager pm = context.getPackageManager();
+        pm.setComponentEnabledSetting(receiver, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
 
+        Intent intent = new Intent(context, ScheduleReceiver.class);
+        intent.putExtra("data", ThoiKhoaBieu.toJson(data));
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+
+        if (!setcalendar.before(calendar)) {
+            Log.d("DEBUG", "setOneShotReminder: Alarm at " + hour + ":" + min);
+            am.set(AlarmManager.RTC_WAKEUP, setcalendar.getTimeInMillis(), pendingIntent);
+        }
+    }
+
+    public static void setDailyReminder(Context context, int requestCode, Class<?> cls, int hour, int min) {
+        Calendar calendar = Calendar.getInstance();
+        Calendar setcalendar = Calendar.getInstance();
+        setcalendar.set(Calendar.HOUR_OF_DAY, hour);
+        setcalendar.set(Calendar.MINUTE, min);
+        setcalendar.set(Calendar.SECOND, 0);
+        Log.d("DEBUG", "setDailyReminder: Set alarm at " + hour + ":" + min);
+
+        if (setcalendar.before(calendar)) {
+            setcalendar.add(Calendar.DATE, 1);
+            Log.d("DEBUG", "setDailyReminder: Alarm will schedule for tomorrow !");
+        }
         // Enable a receiver
         ComponentName receiver = new ComponentName(context, cls);
         PackageManager pm = context.getPackageManager();
         pm.setComponentEnabledSetting(receiver,
                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                 PackageManager.DONT_KILL_APP);
-
         Intent intent = new Intent(context, cls);
-
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
-
-        if (interval == -1) { // Alarm for classes of today
-            if (!setcalendar.before(calendar)) {
-                am.set(AlarmManager.RTC_WAKEUP, setcalendar.getTimeInMillis(), pendingIntent);
-                Log.d("DEBUG", "setReminder: Set alarm for today classes !");
-            }
-        } else { // Alarm as daily service
-            am.setInexactRepeating(AlarmManager.RTC_WAKEUP, setcalendar.getTimeInMillis(),
-                    interval, pendingIntent);
-            Log.d("DEBUG", "setReminder: Set daily alarm at 00:00 !");
-        }
-
+        am.setInexactRepeating(AlarmManager.RTC_WAKEUP, setcalendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
     public static void cancelReminder(Context context, int requestCode, Class<?> cls) {
@@ -98,16 +107,21 @@ public class ScheduleDailyNotification {
             schedule.append("\n");
             ThoiKhoaBieu item = classes.get(i);
             String no = i + 1 + ". ";
-            schedule.append(no);
-            schedule.append(item.TenLopHocPhan);
-            schedule.append("\n * Phòng : ");
-            schedule.append(item.TenPhong);
-            schedule.append("\n * Tiết : ");
-            schedule.append(item.TietHocBatDau);
-            schedule.append(" - ");
-            schedule.append(item.TietHocKetThuc);
-            schedule.append("\n * Giáo viên : ");
-            schedule.append(item.HoVaTen);
+            schedule.append(no)
+                    .append(item.TenLopHocPhan)
+                    .append("\n * Phòng : ")
+                    .append(item.TenPhong)
+                    .append("\n * Tiết : ")
+                    .append(item.TietHocBatDau)
+                    .append(" - ")
+                    .append(item.TietHocKetThuc)
+                    .append(" ( ")
+                    .append(item.getLessionStartTimeStr())
+                    .append(" - ")
+                    .append(item.getLessionEndTimeStr())
+                    .append(" ) ")
+                    .append("\n * Giáo viên : ")
+                    .append(item.HoVaTen);
         }
 
         NotificationCompat.Builder builder = createNotificationCompatBuilder(context);
