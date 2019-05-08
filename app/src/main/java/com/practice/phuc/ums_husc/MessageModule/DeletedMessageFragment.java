@@ -28,6 +28,7 @@ import com.practice.phuc.ums_husc.Helper.CustomSnackbar;
 import com.practice.phuc.ums_husc.Helper.DBHelper;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
+import com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper;
 import com.practice.phuc.ums_husc.Model.TINNHAN;
 import com.practice.phuc.ums_husc.R;
 
@@ -38,6 +39,8 @@ import java.util.Objects;
 import okhttp3.Response;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper.ACCOUNT_ID;
+import static com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper.ACCOUNT_SP;
 
 public class DeletedMessageFragment extends Fragment
         implements SwipeRefreshLayout.OnRefreshListener, MessageItemTouchHelper.MessageItemTouchHelperListener {
@@ -87,7 +90,7 @@ public class DeletedMessageFragment extends Fragment
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.action_searchMessage:
                 SearchMessageActivity.setSuggestions(mAdapter.getDataSet(), SearchMessageActivity.SEARCH_DELETED);
                 Intent intent = new Intent(mContext, SearchMessageActivity.class);
@@ -236,8 +239,10 @@ public class DeletedMessageFragment extends Fragment
             final Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    MessageTaskHelper.getInstance().foreverDelete(swipedItem.MaTinNhan,
-                            Reference.getStudentId(mContext), Reference.getAccountPassword(mContext));
+                    MessageTaskHelper.getInstance()
+                            .foreverDelete(mContext, swipedItem.MaTinNhan,
+                                    Reference.getInstance().getStudentId(mContext),
+                                    Reference.getInstance().getAccountPassword(mContext));
                     Log.e("DEBUG", "DO DELETE");
                 }
             };
@@ -256,8 +261,9 @@ public class DeletedMessageFragment extends Fragment
                 @Override
                 public void run() {
                     Log.d("DEBUG", "Restore message");
-                    MessageTaskHelper.getInstance().restore(swipedItem.MaTinNhan,
-                            Reference.getStudentId(mContext), Reference.getAccountPassword(mContext));
+                    MessageTaskHelper.getInstance().restore(mContext, swipedItem.MaTinNhan,
+                            Reference.getInstance().getStudentId(mContext),
+                            Reference.getInstance().getAccountPassword(mContext));
 
                 }
             };
@@ -268,8 +274,10 @@ public class DeletedMessageFragment extends Fragment
 
     private void attempRestoreMessage(TINNHAN tinNhan) {
         MessageFragment parentFrag = (MessageFragment) getParentFragment();
+        String accountId = SharedPreferenceHelper.getInstance()
+                .getSharedPrefStr(mContext, ACCOUNT_SP, ACCOUNT_ID, "");
 
-        if (tinNhan.MaNguoiGui.equals(Reference.getAccountId(mContext))) { // Restore sent message
+        if (tinNhan.MaNguoiGui.equals(accountId)) { // Restore sent message
             SentMessageFragment smf = (SentMessageFragment) Objects.requireNonNull(parentFrag)
                     .getChildFragment(SentMessageFragment.class.getName());
             if (smf != null) {
@@ -375,7 +383,12 @@ public class DeletedMessageFragment extends Fragment
         SharedPreferences sp = mContext.getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
         String maSinhVien = sp.getString(getString(R.string.pre_key_student_id), null);
         String matKhau = sp.getString(getString(R.string.pre_key_password), null);
-        String url = Reference.getLoadTinNhanDaXoaApiUrl(maSinhVien, matKhau, mCurrentPage, ITEM_PER_PAGE);
+        String url = Reference.getInstance().
+                getHost(mContext) + "api/SinhVien/TinNhan/DaXoa/" +
+                "?masinhvien=" + maSinhVien +
+                "&matkhau=" + matKhau +
+                "&sotrang=" + mCurrentPage +
+                "&sodong=" + ITEM_PER_PAGE;
 
         return NetworkUtil.makeRequest(url, false, null);
     }

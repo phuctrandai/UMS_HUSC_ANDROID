@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.practice.phuc.ums_husc.Helper.Reference;
-import com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper;
 
 import java.util.Objects;
 
@@ -28,10 +27,8 @@ public class ConfigActivity extends AppCompatActivity {
         setTitle("");
         overridePendingTransition(R.anim.slide_in_bottom, R.anim.fade_out_half);
 
-        String serverAddr = SharedPreferenceHelper.getInstance()
-                .getSharedPrefStr(this, "server", "address", Reference.ADDRESS);
-        String serverPort = SharedPreferenceHelper.getInstance()
-                .getSharedPrefStr(this, "server", "port", Reference.PORT);
+        String serverAddr = Reference.getInstance().getServerAddress(this);
+        String serverPort = Reference.getInstance().getServerPort(this);
 
         final EditText etServerAddr = findViewById(R.id.et_server_addr);
         final EditText etServerPort = findViewById(R.id.et_server_port);
@@ -45,18 +42,9 @@ public class ConfigActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String addr = etServerAddr.getText().toString();
                 String port = etServerPort.getText().toString();
-                String host = "http://" + addr + ":" + port + "/";
 
-                SharedPreferenceHelper.getInstance()
-                        .setSharedPref(ConfigActivity.this, "server", "address", addr);
-                SharedPreferenceHelper.getInstance()
-                        .setSharedPref(ConfigActivity.this, "server", "port", port);
-                SharedPreferenceHelper.getInstance()
-                        .setSharedPref(ConfigActivity.this, "server", "host", host);
-
-                Reference.ADDRESS = addr;
-                Reference.PORT = port;
-                Reference.HOST = host;
+                Reference.getInstance().setServerAddress(ConfigActivity.this, addr);
+                Reference.getInstance().setServerPort(ConfigActivity.this, port);
 
                 Toasty.success(ConfigActivity.this, "Lưu cấu hình thành công").show();
             }

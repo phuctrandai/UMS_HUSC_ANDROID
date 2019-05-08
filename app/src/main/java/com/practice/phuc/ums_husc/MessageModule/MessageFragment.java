@@ -57,7 +57,7 @@ public class MessageFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_newMessage:
                 Intent intent = new Intent(mContext, SendMessageActivity.class);
-                intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE_NEW, true);
+                intent.putExtra(Reference.getInstance().BUNDLE_EXTRA_MESSAGE_NEW, true);
                 startActivity(intent);
                 return true;
 

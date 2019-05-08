@@ -20,7 +20,7 @@
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
             android:name=".ConfigActivity"
-            android:label="Cấu hình máy chủ"
+            android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -30,33 +30,34 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ScheduleModule.SelectingSemesterActivity"
-            android:label="Chọn học kì tác nghiệp"
+            android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             tools:ignore="InnerclassSeparator" />
         <activity
-            android:excludeFromRecents="true"
             android:name=".ScheduleModule.ScheduleAlarmActivity"
+            android:excludeFromRecents="true"
+            android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             tools:ignore="InnerclassSeparator" />
         <activity
             android:name=".NewsModule.DetailNewsActivity"
-            android:label="@string/title_activity_detail_news"
+            android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             tools:ignore="InnerclassSeparator" />
         <activity
             android:name=".MessageModule.DetailMessageActivity"
-            android:label="@string/title_activity_detail_message"
+            android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             tools:ignore="InnerclassSeparator" />
         <activity
             android:name=".MessageModule.SendMessageActivity"
-            android:label="@string/title_activity_reply_message"
+            android:label="@string/app_name"
             android:screenOrientation="portrait"
             tools:ignore="InnerclassSeparator" />
         <activity
@@ -70,7 +71,6 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

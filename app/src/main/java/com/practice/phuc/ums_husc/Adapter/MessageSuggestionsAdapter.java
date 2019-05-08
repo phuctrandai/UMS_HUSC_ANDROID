@@ -74,7 +74,7 @@ public class MessageSuggestionsAdapter extends RecyclerView.Adapter<MessageSugge
             public void onItemClickListener(View view, int position, boolean isLongClick) {
                 TINNHAN tinNhan = mSuggestions.get(position);
                 Intent intent = new Intent(mContext, DetailMessageActivity.class);
-                intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, TINNHAN.toJson(tinNhan));
+                intent.putExtra(Reference.getInstance().BUNDLE_EXTRA_MESSAGE, TINNHAN.toJson(tinNhan));
                 mContext.startActivity(intent);
             }
         });

@@ -31,6 +31,7 @@ import com.practice.phuc.ums_husc.Helper.DBHelper;
 import com.practice.phuc.ums_husc.Helper.DateHelper;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
+import com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper;
 import com.practice.phuc.ums_husc.Model.NGUOINHAN;
 import com.practice.phuc.ums_husc.Model.TINNHAN;
 import com.practice.phuc.ums_husc.R;
@@ -46,6 +47,10 @@ import es.dmoral.toasty.Toasty;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import static com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper.ACCOUNT_ID;
+import static com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper.ACCOUNT_NAME;
+import static com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper.ACCOUNT_SP;
 
 public class SendMessageActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
@@ -93,9 +98,12 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
         ITEM_PER_PAGE = 15;
         mDBHelper = new DBHelper(this);
 
-        boolean isNew = getIntent().getBooleanExtra(Reference.BUNDLE_EXTRA_MESSAGE_NEW, false);
-        boolean isReply = getIntent().getBooleanExtra(Reference.BUNDLE_EXTRA_MESSAGE_REPLY, false);
-        boolean isForward = getIntent().getBooleanExtra(Reference.BUNDLE_EXTRA_MESSAGE_FORWARD, false);
+        boolean isNew = getIntent()
+                .getBooleanExtra(Reference.getInstance().BUNDLE_EXTRA_MESSAGE_NEW, false);
+        boolean isReply = getIntent()
+                .getBooleanExtra(Reference.getInstance().BUNDLE_EXTRA_MESSAGE_REPLY, false);
+        boolean isForward = getIntent()
+                .getBooleanExtra(Reference.getInstance().BUNDLE_EXTRA_MESSAGE_FORWARD, false);
 
         int MODE;
         if (isNew) {
@@ -215,7 +223,10 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
 
         @Override
         protected Boolean doInBackground(String... strings) {
-            String url = Reference.getSearchTaiKhoan(strings[0], mCurrentPage, ITEM_PER_PAGE);
+            String url = Reference.getInstance()
+                    .getHost(SendMessageActivity.this) +
+                    "api/SinhVien/TaiKhoan/?order=" +
+                    strings[0] + "&sotrang=" + mCurrentPage + "&sodong=" + ITEM_PER_PAGE;
 
             mResponse = NetworkUtil.makeRequest(url, false, null);
 
@@ -273,9 +284,12 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
 
         @Override
         protected Boolean doInBackground(String... strings) {
-            String maSinhVien = Reference.getStudentId(SendMessageActivity.this);
-            String matKhau = Reference.getAccountPassword(SendMessageActivity.this);
-            String url = Reference.getReplyTinNhanApiUrl(maSinhVien, matKhau);
+            String maSinhVien = Reference.getInstance().getStudentId(SendMessageActivity.this);
+            String matKhau = Reference.getInstance().getAccountPassword(SendMessageActivity.this);
+            String url = Reference.getInstance()
+                    .getHost(SendMessageActivity.this) + "api/SinhVien/TraLoiTinNhan/"
+                    + "?masinhvien=" + maSinhVien
+                    + "&matkhau=" + matKhau;
 
             String json = TINNHAN.toJson(tinNhan);
             Log.e("DEBUG", "Tin nhan gui di: " + json);
@@ -318,13 +332,15 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
     }
 
     private TINNHAN setUpData(int mode) {
-        String json = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_MESSAGE);
+        String json = getIntent().getStringExtra(Reference.getInstance().BUNDLE_EXTRA_MESSAGE);
         TINNHAN current = json != null ? TINNHAN.fromJson(json) : null;
         TINNHAN toSent = new TINNHAN();
 
         String tieuDe = "";
-        String maNguoiGui = Reference.getAccountId(this);
-        String hoTenNguoiGui = Reference.getStudentName(this);
+        String maNguoiGui = SharedPreferenceHelper.getInstance()
+                .getSharedPrefStr(this, ACCOUNT_SP, ACCOUNT_ID, "");
+        String hoTenNguoiGui = SharedPreferenceHelper.getInstance()
+                .getSharedPrefStr(this, ACCOUNT_SP, ACCOUNT_NAME, "");
 
         if (current != null && current.MaNguoiGui.equals(maNguoiGui) && mode != 2)
             mode = 4;
@@ -417,8 +433,8 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
             mTinNhan.NguoiNhans[i] = n;
             i++;
         }
-        Reference.mHasNewSentMessage = true;
-        Reference.getListNewSentMessage().add(mTinNhan);
+        Reference.getInstance().mHasNewSentMessage = true;
+        Reference.getInstance().getListNewSentMessage().add(mTinNhan);
 
         SendMessageTask sendMessageTask = new SendMessageTask(mTinNhan);
         sendMessageTask.execute((String) null);
@@ -452,7 +468,7 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
         mBuilder.setGroupSummary(true);
         mBuilder.setContentIntent(null);
         mBuilder.setSound(Uri.EMPTY);
-        mBuilder.setGroup(Reference.SEND_MESSAGE_NOTIFICATION);
+        mBuilder.setGroup(Reference.getInstance().SEND_MESSAGE_NOTIFICATION);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
         int norificationId = Integer.parseInt(String.valueOf(new Date().getTime() / 1000));
         notificationManager.notify(norificationId, mBuilder.build());

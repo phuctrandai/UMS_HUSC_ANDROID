@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dragView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        android:padding="@dimen/normal_padding">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chỉnh sửa đặc điểm bản thân"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="HardcodedText" />
+
+            <ImageButton
+                android:id="@+id/btn_closeSlidePanel"
+                android:layout_width="48dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/radius_white_background"
+                android:src="@android:drawable/arrow_down_float"
+                android:tint="@color/colorBlack"
+                tools:ignore="ContentDescription" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_thanhPhanXuatThan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_person_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="Thành phần xuất thân"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <Spinner
+                android:id="@+id/sp_thanhPhanXuatThan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_dienUuTienGiaDinh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_people_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="Diện ưu tiên gia đình"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <Spinner
+                android:id="@+id/sp_dienUuTienGiaDinh"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_dienUuTienBanThan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_person_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="Diện ưu tiên bản thân"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <Spinner
+                android:id="@+id/sp_dienUuTienBanThan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_tinhTrangHonNhan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_people_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="Tình trạng hôn nhân"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <Spinner
+                android:id="@+id/sp_tinhTrangHonNhan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/layout_chieuCao"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/normal_margin"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/ic_vertical_align_top_grey_12"
+                    android:drawablePadding="@dimen/small_padding"
+                    android:text="Chiều cao (cm)"
+                    android:textSize="@dimen/small_text"
+                    tools:ignore="HardcodedText" />
+
+                <EditText
+                    android:id="@+id/et_chieuCao"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLength="3"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/normal_text"
+                    tools:ignore="Autofill,LabelFor" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_nhomMau"
+                android:layout_width="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/normal_margin"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/ic_nod_grey_12"
+                    android:drawablePadding="@dimen/small_padding"
+                    android:text="Nhóm máu"
+                    android:textSize="@dimen/small_text"
+                    tools:ignore="HardcodedText" />
+
+                <Spinner
+                    android:id="@+id/sp_nhomMau"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/big_margin">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tham gia tổ chức chính trị, đoàn thể xã hội"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="HardcodedText" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_ngayVaoDoan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/normal_margin"
+            android:layout_marginBottom="@dimen/normal_margin">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_ngayVaoDoan"
+                android:drawableStart="@drawable/ic_date_range_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:paddingStart="@dimen/big_padding"
+                android:paddingEnd="@dimen/extra_padding"
+                android:text="Ngày kết nạp đoàn TNCS Hồ Chí Minh"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/tv_ngayVaoDoan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/big_margin"
+                android:text="01/01/2011"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="HardcodedText" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_noiVaoDoan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/normal_margin"
+            android:layout_marginBottom="@dimen/normal_margin">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_noiVaoDoan"
+                android:drawableStart="@drawable/ic_building_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:paddingStart="@dimen/big_padding"
+                android:paddingEnd="@dimen/extra_padding"
+                android:text="Nơi kết nạp đoàn TNCS Hồ Chí Minh"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/tv_noiVaoDoan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/big_margin"
+                android:text="Nơi vào đoàn"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="HardcodedText" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_ngayVaoDang"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/normal_margin"
+            android:layout_marginBottom="@dimen/normal_margin">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_ngayVaoDang"
+                android:drawableStart="@drawable/ic_date_range_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:paddingStart="@dimen/big_padding"
+                android:paddingEnd="@dimen/extra_padding"
+                android:text="Ngày kết nạp Đảng CSVN"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/tv_ngayVaoDang"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/big_margin"
+                android:text="01/01/2011"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="HardcodedText" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_ngayChinhThuc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/normal_margin"
+            android:layout_marginBottom="@dimen/normal_margin">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_ngayChinhThuc"
+                android:drawableStart="@drawable/ic_date_range_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:paddingStart="@dimen/big_padding"
+                android:paddingEnd="@dimen/extra_padding"
+                android:text="Ngày chính thức"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/tv_ngayChinhThuc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/big_margin"
+                android:text="02/02/2011"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="HardcodedText" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_noiKetNapDang"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/normal_margin"
+            android:layout_marginBottom="@dimen/normal_margin">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_noiKetNapDang"
+                android:drawableStart="@drawable/ic_building_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:paddingStart="@dimen/big_padding"
+                android:paddingEnd="@dimen/extra_padding"
+                android:text="Nơi kết nạp Đảng"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/tv_noiKetNapDang"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/big_margin"
+                android:text="Nơi vào đảng"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="HardcodedText" />
+        </RelativeLayout>
+    </LinearLayout>
+</ScrollView>

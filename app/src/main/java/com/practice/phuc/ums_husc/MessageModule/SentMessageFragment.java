@@ -153,12 +153,12 @@ public class SentMessageFragment extends Fragment
     public void onResume() {
         super.onResume();
 
-        if (Reference.mHasNewSentMessage) {
-            List<TINNHAN> list = Reference.getListNewSentMessage();
+        if (Reference.getInstance().mHasNewSentMessage) {
+            List<TINNHAN> list = Reference.getInstance().getListNewSentMessage();
             for(TINNHAN item : list)
                 mAdapter.insertItem(item, 0);
-            Reference.clearListNewSentMessage();
-            Reference.mHasNewSentMessage = false;
+            Reference.getInstance().clearListNewSentMessage();
+            Reference.getInstance().mHasNewSentMessage = false;
         }
     }
 
@@ -253,8 +253,10 @@ public class SentMessageFragment extends Fragment
             final Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    MessageTaskHelper.getInstance().attempDelete(deletedItem.MaTinNhan,
-                            Reference.getStudentId(mContext), Reference.getAccountPassword(mContext));
+                    MessageTaskHelper.getInstance().attempDelete(mContext,
+                            deletedItem.MaTinNhan,
+                            Reference.getInstance().getStudentId(mContext),
+                            Reference.getInstance().getAccountPassword(mContext));
                 }
             };
             handler.postDelayed(runnable, 3500);
@@ -363,7 +365,11 @@ public class SentMessageFragment extends Fragment
         SharedPreferences sp = mContext.getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
         String maSinhVien = sp.getString(getString(R.string.pre_key_student_id), null);
         String matKhau = sp.getString(getString(R.string.pre_key_password), null);
-        String url = Reference.getLoadTinNhanDaGuiApiUrl(maSinhVien, matKhau, mCurrentPage, ITEM_PER_PAGE);
+        String url = Reference.getInstance().getHost(mContext) + "api/SinhVien/TinNhan/DaGui/"
+                + "?masinhvien=" + maSinhVien
+                + "&matkhau=" + matKhau
+                + "&sotrang=" + mCurrentPage
+                + "&sodong=" + ITEM_PER_PAGE;
 
         return NetworkUtil.makeRequest(url, false, null);
     }

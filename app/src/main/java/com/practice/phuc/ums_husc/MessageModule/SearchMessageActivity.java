@@ -66,8 +66,8 @@ public class SearchMessageActivity extends AppCompatActivity implements SearchVi
 
     @Override
     public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return super.onSupportNavigateUp();
+        finishAfterTransition();
+        return true;
     }
 
     @Override
@@ -138,28 +138,31 @@ public class SearchMessageActivity extends AppCompatActivity implements SearchVi
             String url;
             switch (messageType) {
                 case SEARCH_RECEIVED:
-                    url = Reference.HOST + "api/sinhvien/tinnhan/timkiemdanhan/" +
+                    url = Reference.getInstance().getHost(SearchMessageActivity.this) +
+                            "api/sinhvien/tinnhan/timkiemdanhan/" +
                             "?tukhoa=" + strings[0] +
-                            "&masinhvien=" + Reference.getStudentId(SearchMessageActivity.this) +
-                            "&matkhau=" + Reference.getAccountPassword(SearchMessageActivity.this) +
+                            "&masinhvien=" + Reference.getInstance().getStudentId(SearchMessageActivity.this) +
+                            "&matkhau=" + Reference.getInstance().getAccountPassword(SearchMessageActivity.this) +
                             "&sotrang=" + mCurrentPage +
                             "&sodong=" + ITEM_PER_PAGE;
                     break;
 
                 case SEARCH_SENT:
-                    url = Reference.HOST + "api/sinhvien/tinnhan/timkiemdagui/" +
+                    url = Reference.getInstance().getHost(SearchMessageActivity.this) +
+                            "api/sinhvien/tinnhan/timkiemdagui/" +
                             "?tukhoa=" + strings[0] +
-                            "&masinhvien=" + Reference.getStudentId(SearchMessageActivity.this) +
-                            "&matkhau=" + Reference.getAccountPassword(SearchMessageActivity.this) +
+                            "&masinhvien=" + Reference.getInstance().getStudentId(SearchMessageActivity.this) +
+                            "&matkhau=" + Reference.getInstance().getAccountPassword(SearchMessageActivity.this) +
                             "&sotrang=" + mCurrentPage +
                             "&sodong=" + ITEM_PER_PAGE;
                     break;
 
                 default:
-                    url = Reference.HOST + "api/sinhvien/tinnhan/timkiemdaxoa/" +
+                    url = Reference.getInstance().getHost(SearchMessageActivity.this) +
+                            "api/sinhvien/tinnhan/timkiemdaxoa/" +
                             "?tukhoa=" + strings[0] +
-                            "&masinhvien=" + Reference.getStudentId(SearchMessageActivity.this) +
-                            "&matkhau=" + Reference.getAccountPassword(SearchMessageActivity.this) +
+                            "&masinhvien=" + Reference.getInstance().getStudentId(SearchMessageActivity.this) +
+                            "&matkhau=" + Reference.getInstance().getAccountPassword(SearchMessageActivity.this) +
                             "&sotrang=" + mCurrentPage +
                             "&sodong=" + ITEM_PER_PAGE;
                     break;

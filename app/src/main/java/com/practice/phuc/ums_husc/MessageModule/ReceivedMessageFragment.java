@@ -43,7 +43,6 @@ public class ReceivedMessageFragment extends Fragment
         implements SwipeRefreshLayout.OnRefreshListener, MessageItemTouchHelper.MessageItemTouchHelperListener {
 
     public ReceivedMessageFragment() {
-        // Required empty public constructor
     }
 
     public static ReceivedMessageFragment newInstance(Context context) {
@@ -83,7 +82,7 @@ public class ReceivedMessageFragment extends Fragment
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.action_searchMessage:
                 SearchMessageActivity.setSuggestions(mAdapter.getDataSet(), SearchMessageActivity.SEARCH_RECEIVED);
                 Intent intent = new Intent(mContext, SearchMessageActivity.class);
@@ -161,12 +160,12 @@ public class ReceivedMessageFragment extends Fragment
     public void onResume() {
         super.onResume();
 
-        if (Reference.mHasNewReceivedMessage) {
-            List<TINNHAN> list = Reference.getListNewReceivedMessage();
+        if (Reference.getInstance().mHasNewReceivedMessage) {
+            List<TINNHAN> list = Reference.getInstance().getListNewReceivedMessage();
             for (TINNHAN item : list)
                 mAdapter.insertItem(item, 0);
-            Reference.clearListNewReceivedMessage();
-            Reference.mHasNewReceivedMessage = false;
+            Reference.getInstance().clearListNewReceivedMessage();
+            Reference.getInstance().mHasNewReceivedMessage = false;
         }
     }
 
@@ -251,8 +250,10 @@ public class ReceivedMessageFragment extends Fragment
             final Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    MessageTaskHelper.getInstance().attempDelete(deletedItem.MaTinNhan,
-                            Reference.getStudentId(mContext), Reference.getAccountPassword(mContext));
+                    MessageTaskHelper.getInstance()
+                            .attempDelete(mContext, deletedItem.MaTinNhan,
+                                    Reference.getInstance().getStudentId(mContext),
+                                    Reference.getInstance().getAccountPassword(mContext));
                 }
             };
             handler.postDelayed(runnable, 3500);
@@ -361,7 +362,11 @@ public class ReceivedMessageFragment extends Fragment
         SharedPreferences sp = mContext.getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
         String maSinhVien = sp.getString(getString(R.string.pre_key_student_id), null);
         String matKhau = sp.getString(getString(R.string.pre_key_password), null);
-        String url = Reference.getLoadTinNhanDenApiUrl(maSinhVien, matKhau, mCurrentPage, ITEM_PER_PAGE);
+        String url = Reference.getInstance().getHost(mContext) + "api/SinhVien/TinNhan/DaNhan/"
+                + "?masinhvien=" + maSinhVien
+                + "&matkhau=" + matKhau
+                + "&sotrang=" + mCurrentPage
+                + "&sodong=" + ITEM_PER_PAGE;
 
         return NetworkUtil.makeRequest(url, false, null);
     }

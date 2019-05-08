@@ -93,7 +93,7 @@ public class ScheduleDailyNotification {
         mBuilder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.large_icon));
         mBuilder.setColor(context.getResources().getColor(R.color.colorPrimary));
         mBuilder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
-        mBuilder.setGroup(Reference.SCHEDULE_NOTIFICATION);
+        mBuilder.setGroup(Reference.getInstance().SCHEDULE_NOTIFICATION);
         mBuilder.setSmallIcon(R.mipmap.noti_icon);
         return mBuilder;
     }

@@ -20,7 +20,6 @@ public class DailyReceiver extends BroadcastReceiver {
         boolean isAllow = SharedPreferenceHelper.getInstance()
                 .getSharedPrefBool(context, SettingFragment.SHARED_SETTING, SettingFragment.SHARED_PRE_TIMETABLE_ALARM, true);
 
-
         List<ThoiKhoaBieu> todayClasses = ScheduleTaskHelper.getInstance().setTodayReminder(context);
 
         // Push notification

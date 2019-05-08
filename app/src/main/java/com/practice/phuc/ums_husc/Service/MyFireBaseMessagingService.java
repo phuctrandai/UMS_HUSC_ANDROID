@@ -37,21 +37,30 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
 
         if (remoteMessage.getData().size() > 0) {
             String messageType = remoteMessage.getData().get("type");
+            Log.d("DEBUG", "onMessageReceived: Message type: " + messageType);
 
             String accountId = SharedPreferenceHelper.getInstance()
-                    .getSharedPrefStr(this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.ACCOUNT_ID, "");
+                    .getSharedPrefStr(this,
+                            SharedPreferenceHelper.ACCOUNT_SP,
+                            SharedPreferenceHelper.ACCOUNT_ID, "");
 
-            if (messageType != null && messageType.equals(Reference.NEWS_NOTIFICATION)) {
+            if (messageType != null && messageType.equals(Reference.getInstance().NEWS_NOTIFICATION)) {
                 boolean isAllow = SharedPreferenceHelper.getInstance()
-                        .getSharedPrefBool(this, SettingFragment.SHARED_SETTING, SettingFragment.SHARED_PRE_NEWS_NOTI, true);
+                        .getSharedPrefBool(this,
+                                SettingFragment.SHARED_SETTING,
+                                SettingFragment.SHARED_PRE_NEWS_NOTI, true);
                 if (isAllow && (!accountId.equals(""))) {
+                    Log.d("DEBUG", "onMessageReceived: Rise news noti");
                     riseNotification(createNewsNotification(remoteMessage));
                 }
 
-            } else if (messageType != null && messageType.equals(Reference.MESSAGE_NOTIFICATION)) {
+            } else if (messageType != null && messageType.equals(Reference.getInstance().MESSAGE_NOTIFICATION)) {
                 boolean isAllow = SharedPreferenceHelper.getInstance()
-                        .getSharedPrefBool(this, SettingFragment.SHARED_SETTING, SettingFragment.SHARED_PRE_MESSAGE_NOTI, true);
+                        .getSharedPrefBool(this,
+                                SettingFragment.SHARED_SETTING,
+                                SettingFragment.SHARED_PRE_MESSAGE_NOTI, true);
                 if (isAllow && (!accountId.equals(""))) {
+                    Log.d("DEBUG", "onMessageReceived: Rise message noti");
                     riseNotification(createMessageNotification(remoteMessage));
                 }
             }
@@ -76,15 +85,16 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
             intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         } else {
-            intent = new Intent(mContext, DetailNewsActivity.class);
             context = mContext;
+            intent = new Intent(context, DetailNewsActivity.class);
         }
+
         THONGBAO thongBao = new THONGBAO();
         thongBao.setTieuDe(notiBody);
         thongBao.setThoiGianDang(newsPostTime);
         thongBao.setMaThongBao(Integer.parseInt(Objects.requireNonNull(newsId)));
-        intent.putExtra(Reference.BUNDLE_EXTRA_NEWS, THONGBAO.toJson(thongBao));
-        intent.putExtra(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, true);
+        intent.putExtra(Reference.getInstance().BUNDLE_EXTRA_NEWS, THONGBAO.toJson(thongBao));
+        intent.putExtra(Reference.getInstance().BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, true);
 
         pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -94,7 +104,7 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
         mBuilder.setContentText("Lúc " + newsPostTime);
         mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(notiBody));
         mBuilder.setContentIntent(pendingIntent);
-        mBuilder.setGroup(Reference.NEWS_NOTIFICATION);
+        mBuilder.setGroup(Reference.getInstance().NEWS_NOTIFICATION);
         return mBuilder.build();
     }
 
@@ -121,8 +131,8 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
             context = mContext;
             intent = new Intent(mContext, DetailMessageActivity.class);
         }
-        intent.putExtra(Reference.BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, true);
-        intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, TINNHAN.toJson(tinNhan));
+        intent.putExtra(Reference.getInstance().BUNDLE_EXTRA_MESSAGE, TINNHAN.toJson(tinNhan));
+        intent.putExtra(Reference.getInstance().BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, true);
         pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Khoi tao thong bao
@@ -131,7 +141,7 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
         mBuilder.setContentText("Lúc " + messageSendTime); // Noi dung la thoi gian gui
         mBuilder.setContentIntent(pendingIntent);
         mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(messageTitle)); // Noi dung chinh la tieu de tin nhan
-        mBuilder.setGroup(Reference.MESSAGE_NOTIFICATION);
+        mBuilder.setGroup(Reference.getInstance().MESSAGE_NOTIFICATION);
         return mBuilder.build();
     }
 
@@ -148,7 +158,6 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
 
     private void riseNotification(Notification notification) {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-//        int norificationId = Integer.parseInt(String.valueOf(new Date().getTime() / 1000));
         int norificationId = (int) SystemClock.uptimeMillis();
         notificationManager.notify(norificationId, notification);
     }

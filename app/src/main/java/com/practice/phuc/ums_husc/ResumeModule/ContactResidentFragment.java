@@ -576,42 +576,42 @@ public class ContactResidentFragment extends Fragment {
             String order = strings[0];
 
             if (strings.length == 3) HOME_OR_RESIDENT = strings[2];
-
+            String host = Reference.getInstance().getHost(mContext);
             switch (order) {
                 case GET_NATIONS:
-                    String url = Reference.HOST + "api/DungChung/Get/QuocGia/";
+                    String url = host + "api/DungChung/Get/QuocGia/";
                     mResponse = NetworkUtil.makeRequest(url, false, null);
                     ORDER = GET_NATIONS;
                     break;
 
                 case GET_CITIES_BY_NATION:
-                    url = Reference.HOST + "api/DungChung/Get/ThanhPho/?refId=" + strings[1];
+                    url = host + "api/DungChung/Get/ThanhPho/?refId=" + strings[1];
                     mResponse = NetworkUtil.makeRequest(url, false, null);
                     ORDER = GET_CITIES_BY_NATION;
                     break;
 
                 case GET_DISTRICT_BY_CITY:
-                    url = Reference.HOST + "api/DungChung/Get/QuanHuyen/?refId=" + strings[1];
+                    url = host + "api/DungChung/Get/QuanHuyen/?refId=" + strings[1];
                     mResponse = NetworkUtil.makeRequest(url, false, null);
                     ORDER = GET_DISTRICT_BY_CITY;
                     break;
 
                 case GET_WARDS_BY_DISTRICT:
-                    url = Reference.HOST + "api/DungChung/Get/PhuongXa/?refId=" + strings[1];
+                    url = host + "api/DungChung/Get/PhuongXa/?refId=" + strings[1];
                     mResponse = NetworkUtil.makeRequest(url, false, null);
                     ORDER = GET_WARDS_BY_DISTRICT;
                     break;
 
                 case GET_DORMITORY:
-                    url = Reference.HOST + "api/DungChung/Get/KyTucXa/";
+                    url = host + "api/DungChung/Get/KyTucXa/";
                     mResponse = NetworkUtil.makeRequest(url, false, null);
                     ORDER = GET_DORMITORY;
                     break;
 
                 case DO_UPDATE:
-                    url = Reference.HOST + "api/SinhVien/UpdateThongTinLienHe/" +
-                            "?masinhvien=" + Reference.getStudentId(mContext) +
-                            "&matkhau=" + Reference.getAccountPassword(mContext);
+                    url = host + "api/SinhVien/UpdateThongTinLienHe/" +
+                            "?masinhvien=" + Reference.getInstance().getStudentId(mContext) +
+                            "&matkhau=" + Reference.getInstance().getAccountPassword(mContext);
                     String data = strings[1];
                     RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), data);
                     mResponse = NetworkUtil.makeRequest(url, true, body);

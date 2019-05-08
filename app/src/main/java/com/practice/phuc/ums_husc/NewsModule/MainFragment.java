@@ -68,16 +68,19 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        mLastAction = ACTION_INIT;
         mStatus = STATUS_INIT;
+        mLastAction = ACTION_INIT;
         mAdapter = new NewsRecyclerDataAdapter(mContext, new ArrayList<THONGBAO>());
         mDBHelper = new DBHelper(mContext);
         mIsScrolling = true;
-        long countRow = mDBHelper.countRow(DBHelper.NEWS);
-        if (countRow > 0) {
-            mCurrentPage = countRow / ITEM_PER_PAGE + 1;
+
+        if (NetworkUtil.getConnectivityStatus(mContext) == NetworkUtil.TYPE_NOT_CONNECTED) {
+            long countRow = mDBHelper.countRow(DBHelper.NEWS);
+            mCurrentPage = countRow > 0 ? countRow / ITEM_PER_PAGE + 1 : 1;
+
         } else {
             mCurrentPage = 1;
+            mDBHelper.deleteAllRecord(DBHelper.NEWS);
         }
         super.onCreate(savedInstanceState);
     }
@@ -123,24 +126,24 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        if (Reference.getInstance().mHasNewNews) {
+            List<THONGBAO> newItems = Reference.getInstance().getmListNewThongBao();
+            for (int i = 0; i < newItems.size(); i++) {
+                mAdapter.insertItem(newItems.get(i), 0);
+            }
+            Reference.getInstance().clearListNewThongBao();
+            Reference.getInstance().mHasNewNews = false;
+        }
+    }
+
+    @Override
     public void onPause() {
         showNetworkErrorSnackbar(false);
         showErrorSnackbar(false, mErrorMessage);
         super.onPause();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        if (Reference.mHasNewNews) {
-            List<THONGBAO> newItems = Reference.getmListNewThongBao();
-            for (int i = 0; i < newItems.size(); i++) {
-                mAdapter.insertItem(newItems.get(i), 0);
-            }
-            Reference.clearListNewThongBao();
-            Reference.mHasNewNews = false;
-        }
     }
 
     @Override
@@ -151,9 +154,9 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onDestroy() {
+        super.onDestroy();
         mAdapter.clearDataSet();
         mLoadNewsTask = null;
-        super.onDestroy();
     }
 
     @Override
@@ -289,10 +292,15 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         if (mLastAction == ACTION_INIT) mCurrentPage = 1;
 
         String maSinhVien = mContext.getSharedPreferences(getString(R.string.share_pre_key_account_info), Context.MODE_PRIVATE)
-                .getString(getString(R.string.pre_key_student_id), null);
+                .getString(getString(R.string.pre_key_student_id), "");
         String matKhau = mContext.getSharedPreferences(getString(R.string.share_pre_key_account_info), Context.MODE_PRIVATE)
-                .getString(getString(R.string.pre_key_password), null);
-        String url = Reference.getLoadThongBaoApiUrl(maSinhVien, matKhau, mCurrentPage, ITEM_PER_PAGE);
+                .getString(getString(R.string.pre_key_password), "");
+        String url = Reference.getInstance()
+                .getHost(mContext) + "api/ThongBao/DanhSach/"
+                + "?masinhvien=" + maSinhVien
+                + "&matkhau=" + matKhau
+                + "&sotrang=" + mCurrentPage
+                + "&sodong=" + ITEM_PER_PAGE;
 
         return NetworkUtil.makeRequest(url, false, null);
     }
@@ -300,10 +308,10 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private void refreshData(List<THONGBAO> list, boolean isLocalData) {
         if (list != null) {
             mStatus = STATUS_SHOW_DATA;
-            if (mLastAction == ACTION_REFRESH || mLastAction == ACTION_INIT)
+            if (mLastAction == ACTION_REFRESH || mLastAction == ACTION_INIT) {
                 mAdapter.changeDataSet(list);
 
-            else if (mLastAction == ACTION_LOAD_MORE && list.size() > 0)
+            } else if (mLastAction == ACTION_LOAD_MORE && list.size() > 0)
                 mAdapter.insertItemRange(list, mAdapter.getItemCount(), ITEM_PER_PAGE);
 
             if (list.size() > 0 && (!isLocalData))

@@ -1,6 +1,7 @@
 package com.practice.phuc.ums_husc.MessageModule;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -98,17 +99,25 @@ public class MessageTaskHelper {
         }
     }
 
-    void updateSeenTime(int messageId, String maSinhVien, String matKhau) {
-        String url = Reference.getUpdateThoiDiemXemTinNhanApiUrl(maSinhVien, matKhau, String.valueOf(messageId));
+    void updateSeenTime(Context context, int messageId, String maSinhVien, String matKhau) {
+        String url = Reference.getInstance()
+                .getHost(context) + "api/SinhVien/TinNhan/CapNhatThoiDiemXem/" +
+                "?masinhvien=" + maSinhVien +
+                "&matkhau=" + matKhau +
+                "&id=" + messageId;
 
         new Task(Task.DO_UPDATE_SEEN_TIME).execute(url);
     }
 
-    void attempDelete(String messageId, String maSinhVien, String matKhau) {
+    void attempDelete(Context context, String messageId, String maSinhVien, String matKhau) {
         int count = MessageTaskHelper.getInstance().mAttempDeleteMessage.size();
 
         if (count > 0) {
-            String url = Reference.getAttempDeleteTinNhanApiUrl(maSinhVien, matKhau, messageId);
+            String url = Reference.getInstance()
+                    .getHost(context) + "api/SinhVien/TinNhan/XoaTamThoi/" +
+                    "?masinhvien=" + maSinhVien +
+                    "&matkhau=" + matKhau +
+                    "&id=" + messageId;
             Log.e("DEBUG", "Request to server: " + url);
             new Task(Task.DO_ATTEMP_DELETE).execute(url, messageId);
         } else {
@@ -116,15 +125,23 @@ public class MessageTaskHelper {
         }
     }
 
-    void foreverDelete(String messageId, String maSinhVien, String matKhau) {
-        String url = Reference.getForeverDeleteTinNhanApiUrl(maSinhVien, matKhau, messageId);
+    void foreverDelete(Context context, String messageId, String maSinhVien, String matKhau) {
+        String url = Reference.getInstance()
+                .getHost(context) + "api/SinhVien/TinNhan/XoaVinhVien/" +
+                "?masinhvien=" + maSinhVien +
+                "&matkhau=" + matKhau +
+                "&id=" + messageId;
         Log.e("DEBUG", "Request to server: " + url);
 
         new Task(Task.DO_FOREVER_DELETE).execute(url);
     }
 
-    void restore(String messageId, String maSinhVien, String matKhau) {
-        String url = Reference.getRestoreDeletedTinNhanApiUrl(maSinhVien, matKhau, messageId);
+    void restore(Context context, String messageId, String maSinhVien, String matKhau) {
+        String url = Reference.getInstance()
+                . getHost(context) + "api/SinhVien/TinNhan/KhoiPhuc/" +
+                "?masinhvien=" + maSinhVien +
+                "&matkhau=" + matKhau +
+                "&id=" + messageId;
         Log.e("DEBUG", "Request to server: " + url);
 
         new Task(Task.DO_RESTORE).execute(url, messageId);

@@ -254,12 +254,15 @@ public class LoginActivity extends AppCompatActivity {
                 this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.STUDENT_ID, ""
         );
         String token = MyFireBaseMessagingService.getToken(this);
-        FireBaseIDTask.saveTokenForAccount(maSinhVien, token);
+        FireBaseIDTask.saveTokenForAccount(this, maSinhVien, token);
     }
 
     private Response onlineLogin(String maSinhVien, String matKhau) {
-        return NetworkUtil.makeRequest(Reference.getLoginApiUrl(maSinhVien, matKhau),
-                false, null);
+        String url = Reference.getInstance().
+                getHost(this) + "api/SinhVien/TaiKhoan/DangNhap/"
+                + "?masinhvien=" + maSinhVien
+                + "&matkhau=" + matKhau;
+        return NetworkUtil.makeRequest(url,false, null);
     }
 
     private void showProgress(final boolean show) {
@@ -287,14 +290,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void configureRemoteServer() {
-
-        Reference.ADDRESS = SharedPreferenceHelper.getInstance()
-                .getSharedPrefStr(this, "server", "address", Reference.ADDRESS);
-        Reference.PORT = SharedPreferenceHelper.getInstance()
-                .getSharedPrefStr(this, "server", "port", Reference.PORT);
-        Reference.HOST = SharedPreferenceHelper.getInstance()
-                .getSharedPrefStr(this, "server", "host", Reference.HOST);
-
         ImageView ivAvatar = findViewById(R.id.iv_logo);
         ivAvatar.setOnLongClickListener(new View.OnLongClickListener() {
             @Override

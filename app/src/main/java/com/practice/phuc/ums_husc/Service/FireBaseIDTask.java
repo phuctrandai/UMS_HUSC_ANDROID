@@ -1,5 +1,6 @@
 package com.practice.phuc.ums_husc.Service;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -35,13 +36,13 @@ public class FireBaseIDTask extends AsyncTask<String, Void, Boolean> {
         return false;
     }
 
-    public static void saveTokenForAccount(String maSinhVien, String token) {
+    public static void saveTokenForAccount(Context context, String maSinhVien, String token) {
         Log.e("DEBUG", "FireBase save token");
-        new FireBaseIDTask().execute(Reference.getSaveTokenApiUrl(maSinhVien, token));
+        new FireBaseIDTask().execute(Reference.getInstance().getSaveTokenApiUrl(context, maSinhVien, token));
     }
 
-    public static void deleteTokenFromAccount(String maSinhVien, String token) {
+    public static void deleteTokenFromAccount(Context context, String maSinhVien, String token) {
         Log.e("DEBUG", "FireBase delete token");
-        new FireBaseIDTask().execute(Reference.getDeleteTokenApiUrl(maSinhVien, token));
+        new FireBaseIDTask().execute(Reference.getInstance().getDeleteTokenApiUrl(context, maSinhVien, token));
     }
 }

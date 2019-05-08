@@ -295,7 +295,7 @@ public class ScheduleFragment extends Fragment {
 
         @Override
         protected Boolean doInBackground(String... strings) {
-            String url = Reference.HOST + "api/sinhvien/thoikhoabieu" +
+            String url = Reference.getInstance().getHost(mContext) + "api/sinhvien/thoikhoabieu" +
                     "?masinhvien=" + mStudentId +
                     "&matkhau=" + mPassword +
                     "&mahocky=" + mSemesterId;

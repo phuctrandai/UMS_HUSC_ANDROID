@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.practice.phuc.ums_husc.Helper.CustomSnackbar;
 import com.practice.phuc.ums_husc.Helper.DateHelper;
 import com.practice.phuc.ums_husc.Helper.JustifyTextInTextView;
+import com.practice.phuc.ums_husc.MainActivity;
 import com.practice.phuc.ums_husc.Service.MyFireBaseMessagingService;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
@@ -37,8 +38,9 @@ public class DetailMessageActivity extends AppCompatActivity {
     private ProgressBar mProgressBar;
     private Snackbar mNotNetworkSnackbar;
     private Snackbar mErrorSnackbar;
-    private boolean mIsViewDestroyed;
     private TINNHAN mTinNhan;
+    private boolean mIsViewDestroyed;
+    private boolean mAutoAddNewMessages;
 
     private View rootLayout;
     private TextView tvTieuDe;
@@ -67,16 +69,17 @@ public class DetailMessageActivity extends AppCompatActivity {
         tvNguoiNhan = findViewById(R.id.tv_nguoiNhan);
         tvNoiDung = findViewById(R.id.tv_noiDung);
 
-        String json = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_MESSAGE);
+        String json = getIntent().getStringExtra(Reference.getInstance().BUNDLE_EXTRA_MESSAGE);
         mTinNhan = TINNHAN.fromJson(json);
         showData(mTinNhan);
+        mAutoAddNewMessages = getIntent().getBooleanExtra("auto_add_new_messages", true);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        String json = intent.getStringExtra(Reference.BUNDLE_EXTRA_MESSAGE);
+        String json = intent.getStringExtra(Reference.getInstance().BUNDLE_EXTRA_MESSAGE);
         mTinNhan = TINNHAN.fromJson(json);
         showData(mTinNhan);
     }
@@ -115,15 +118,15 @@ public class DetailMessageActivity extends AppCompatActivity {
         switch (id) {
             case R.id.item_traLoi:
                 Intent intent = new Intent(this, SendMessageActivity.class);
-                intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, TINNHAN.toJson(mTinNhan));
-                intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE_REPLY, true);
+                intent.putExtra(Reference.getInstance().BUNDLE_EXTRA_MESSAGE, TINNHAN.toJson(mTinNhan));
+                intent.putExtra(Reference.getInstance().BUNDLE_EXTRA_MESSAGE_REPLY, true);
                 startActivity(intent);
                 break;
 
             case R.id.item_chuyenTiep:
                 Intent intentCT = new Intent(this, SendMessageActivity.class);
-                intentCT.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, TINNHAN.toJson(mTinNhan));
-                intentCT.putExtra(Reference.BUNDLE_EXTRA_MESSAGE_FORWARD, true);
+                intentCT.putExtra(Reference.getInstance().BUNDLE_EXTRA_MESSAGE, TINNHAN.toJson(mTinNhan));
+                intentCT.putExtra(Reference.getInstance().BUNDLE_EXTRA_MESSAGE_FORWARD, true);
                 startActivity(intentCT);
                 break;
 
@@ -136,7 +139,8 @@ public class DetailMessageActivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     private void showData(TINNHAN tinNhan) {
 
-        boolean launchFromNotification = getIntent().getBooleanExtra(Reference.BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, false);
+        boolean launchFromNotification = getIntent()
+                .getBooleanExtra(Reference.getInstance().BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, false);
 
         if (tinNhan == null) return;
 
@@ -213,12 +217,14 @@ public class DetailMessageActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean success) {
             if (mLoadTask != null) {
                 if (success) {
+                    mProgressBar.setVisibility(View.GONE);
                     mTinNhan = TINNHAN.fromJson(json);
                     showMessageBody(Objects.requireNonNull(mTinNhan));
 
-                    Reference.mHasNewReceivedMessage = true;
-                    Reference.getListNewReceivedMessage().add(mTinNhan);
-                    mProgressBar.setVisibility(View.GONE);
+                    if (mAutoAddNewMessages && MainActivity.mIsCreated) {
+                        Reference.getInstance().mHasNewReceivedMessage = true;
+                        Reference.getInstance().getListNewReceivedMessage().add(mTinNhan);
+                    }
 
                     showErrorSnackbar(false, "");
                     showNetworkErrorSnackbar(false);
@@ -238,9 +244,13 @@ public class DetailMessageActivity extends AppCompatActivity {
     }
 
     private Response fetchData(String messageId) {
-        String maSinhVien = Reference.getStudentId(this);
-        String matKhau = Reference.getAccountPassword(this);
-        String url = Reference.getLoadNoiDungTinNhanApiUrl(maSinhVien, matKhau, messageId);
+        String maSinhVien = Reference.getInstance().getStudentId(this);
+        String matKhau = Reference.getInstance().getAccountPassword(this);
+        String url = Reference.getInstance()
+                .getHost(DetailMessageActivity.this) + "api/SinhVien/TinNhan/NoiDung/"
+                + "?masinhvien=" + maSinhVien
+                + "&matkhau=" + matKhau
+                + "&id=" + messageId;
 
         return NetworkUtil.makeRequest(url, false, null);
     }
@@ -255,7 +265,6 @@ public class DetailMessageActivity extends AppCompatActivity {
             @Override
             public void run() {
                 tvNoiDung.setAlpha(1.0f);
-//                tvNoiDung.refreshDrawableState();
             }
         }, 1000);
 

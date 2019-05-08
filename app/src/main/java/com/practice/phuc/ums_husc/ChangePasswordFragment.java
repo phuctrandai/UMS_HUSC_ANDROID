@@ -239,7 +239,11 @@ public class ChangePasswordFragment extends Fragment {
                 .getSharedPrefStr(mContext, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.STUDENT_ID, "");
         String matKhau = SharedPreferenceHelper.getInstance()
                 .getSharedPrefStr(mContext, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.ACCOUNT_PASSWORD, "");
-        String url = Reference.getChangePassApiUrl(maSinhVien, matKhau, newPass);
+        String url = Reference.getInstance().
+                getHost(mContext) + "api/SinhVien/TaiKhoan/DoiMatKhau"
+                + "?masinhvien=" + maSinhVien
+                + "&matkhau=" + matKhau
+                + "&matkhaumoi=" + newPass;
 
         return NetworkUtil.makeRequest(url, false, null);
     }

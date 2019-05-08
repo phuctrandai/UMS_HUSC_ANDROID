@@ -45,6 +45,8 @@ import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    public static boolean mIsCreated = false;
+
     private NavigationView navigationView;
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
@@ -64,55 +66,61 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (!mIsLogined) {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
-            this.finish();
+            finishAfterTransition();
 
         } else {
             initAll();
             showAccountInfo();
             fragmentManager = getSupportFragmentManager();
+            mIsCreated = true;
 
-            boolean mIsLaunchFromNewsNoti = getIntent().getBooleanExtra(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, false);
-            boolean mIsLaunchFromMessageNoti = getIntent().getBooleanExtra(Reference.BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, false);
+            boolean mIsLaunchFromNewsNoti = getIntent()
+                    .getBooleanExtra(Reference.getInstance().BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, false);
+            boolean mIsLaunchFromMessageNoti = getIntent()
+                    .getBooleanExtra(Reference.getInstance().BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, false);
 
             if (mIsLaunchFromMessageNoti) {
                 initFragment(MessageFragment.newInstance(this));
 
-                String messageJson = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_MESSAGE);
+                String messageJson = getIntent()
+                        .getStringExtra(Reference.getInstance().BUNDLE_EXTRA_MESSAGE);
                 Intent intent = new Intent(this, DetailMessageActivity.class);
-                intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, messageJson);
-                intent.putExtra(Reference.BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, true);
+                intent.putExtra(Reference.getInstance().BUNDLE_EXTRA_MESSAGE, messageJson);
+                intent.putExtra(Reference.getInstance().BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, true);
+                intent.putExtra("auto_add_new_messages", false);
                 startActivity(intent);
 
             } else if (mIsLaunchFromNewsNoti) {
                 initFragment(MainFragment.newInstance(this));
 
-                String newsJson = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_NEWS);
+                String newsJson = getIntent()
+                        .getStringExtra(Reference.getInstance().BUNDLE_EXTRA_NEWS);
                 Intent intent = new Intent(this, DetailNewsActivity.class);
-                intent.putExtra(Reference.BUNDLE_EXTRA_NEWS, newsJson);
-                intent.putExtra(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, true);
+                intent.putExtra(Reference.getInstance().BUNDLE_EXTRA_NEWS, newsJson);
+                intent.putExtra(Reference.getInstance().BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, true);
+                intent.putExtra("auto_add_new_news", false);
                 startActivity(intent);
 
             } else {
                 initFragment(MainFragment.newInstance(this));
-
             }
         }
-        configureRemoteServer();
     }
 
     @Override
     protected void onResume() {
-        MyFireBaseMessagingService.mContext = this;
         super.onResume();
+        MyFireBaseMessagingService.mContext = this;
     }
 
     @Override
     protected void onDestroy() {
+        mIsCreated = false;
         MyFireBaseMessagingService.mContext = null;
+        Reference.getInstance().clearListNewSentMessage();
+        Reference.getInstance().clearListNewReceivedMessage();
+        Reference.getInstance().clearListNewThongBao();
         MessageTaskHelper.getInstance().destroy();
-        Reference.clearListNewSentMessage();
-        Reference.clearListNewReceivedMessage();
-        Reference.clearListNewThongBao();
         super.onDestroy();
     }
 
@@ -287,6 +295,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View headerView = navigationView.getHeaderView(0);
+        CircleImageView ivAvatar = headerView.findViewById(R.id.iv_avatar);
+        ivAvatar.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(MainActivity.this, ConfigActivity.class);
+                        MainActivity.this.startActivity(intent);
+                    }
+                }, 500);
+                return true;
+            }
+        });
     }
 
     private void initFragment(Fragment fragment) {
@@ -353,18 +377,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         .getSharedPrefStr(MainActivity.this, SharedPreferenceHelper.ACCOUNT_SP, SharedPreferenceHelper.STUDENT_ID, "");
                 String token = SharedPreferenceHelper.getInstance()
                         .getSharedPrefStr(MainActivity.this, "FIREBASE", "TOKEN", "");
-                FireBaseIDTask.deleteTokenFromAccount(maSinhVien, token);
+                FireBaseIDTask.deleteTokenFromAccount(MainActivity.this, maSinhVien, token);
+
                 // Clear all notification
                 NotificationManager nm = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
                 nm.cancelAll();
+
                 // Delete account info
                 getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE).edit().clear().apply();
+
                 // Delete schedule
                 DBHelper dbHelper = new DBHelper(MainActivity.this);
                 dbHelper.deleteAllRecord(DBHelper.SCHEDULE);
                 dbHelper.deleteAllRecord(DBHelper.NEWS);
+
                 // Cancel alarm
                 ScheduleDailyNotification.cancelReminder(MainActivity.this, 1501, DailyReceiver.class);
+
                 // Start login screen
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
@@ -429,33 +458,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView tvHocKiNamHoc = headerView.findViewById(R.id.tv_hocKiNamHoc);
         tvHocKiNamHoc.setText(semesterStr);
         tvHocKiNamHoc.refreshDrawableState();
-    }
-
-    public void configureRemoteServer() {
-
-        Reference.ADDRESS = SharedPreferenceHelper.getInstance()
-                .getSharedPrefStr(this, "server", "address", Reference.ADDRESS);
-        Reference.PORT = SharedPreferenceHelper.getInstance()
-                .getSharedPrefStr(this, "server", "port", Reference.PORT);
-        Reference.HOST = SharedPreferenceHelper.getInstance()
-                .getSharedPrefStr(this, "server", "host", Reference.HOST);
-
-        navigationView = findViewById(R.id.nav_view);
-        View headerView = navigationView.getHeaderView(0);
-        CircleImageView ivAvatar = headerView.findViewById(R.id.iv_avatar);
-        ivAvatar.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent intent = new Intent(MainActivity.this, ConfigActivity.class);
-                        MainActivity.this.startActivity(intent);
-                    }
-                }, 500);
-                return true;
-            }
-        });
     }
 
     public void showAboutDialog() {

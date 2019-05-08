@@ -52,7 +52,7 @@ public class NewsRecyclerDataAdapter extends RecyclerView.Adapter<NewsRecyclerDa
             public void onClick(View view, int position, boolean isLongClick) {
                 Intent intent = new Intent(context, DetailNewsActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                intent.putExtra(Reference.BUNDLE_EXTRA_NEWS, THONGBAO.toJson(thongBaoList.get(position)));
+                intent.putExtra(Reference.getInstance().BUNDLE_EXTRA_NEWS, THONGBAO.toJson(thongBaoList.get(position)));
 
                 context.startActivity(intent);
             }

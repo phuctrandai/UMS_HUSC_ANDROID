@@ -20,6 +20,7 @@ import com.practice.phuc.ums_husc.Helper.DateHelper;
 import com.practice.phuc.ums_husc.Helper.JustifyTextInTextView;
 import com.practice.phuc.ums_husc.Helper.NetworkUtil;
 import com.practice.phuc.ums_husc.Helper.Reference;
+import com.practice.phuc.ums_husc.MainActivity;
 import com.practice.phuc.ums_husc.Model.THONGBAO;
 import com.practice.phuc.ums_husc.R;
 import com.practice.phuc.ums_husc.Service.MyFireBaseMessagingService;
@@ -29,13 +30,13 @@ import java.util.Objects;
 import okhttp3.Response;
 
 public class DetailNewsActivity extends AppCompatActivity {
-
     private View rootLayout;
     private TextView tvTieuDe;
     private TextView tvThoiGianDang;
     private WebView tvNoiDung;
     private ProgressBar progressBar;
 
+    private boolean mAutoAddNewNews;
     private boolean mIsViewDestroyed;
     private LoadNewsContentTask mLoadTask;
     private Snackbar mNotNetworkSnackbar;
@@ -58,16 +59,17 @@ public class DetailNewsActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         mIsViewDestroyed = false;
 
-        String json = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_NEWS);
+        String json = getIntent().getStringExtra(Reference.getInstance().BUNDLE_EXTRA_NEWS);
         mThongBao = THONGBAO.fromJson(json);
         showData(Objects.requireNonNull(mThongBao));
+        mAutoAddNewNews = getIntent().getBooleanExtra("auto_add_new_news", true);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        String json = getIntent().getStringExtra(Reference.BUNDLE_EXTRA_NEWS);
+        String json = getIntent().getStringExtra(Reference.getInstance().BUNDLE_EXTRA_NEWS);
         mThongBao = THONGBAO.fromJson(json);
         if (mThongBao != null) {
             showData(mThongBao);
@@ -76,18 +78,18 @@ public class DetailNewsActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        MyFireBaseMessagingService.mContext = this;
         super.onResume();
+        MyFireBaseMessagingService.mContext = this;
     }
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
         if (mLoadTask != null) {
             mLoadTask.cancel(true);
             mLoadTask = null;
         }
         mIsViewDestroyed = true;
-        super.onDestroy();
     }
 
     @Override
@@ -97,7 +99,8 @@ public class DetailNewsActivity extends AppCompatActivity {
     }
 
     private void showData(THONGBAO thongBao) {
-        boolean launchFromNotification = getIntent().getBooleanExtra(Reference.BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, false);
+        boolean launchFromNotification = getIntent()
+                .getBooleanExtra(Reference.getInstance().BUNDLE_KEY_NEWS_LAUNCH_FROM_NOTI, false);
         String thoiGianDang = thongBao.getThoiGianDang();
         String ngayDang = DateHelper.formatYMDToDMY(thoiGianDang.substring(0, 10));
         String gioDang = thoiGianDang.substring(11, 16);
@@ -174,8 +177,10 @@ public class DetailNewsActivity extends AppCompatActivity {
                     showBodyNews(Objects.requireNonNull(mThongBao));
 
                     // Luu lai cac thong bao moi, de them vao o Main fragment
-                    Reference.mHasNewNews = true;
-                    Reference.getmListNewThongBao().add(mThongBao);
+                    if (mAutoAddNewNews && MainActivity.mIsCreated) {
+                        Reference.getInstance().mHasNewNews = true;
+                        Reference.getInstance().getmListNewThongBao().add(mThongBao);
+                    }
 
                     progressBar.setVisibility(View.GONE);
                     showNetworkErrorSnackbar(false);
@@ -199,7 +204,11 @@ public class DetailNewsActivity extends AppCompatActivity {
         SharedPreferences sp = getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
         String maSinhVien = sp.getString(getString(R.string.pre_key_student_id), null);
         String matKhau = sp.getString(getString(R.string.pre_key_password), null);
-        String url = Reference.getLoadNoiDungThongBaoApiUrl(maSinhVien, matKhau, newsId);
+        String url = Reference.getInstance()
+                . getHost(this) + "api/ThongBao/ChiTiet/"
+                + "?masinhvien=" + maSinhVien
+                + "&matkhau=" + matKhau
+                + "&id=" + newsId;
 
         return NetworkUtil.makeRequest(url, false, null);
     }
@@ -214,7 +223,6 @@ public class DetailNewsActivity extends AppCompatActivity {
             @Override
             public void run() {
                 tvNoiDung.setAlpha(1.0f);
-//                tvNoiDung.refreshDrawableState();
             }
         }, 1000);
     }

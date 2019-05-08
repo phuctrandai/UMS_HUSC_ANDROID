@@ -56,7 +56,8 @@ public class ScheduleTaskHelper {
 
         @Override
         protected Boolean doInBackground(String... strings) {
-            String url = Reference.HOST + "api/sinhvien/thoikhoabieu" +
+            String url = Reference.getInstance().getHost(mContext) +
+                    "api/sinhvien/thoikhoabieu" +
                     "?masinhvien=" + maSinhVien +
                     "&matkhau=" + matKhau +
                     "&mahocky=" + maHocKy;

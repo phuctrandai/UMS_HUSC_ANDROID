@@ -312,7 +312,7 @@ public class GeneralInfoFragment extends Fragment {
                 newThongTin.SoCMND = soCMND;
                 newThongTin.NgayCap = thangCapCMND + "/" + ngayCapCMND + "/" + namCapCMND;
                 newThongTin.NoiCap = noiCapCMND;
-                newThongTin.MaSinhVien = Reference.getStudentId(mContext);
+                newThongTin.MaSinhVien = Reference.getInstance().getStudentId(mContext);
                 newThongTin.TenDanToc = "";
                 newThongTin.TenQuocGia = "";
                 newThongTin.TenTonGiao = "";
@@ -435,35 +435,37 @@ public class GeneralInfoFragment extends Fragment {
         @Override
         protected Boolean doInBackground(String... strings) {
             String order = strings[0];
+            String host = Reference.getInstance().getHost(mContext);
+
             switch (order) {
                 case GET_NATIONS:
-                    String url = Reference.HOST + "api/DungChung/Get/QuocGia/";
+                    String url = host + "api/DungChung/Get/QuocGia/";
                     mResponse = NetworkUtil.makeRequest(url, false, null);
                     ORDER = GET_NATIONS;
                     return true;
 
                 case GET_CITIES_BY_NATION:
-                    url = Reference.HOST + "api/DungChung/Get/ThanhPho/?refId=" + strings[1];
+                    url = host + "api/DungChung/Get/ThanhPho/?refId=" + strings[1];
                     mResponse = NetworkUtil.makeRequest(url, false, null);
                     ORDER = GET_CITIES_BY_NATION;
                     return true;
 
                 case GET_RELIGION:
-                    url = Reference.HOST + "api/DungChung/Get/TonGiao/";
+                    url = host + "api/DungChung/Get/TonGiao/";
                     mResponse = NetworkUtil.makeRequest(url, false, null);
                     ORDER = GET_RELIGION;
                     return true;
 
                 case GET_PEOPLE:
-                    url = Reference.HOST + "api/DungChung/Get/DanToc";
+                    url = host + "api/DungChung/Get/DanToc";
                     mResponse = NetworkUtil.makeRequest(url, false, null);
                     ORDER = GET_PEOPLE;
                     return true;
 
                 case DO_UPDATE:
-                    url = Reference.HOST + "api/SinhVien/UpdateThongTinChung/" +
-                            "?masinhvien=" + Reference.getStudentId(mContext) +
-                            "&matkhau=" + Reference.getAccountPassword(mContext);
+                    url = host + "api/SinhVien/UpdateThongTinChung/" +
+                            "?masinhvien=" + Reference.getInstance().getStudentId(mContext) +
+                            "&matkhau=" + Reference.getInstance().getAccountPassword(mContext);
                     String data = strings[1];
 
                     RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), data);

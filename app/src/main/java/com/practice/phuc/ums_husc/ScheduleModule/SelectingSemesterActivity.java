@@ -185,11 +185,14 @@ public class SelectingSemesterActivity extends AppCompatActivity implements Swip
                 return true;
             }
 
-            String url = Reference.HOST + "api/sinhvien/hocky/tacnghiep" +
-                    "?masinhvien=" + SharedPreferenceHelper.getInstance()
-                    .getSharedPrefStr(SelectingSemesterActivity.this, ACCOUNT_SP, STUDENT_ID, "") +
-                    "&matkhau=" + SharedPreferenceHelper.getInstance()
-                    .getSharedPrefStr(SelectingSemesterActivity.this, ACCOUNT_SP, ACCOUNT_PASSWORD, "") +
+            String url = Reference.getInstance().getHost(SelectingSemesterActivity.this) +
+                    "api/sinhvien/hocky/tacnghiep" +
+                    "?masinhvien=" +
+                    SharedPreferenceHelper.getInstance()
+                            .getSharedPrefStr(SelectingSemesterActivity.this, ACCOUNT_SP, STUDENT_ID, "") +
+                    "&matkhau=" +
+                    SharedPreferenceHelper.getInstance()
+                            .getSharedPrefStr(SelectingSemesterActivity.this, ACCOUNT_SP, ACCOUNT_PASSWORD, "") +
                     "&mahocky=" + maHocKy;
             Response response = NetworkUtil.makeRequest(url, false, null);
 
@@ -275,11 +278,14 @@ public class SelectingSemesterActivity extends AppCompatActivity implements Swip
 
         @Override
         protected Boolean doInBackground(String... strings) {
-            String url = Reference.HOST + "/api/sinhvien/hocky/danhsach" +
-                    "?masinhvien=" + SharedPreferenceHelper.getInstance()
-                    .getSharedPrefStr(SelectingSemesterActivity.this, ACCOUNT_SP, STUDENT_ID, "")
-                    + "&matkhau=" + SharedPreferenceHelper.getInstance()
-                    .getSharedPrefStr(SelectingSemesterActivity.this, ACCOUNT_SP, ACCOUNT_PASSWORD, "");
+            String url = Reference.getInstance().getHost(SelectingSemesterActivity.this) +
+                    "/api/sinhvien/hocky/danhsach" +
+                    "?masinhvien=" +
+                    SharedPreferenceHelper.getInstance()
+                            .getSharedPrefStr(SelectingSemesterActivity.this, ACCOUNT_SP, STUDENT_ID, "")
+                    + "&matkhau=" +
+                    SharedPreferenceHelper.getInstance()
+                            .getSharedPrefStr(SelectingSemesterActivity.this, ACCOUNT_SP, ACCOUNT_PASSWORD, "");
             Response response = NetworkUtil.makeRequest(url, false, null);
 
             if (response == null) {

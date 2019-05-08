@@ -116,14 +116,14 @@ public class ResumeFragment extends Fragment {
                 mLayoutData.setVisibility(View.VISIBLE);
                 break;
             default:
-                    break;
+                break;
         }
         super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.action_refreshResume:
                 showProgress(true);
                 attempGetData();
@@ -234,9 +234,11 @@ public class ResumeFragment extends Fragment {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(getString(R.string.share_pre_key_account_info), MODE_PRIVATE);
         String maSinhVien = sharedPreferences.getString(getString(R.string.pre_key_student_id), null);
         String matKhau = sharedPreferences.getString(getString(R.string.pre_key_password), null);
-
-        return NetworkUtil.makeRequest(Reference.getLoadLyLichApiUrl(maSinhVien, matKhau),
-                false, null);
+        String url = Reference.getInstance()
+                .getHost(mContext) + "api/SinhVien/TaiKhoan/LyLichCaNhan/"
+                + "?masinhvien=" + maSinhVien
+                + "&matkhau=" + matKhau;
+        return NetworkUtil.makeRequest(url,false, null);
     }
 
     private void displayPersonalData(View view) {

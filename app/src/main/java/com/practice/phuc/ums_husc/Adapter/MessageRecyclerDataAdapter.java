@@ -54,7 +54,7 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
         viewHolder.tvNguoiGui.setText(hoTenNguoiGui);
         viewHolder.tvNguoiNhan.setText(tenNguoiNhanCollapse);
         viewHolder.tvThoiDiemGui.setText(thoiGianDangStr);
-        viewHolder.tvNguoiGuiLabel.setText(StringHelper.getFirstCharToCap(tieuDe));
+        viewHolder.tvNguoiGuiLabel.setText(StringHelper.getFirstCharToCap(hoTenNguoiGui));
 
 //        String maTaiKhoan = Reference.getAccountId(mContext);
 //        final NGUOINHAN nguoiNhan = tinnhan.getNguoiNhanTrongDanhSach(maTaiKhoan);
@@ -70,7 +70,7 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
             @Override
             public void onClick(View view, int position, boolean isLongClick) {
                 Intent intent = new Intent(mContext, DetailMessageActivity.class);
-                intent.putExtra(Reference.BUNDLE_EXTRA_MESSAGE, TINNHAN.toJson(tinnhan));
+                intent.putExtra(Reference.getInstance().BUNDLE_EXTRA_MESSAGE, TINNHAN.toJson(tinnhan));
                 mContext.startActivity(intent);
 
 //                if (nguoiNhan != null && isNullOrEmpty(nguoiNhan.ThoiDiemXem)) {
