@@ -6,7 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.practice.phuc.ums_husc.ResumeModule.DacDiemBanThanFragment;
+import com.practice.phuc.ums_husc.ResumeModule.CharacteristicsFragment;
 import com.practice.phuc.ums_husc.ResumeModule.LichSuBanThanFragment;
 import com.practice.phuc.ums_husc.ResumeModule.ContactResidentFragment;
 import com.practice.phuc.ums_husc.ResumeModule.GeneralInfoFragment;
@@ -28,14 +28,14 @@ public class ResumePagerAdapter extends FragmentPagerAdapter {
 
     private GeneralInfoFragment generalInfoFragment;
     private ContactResidentFragment contactResidentFragment;
-    private DacDiemBanThanFragment dacDiemBanThanFragment;
+    private CharacteristicsFragment characteristicsFragment;
     private LichSuBanThanFragment lichSuBanThanFragment;
 
     public ResumePagerAdapter(FragmentManager fm, Context context) {
         super(fm);
         generalInfoFragment = GeneralInfoFragment.newInstance(context, thongTinChung);
         contactResidentFragment = ContactResidentFragment.newInstance(context, thongTinLienHe, thuongTru, queQuan);
-        dacDiemBanThanFragment = DacDiemBanThanFragment.newInstance(dacDiemBanThan);
+        characteristicsFragment = CharacteristicsFragment.newInstance(context, dacDiemBanThan);
         lichSuBanThanFragment = LichSuBanThanFragment.newInstance(lichSuBanThan);
     }
 
@@ -66,8 +66,8 @@ public class ResumePagerAdapter extends FragmentPagerAdapter {
                 contactResidentFragment.setThongTin(thongTinLienHe, thuongTru, queQuan);
                 return contactResidentFragment;
             case 2:
-                dacDiemBanThanFragment.setThongTin(dacDiemBanThan);
-                return dacDiemBanThanFragment;
+                characteristicsFragment.setThongTin(dacDiemBanThan);
+                return characteristicsFragment;
             default:
                 lichSuBanThanFragment.setThongTin(lichSuBanThan);
                 return lichSuBanThanFragment;
@@ -78,7 +78,7 @@ public class ResumePagerAdapter extends FragmentPagerAdapter {
     public void notifyDataSetChanged() {
         generalInfoFragment.setThongTin(thongTinChung);
         contactResidentFragment.setThongTin(thongTinLienHe, thuongTru, queQuan);
-        dacDiemBanThanFragment.setThongTin(dacDiemBanThan);
+        characteristicsFragment.setThongTin(dacDiemBanThan);
         lichSuBanThanFragment.setThongTin(lichSuBanThan);
         super.notifyDataSetChanged();
     }

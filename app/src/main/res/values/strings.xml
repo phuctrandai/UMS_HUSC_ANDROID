@@ -140,5 +140,36 @@
         <item>Ở ngoại trú</item>
         <item>Theo hộ khẩu thường trú</item>
     </string-array>
-
+    <string-array name="marital_status">
+        <item>----</item>
+        <item>Độc thân</item>
+        <item>Đã kết hôn</item>
+        <item>Đã ly dị</item>
+    </string-array>
+    <string-array name="blood_group">
+        <item>----</item>
+        <item>O</item>
+        <item>A</item>
+        <item>B</item>
+        <item>AB</item>
+    </string-array>
+    <string-array name="composition_of_origin">
+        <item>----</item>
+        <item>Công nhân viên chức</item>
+        <item>Nông dân</item>
+        <item>Khác</item>
+    </string-array>
+    <string-array name="family_priority">
+        <item>----</item>
+    </string-array>
+    <string-array name="priority_for_yourself">
+        <item>----</item>
+        <item>Con thương binh</item>
+        <item>Tàn tật - hộ cận nghèo</item>
+        <item>Con liệt sĩ</item>
+        <item>Con mồ côi</item>
+        <item>Con bệnh binh</item>
+        <item>Dân tộc - hộ nghèo</item>
+        <item>Dân tộc - hộ cận nghèo</item>
+    </string-array>
 </resources>

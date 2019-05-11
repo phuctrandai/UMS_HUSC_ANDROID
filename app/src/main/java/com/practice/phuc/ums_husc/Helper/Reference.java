@@ -134,6 +134,7 @@ public final class Reference {
     public final String MESSAGE_NOTIFICATION = "message_notification";
     public final String NEWS_NOTIFICATION = "news_notification";
     public final String SCHEDULE_NOTIFICATION = "schedule_notification";
+    public final String ADD_SCHEDULE_NOTIFICATION = "add_schedule_notification";
     public final String SEND_MESSAGE_NOTIFICATION = "send_message_notification";
 
     /* BUNDLE KEY */

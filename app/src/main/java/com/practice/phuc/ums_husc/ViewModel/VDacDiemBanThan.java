@@ -1,5 +1,12 @@
 package com.practice.phuc.ums_husc.ViewModel;
 
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+
 public class VDacDiemBanThan {
     private String MaSinhVien;
     private String TinhTrangHonNhan;
@@ -7,7 +14,7 @@ public class VDacDiemBanThan {
     private String NhomMau;
     private String ThanhPhanXuatThan;
     private String DienUuTienGiaDinh;
-    private String TenDienUuTienBanThan;
+    private String DienUuTienBanThan;
     private String NgayVaoDoan;
     private String NoiKetNapDoan;
     private String NgayVaoDang;
@@ -62,12 +69,12 @@ public class VDacDiemBanThan {
         DienUuTienGiaDinh = dienUuTienGiaDinh;
     }
 
-    public String getTenDienUuTienBanThan() {
-        return TenDienUuTienBanThan;
+    public String getDienUuTienBanThan() {
+        return DienUuTienBanThan;
     }
 
-    public void setTenDienUuTienBanThan(String tenDienUuTienBanThan) {
-        TenDienUuTienBanThan = tenDienUuTienBanThan;
+    public void setDienUuTienBanThan(String dienUuTienBanThan) {
+        DienUuTienBanThan = dienUuTienBanThan;
     }
 
     public String getNgayVaoDoan() {
@@ -110,24 +117,25 @@ public class VDacDiemBanThan {
         NgayChinhThucVaoDang = ngayChinhThucVaoDang;
     }
 
-    public VDacDiemBanThan(String maSinhVien, String tinhTrangHonNhan, String chieuCao, String nhomMau,
-                           String thanhPhanXuatThan, String dienUuTienGiaDinh,
-                           String tenDienUuTienBanThan, String ngayVaoDoan, String noiKetNapDoan,
-                           String ngayVaoDang, String noiKetNapDang, String ngayChinhThucVaoDang) {
-        MaSinhVien = maSinhVien;
-        TinhTrangHonNhan = tinhTrangHonNhan;
-        ChieuCao = chieuCao;
-        NhomMau = nhomMau;
-        ThanhPhanXuatThan = thanhPhanXuatThan;
-        DienUuTienGiaDinh = dienUuTienGiaDinh;
-        TenDienUuTienBanThan = tenDienUuTienBanThan;
-        NgayVaoDoan = ngayVaoDoan;
-        NoiKetNapDoan = noiKetNapDoan;
-        NgayVaoDang = ngayVaoDang;
-        NoiKetNapDang = noiKetNapDang;
-        NgayChinhThucVaoDang = ngayChinhThucVaoDang;
+    public VDacDiemBanThan() {
     }
 
-    public VDacDiemBanThan() {
+    public static String toJson(VDacDiemBanThan obj) {
+        Moshi moshi = new Moshi.Builder().build();
+        Type type = Types.newParameterizedType(VDacDiemBanThan.class);
+        JsonAdapter<VDacDiemBanThan> adapter = moshi.adapter(type);
+        return adapter.toJson(obj);
+    }
+
+    public static VDacDiemBanThan fromJson(String json) {
+        Moshi moshi = new Moshi.Builder().build();
+        Type type = Types.newParameterizedType(VDacDiemBanThan.class);
+        JsonAdapter<VDacDiemBanThan> adapter = moshi.adapter(type);
+        try {
+            return adapter.fromJson(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

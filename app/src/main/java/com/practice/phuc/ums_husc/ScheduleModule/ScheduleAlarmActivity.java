@@ -50,8 +50,13 @@ public class ScheduleAlarmActivity extends Activity {
         TextView tvRoom = findViewById(R.id.tv_room);
         TextView tvTeacher = findViewById(R.id.tv_teacher);
 
+        String startMinute = thoiKhoaBieu.getLessionStartMinute() < 10 ?
+                "0" + thoiKhoaBieu.getLessionStartMinute() : thoiKhoaBieu.getLessionStartMinute() + "";
+        String startHourt = thoiKhoaBieu.getLessionStartHour() < 10 ?
+                "0" + thoiKhoaBieu.getLessionStartHour() : thoiKhoaBieu.getLessionStartHour() + "";
+
         tvSubject.setText(thoiKhoaBieu.TenLopHocPhan);
-        tvStartTime.setText("Vào học lúc: " + thoiKhoaBieu.getLessionStartHour() + ":" + thoiKhoaBieu.getLessionStartMinute());
+        tvStartTime.setText("Vào học lúc: " + startHourt + ":" + startMinute);
         tvRoom.setText("Phòng: " + thoiKhoaBieu.TenPhong);
         tvTeacher.setText("Giảng viên: " + thoiKhoaBieu.HoVaTen);
     }

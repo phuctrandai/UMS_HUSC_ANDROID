@@ -22,7 +22,9 @@ import com.practice.phuc.ums_husc.Model.THONGBAO;
 import com.practice.phuc.ums_husc.Model.TINNHAN;
 import com.practice.phuc.ums_husc.NewsModule.DetailNewsActivity;
 import com.practice.phuc.ums_husc.R;
+import com.practice.phuc.ums_husc.ScheduleModule.ScheduleTaskHelper;
 import com.practice.phuc.ums_husc.SettingFragment;
+import com.practice.phuc.ums_husc.ViewModel.ThoiKhoaBieu;
 
 import java.util.Objects;
 
@@ -62,6 +64,24 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
                 if (isAllow && (!accountId.equals(""))) {
                     Log.d("DEBUG", "onMessageReceived: Rise message noti");
                     riseNotification(createMessageNotification(remoteMessage));
+                }
+
+            } else if (messageType != null && messageType.equals(Reference.getInstance().ADD_SCHEDULE_NOTIFICATION)) {
+                boolean isAllow = SharedPreferenceHelper.getInstance()
+                        .getSharedPrefBool(this,
+                                SettingFragment.SHARED_SETTING,
+                                SettingFragment.SHARED_PRE_TIMETABLE_ALARM, true);
+                if (isAllow && (!accountId.equals(""))) {
+                    Log.d("DEBUG", "onMessageReceived: Rise add schedule noti");
+                    String body = remoteMessage.getData().get("body");
+                    ThoiKhoaBieu thoiKhoaBieu = ThoiKhoaBieu.fromJson(body);
+
+                    if (thoiKhoaBieu != null) {
+                        ScheduleTaskHelper.getInstance().addSchedule(this, thoiKhoaBieu);
+                        riseNotification(createAddScheduleNotification(remoteMessage, thoiKhoaBieu));
+                    } else {
+                        Log.d("DEBUG", "onMessageReceived: Schedule from json is Null");
+                    }
                 }
             }
         }
@@ -129,7 +149,7 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
             intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         } else {
             context = mContext;
-            intent = new Intent(mContext, DetailMessageActivity.class);
+            intent = new Intent(context, DetailMessageActivity.class);
         }
         intent.putExtra(Reference.getInstance().BUNDLE_EXTRA_MESSAGE, TINNHAN.toJson(tinNhan));
         intent.putExtra(Reference.getInstance().BUNDLE_KEY_MESSAGE_LAUNCH_FROM_NOTI, true);
@@ -143,6 +163,36 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
         mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(messageTitle)); // Noi dung chinh la tieu de tin nhan
         mBuilder.setGroup(Reference.getInstance().MESSAGE_NOTIFICATION);
         return mBuilder.build();
+    }
+
+    private Notification createAddScheduleNotification(RemoteMessage remoteMessage, ThoiKhoaBieu thoiKhoaBieu) {
+        String notiTitle = remoteMessage.getData().get("title");
+        String notiText = DateHelper.formatDateTimeString(remoteMessage.getData().get("postTime"));
+        String date = DateHelper.formatYMDToDMY(thoiKhoaBieu.NgayHoc.substring(0, 10));
+        StringBuilder schedule = new StringBuilder();
+        schedule.append(thoiKhoaBieu.TenLopHocPhan)
+                .append("\n * Ngày học: ")
+                .append(date)
+                .append("\n * Phòng : ")
+                .append(thoiKhoaBieu.TenPhong)
+                .append("\n * Tiết : ")
+                .append(thoiKhoaBieu.TietHocBatDau)
+                .append(" - ")
+                .append(thoiKhoaBieu.TietHocKetThuc)
+                .append(" ( ")
+                .append(thoiKhoaBieu.getLessionStartTimeStr())
+                .append(" - ")
+                .append(thoiKhoaBieu.getLessionEndTimeStr())
+                .append(" ) ")
+                .append("\n * Giáo viên : ")
+                .append(thoiKhoaBieu.HoVaTen);
+
+        NotificationCompat.Builder builder = CreateNotificationCompatBuilder();
+        builder.setContentTitle(notiTitle);
+        builder.setContentText("Đưa ra lúc " + notiText);
+        builder.setStyle(new NotificationCompat.BigTextStyle().bigText(schedule));
+        builder.setGroup(Reference.getInstance().ADD_SCHEDULE_NOTIFICATION);
+        return builder.build();
     }
 
     private NotificationCompat.Builder CreateNotificationCompatBuilder() {

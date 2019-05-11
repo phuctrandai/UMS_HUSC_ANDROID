@@ -51,6 +51,9 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String TEACHER = "teacher";
     private static final String SEMESTER = "semester";
 
+    public static final String REMINDER = "reminder";
+    private static final String REQUEST_CODE = "request_code";
+
     public DBHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         try (SQLiteDatabase db = getWritableDatabase()) {
@@ -58,6 +61,7 @@ public class DBHelper extends SQLiteOpenHelper {
             createMessageTable(db);
             createAccountTable(db);
             createScheduleTable(db);
+            createReminderTable(db);
         }
     }
 
@@ -67,6 +71,7 @@ public class DBHelper extends SQLiteOpenHelper {
         createMessageTable(db);
         createAccountTable(db);
         createScheduleTable(db);
+        createReminderTable(db);
     }
 
     @Override
@@ -76,6 +81,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + MESSAGE);
         db.execSQL("DROP TABLE IF EXISTS " + ACCOUNT);
         db.execSQL("DROP TABLE IF EXISTS " + SCHEDULE);
+        db.execSQL("DROP TABLE IF EXISTS " + REMINDER);
         onCreate(db);
     }
 
@@ -312,11 +318,25 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(MESSAGE_ID, tinnhan.MaTinNhan);
         contentValues.put(MESSAGE_TITLE, tinnhan.TieuDe);
         contentValues.put(MESSAGE_BODY, tinnhan.NoiDung);
-//        contentValues.put(MESSAGE_SENDER, tinnhan.getNguoiGui());
-//        contentValues.put(MESSAGE_RECEIVER, tinnhan.getNguoiNhan());
         contentValues.put(MESSAGE_SEND_TIME, tinnhan.ThoiDiemGui);
-//        contentValues.put(MESSAGE_SEEN_TIME, tinnhan.getThoiDiemXem());
         db.insert(MESSAGE, null, contentValues);
+        db.close();
+    }
+
+    /*
+     * Method for reminder table
+     */
+    private void createReminderTable(SQLiteDatabase db) {
+        String query = "CREATE TABLE IF NOT EXISTS " + REMINDER + "("
+                + REQUEST_CODE + " INTEGER)";
+        db.execSQL(query);
+    }
+
+    public void insertRequestCodeReminder(int requestCode) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(REQUEST_CODE, requestCode);
+        db.insert(REMINDER, null, contentValues);
         db.close();
     }
 

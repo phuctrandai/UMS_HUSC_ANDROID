@@ -118,11 +118,18 @@ public class ScheduleTaskHelper {
                 calendar.set(Calendar.MINUTE, phutBao);
                 calendar.add(Calendar.MINUTE, -thoiGianBaoTruoc);
 
-                ScheduleDailyNotification.setOneShotReminder(context, gioBatDau,
+                int requestCode = gioBatDau + phutBao - thoiGianBaoTruoc;
+                ScheduleDailyNotification.setOneShotReminder(context, requestCode,
                         calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), item);
+                dbHelper.insertRequestCodeReminder(requestCode);
             }
             return todayClasses;
         }
         return null;
+    }
+
+    public void addSchedule(Context context, ThoiKhoaBieu thoiKhoaBieu) {
+        mDBHelper = new DBHelper(context);
+        mDBHelper.insertSchedule(thoiKhoaBieu);
     }
 }

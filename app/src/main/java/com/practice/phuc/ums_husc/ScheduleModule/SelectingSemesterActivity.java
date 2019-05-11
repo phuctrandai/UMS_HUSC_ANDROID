@@ -234,6 +234,7 @@ public class SelectingSemesterActivity extends AppCompatActivity implements Swip
                 List<ThoiKhoaBieu> thoiKhoaBieus = ThoiKhoaBieu.fromJsonToList(json);
                 DBHelper dbHelper = new DBHelper(SelectingSemesterActivity.this);
                 dbHelper.deleteAllRecord(DBHelper.SCHEDULE);
+                dbHelper.deleteAllRecord(DBHelper.REMINDER);
                 ScheduleFragment.mIsLastSemester = mSelectedPos == 0;
                 ScheduleFragment.mIsChangeSemester = true;
 

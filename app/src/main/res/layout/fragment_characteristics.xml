@@ -399,7 +399,7 @@
     </ScrollView>
 
     <include
-        layout="@layout/panel_dac_diem_ban_than"
+        layout="@layout/panel_characteristics"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

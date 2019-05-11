@@ -45,6 +45,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/normal_margin"
                 android:drawableStart="@drawable/ic_person_grey_12"
                 android:drawablePadding="@dimen/small_padding"
                 android:text="Thành phần xuất thân"
@@ -68,6 +69,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/normal_margin"
                 android:drawableStart="@drawable/ic_people_grey_12"
                 android:drawablePadding="@dimen/small_padding"
                 android:text="Diện ưu tiên gia đình"
@@ -90,6 +92,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/normal_margin"
                 android:drawableStart="@drawable/ic_person_grey_12"
                 android:drawablePadding="@dimen/small_padding"
                 android:text="Diện ưu tiên bản thân"
@@ -112,6 +115,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/normal_margin"
                 android:drawableStart="@drawable/ic_people_grey_12"
                 android:drawablePadding="@dimen/small_padding"
                 android:text="Tình trạng hôn nhân"
@@ -138,6 +142,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/normal_margin"
                     android:drawableStart="@drawable/ic_vertical_align_top_grey_12"
                     android:drawablePadding="@dimen/small_padding"
                     android:text="Chiều cao (cm)"
@@ -157,15 +162,16 @@
 
             <LinearLayout
                 android:id="@+id/layout_nhomMau"
-                android:layout_width="wrap_content"
-                android:layout_centerHorizontal="true"
+                android:layout_width="120dp"
                 android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
                 android:layout_margin="@dimen/normal_margin"
                 android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/big_margin"
                     android:drawableStart="@drawable/ic_nod_grey_12"
                     android:drawablePadding="@dimen/small_padding"
                     android:text="Nhóm máu"
@@ -182,7 +188,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/big_margin">
+            android:layout_margin="@dimen/normal_margin">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -196,150 +202,221 @@
             android:id="@+id/layout_ngayVaoDoan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/normal_margin"
-            android:layout_marginBottom="@dimen/normal_margin">
+            android:layout_margin="@dimen/normal_margin">
 
             <TextView
+                android:id="@+id/tv_ngayVaoDoanLb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tv_ngayVaoDoan"
+                android:layout_marginBottom="@dimen/normal_margin"
                 android:drawableStart="@drawable/ic_date_range_grey_12"
                 android:drawablePadding="@dimen/small_padding"
-                android:paddingStart="@dimen/big_padding"
-                android:paddingEnd="@dimen/extra_padding"
                 android:text="Ngày kết nạp đoàn TNCS Hồ Chí Minh"
                 android:textSize="@dimen/small_text"
                 tools:ignore="HardcodedText" />
 
-            <TextView
-                android:id="@+id/tv_ngayVaoDoan"
-                android:layout_width="wrap_content"
+            <Spinner
+                android:id="@+id/sp_ngayVaoDoan"
+                android:layout_width="90dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/big_margin"
-                android:text="01/01/2011"
-                android:textColor="@android:color/black"
-                android:textSize="@dimen/normal_text"
-                tools:ignore="HardcodedText" />
+                android:layout_below="@id/tv_ngayVaoDoanLb"
+                android:layout_alignParentStart="true" />
+
+            <Spinner
+                android:id="@+id/sp_thangVaoDoan"
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_ngayVaoDoanLb"
+                android:layout_centerHorizontal="true" />
+
+            <Spinner
+                android:id="@+id/sp_namVaoDoan"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_ngayVaoDoanLb"
+                android:layout_alignParentEnd="true" />
+
         </RelativeLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/layout_noiVaoDoan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/normal_margin"
-            android:layout_marginBottom="@dimen/normal_margin">
+            android:layout_margin="@dimen/normal_margin"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tv_noiVaoDoan"
+                android:layout_marginBottom="@dimen/normal_margin"
                 android:drawableStart="@drawable/ic_building_grey_12"
                 android:drawablePadding="@dimen/small_padding"
-                android:paddingStart="@dimen/big_padding"
-                android:paddingEnd="@dimen/extra_padding"
                 android:text="Nơi kết nạp đoàn TNCS Hồ Chí Minh"
                 android:textSize="@dimen/small_text"
                 tools:ignore="HardcodedText" />
 
-            <TextView
-                android:id="@+id/tv_noiVaoDoan"
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/et_noiKetNapDoan"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/big_margin"
-                android:text="Nơi vào đoàn"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/normal_text"
-                tools:ignore="HardcodedText" />
-        </RelativeLayout>
+                tools:ignore="LabelFor,UnusedAttribute" />
+        </LinearLayout>
 
         <RelativeLayout
             android:id="@+id/layout_ngayVaoDang"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/normal_margin"
-            android:layout_marginBottom="@dimen/normal_margin">
+            android:layout_margin="@dimen/normal_margin">
 
             <TextView
+                android:id="@+id/tv_ngayVaoDangLb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tv_ngayVaoDang"
+                android:layout_marginBottom="@dimen/normal_margin"
                 android:drawableStart="@drawable/ic_date_range_grey_12"
                 android:drawablePadding="@dimen/small_padding"
-                android:paddingStart="@dimen/big_padding"
-                android:paddingEnd="@dimen/extra_padding"
                 android:text="Ngày kết nạp Đảng CSVN"
                 android:textSize="@dimen/small_text"
                 tools:ignore="HardcodedText" />
 
-            <TextView
-                android:id="@+id/tv_ngayVaoDang"
-                android:layout_width="wrap_content"
+            <Spinner
+                android:id="@+id/sp_ngayVaoDang"
+                android:layout_width="90dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/big_margin"
-                android:text="01/01/2011"
-                android:textColor="@android:color/black"
-                android:textSize="@dimen/normal_text"
-                tools:ignore="HardcodedText" />
+                android:layout_below="@id/tv_ngayVaoDangLb"
+                android:layout_alignParentStart="true" />
+
+            <Spinner
+                android:id="@+id/sp_thangVaoDang"
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_ngayVaoDangLb"
+                android:layout_centerHorizontal="true" />
+
+            <Spinner
+                android:id="@+id/sp_namVaoDang"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_ngayVaoDangLb"
+                android:layout_alignParentEnd="true" />
+
         </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/layout_ngayChinhThuc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/normal_margin"
-            android:layout_marginBottom="@dimen/normal_margin">
+            android:layout_margin="@dimen/normal_margin">
 
             <TextView
+                android:id="@+id/tv_ngayChinhThucLb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tv_ngayChinhThuc"
+                android:layout_marginBottom="@dimen/normal_margin"
                 android:drawableStart="@drawable/ic_date_range_grey_12"
                 android:drawablePadding="@dimen/small_padding"
-                android:paddingStart="@dimen/big_padding"
-                android:paddingEnd="@dimen/extra_padding"
                 android:text="Ngày chính thức"
                 android:textSize="@dimen/small_text"
                 tools:ignore="HardcodedText" />
 
-            <TextView
-                android:id="@+id/tv_ngayChinhThuc"
-                android:layout_width="wrap_content"
+            <Spinner
+                android:id="@+id/sp_ngayChinhThuc"
+                android:layout_width="90dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/big_margin"
-                android:text="02/02/2011"
-                android:textColor="@android:color/black"
-                android:textSize="@dimen/normal_text"
-                tools:ignore="HardcodedText" />
+                android:layout_below="@id/tv_ngayChinhThucLb"
+                android:layout_alignParentStart="true" />
+
+            <Spinner
+                android:id="@+id/sp_thangChinhThuc"
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_ngayChinhThucLb"
+                android:layout_centerHorizontal="true" />
+
+            <Spinner
+                android:id="@+id/sp_namChinhThuc"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_ngayChinhThucLb"
+                android:layout_alignParentEnd="true" />
+
         </RelativeLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/layout_noiKetNapDang"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/normal_margin"
-            android:layout_marginBottom="@dimen/normal_margin">
+            android:layout_margin="@dimen/normal_margin"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tv_noiKetNapDang"
+                android:layout_marginBottom="@dimen/normal_margin"
                 android:drawableStart="@drawable/ic_building_grey_12"
                 android:drawablePadding="@dimen/small_padding"
-                android:paddingStart="@dimen/big_padding"
-                android:paddingEnd="@dimen/extra_padding"
                 android:text="Nơi kết nạp Đảng"
                 android:textSize="@dimen/small_text"
                 tools:ignore="HardcodedText" />
 
-            <TextView
-                android:id="@+id/tv_noiKetNapDang"
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/et_noiKetNapDang"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/big_margin"
-                android:text="Nơi vào đảng"
+                android:inputType="text"
+                android:maxLines="1"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/normal_text"
-                tools:ignore="HardcodedText" />
+                tools:ignore="Autofill,LabelFor" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin">
+
+            <Button
+                android:id="@+id/btn_closeSlidePanelBtm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:background="@android:color/transparent"
+                android:elevation="0dp"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:text="Đóng"
+                android:textColor="@color/colorDarkerGrey"
+                android:textStyle="bold"
+                tools:ignore="HardcodedText,UnusedAttribute" />
+
+            <Button
+                android:id="@+id/btn_save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/radius_5dp_grey_background"
+                android:elevation="0dp"
+                android:fadingEdge="none"
+                android:fadingEdgeLength="0dp"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:text="Lưu"
+                android:textColor="@color/colorBlack"
+                android:textStyle="bold"
+                tools:ignore="HardcodedText,UnusedAttribute" />
+
+            <ProgressBar
+                android:id="@+id/pb_updateLoading"
+                style="@android:style/Widget.DeviceDefault.ProgressBar.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/normal_margin"
+                android:layout_toStartOf="@id/btn_save"
+                android:visibility="gone" />
         </RelativeLayout>
     </LinearLayout>
 </ScrollView>

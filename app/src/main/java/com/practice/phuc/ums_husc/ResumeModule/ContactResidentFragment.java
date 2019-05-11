@@ -140,7 +140,8 @@ public class ContactResidentFragment extends Fragment {
         mKyTucXaAdt = new ArrayAdapter<>(mContext, R.layout.custom_simple_spinner_item, mKyTucXaData);
         mKyTucXaAdt.setDropDownViewResource(R.layout.custom_simple_list_item_single_choice);
 
-        mHinhThucCTAdt = new ArrayAdapter<>(mContext, R.layout.custom_simple_spinner_item, getResources().getStringArray(R.array.resident_type_name));
+        mHinhThucCTAdt = new ArrayAdapter<>(mContext, R.layout.custom_simple_spinner_item,
+                getResources().getStringArray(R.array.resident_type_name));
         mHinhThucCTAdt.setDropDownViewResource(R.layout.custom_simple_list_item_single_choice);
 
         mNgayCTAdt = new ArrayAdapter<>(mContext, R.layout.custom_simple_spinner_item, mNgayCTData);
@@ -194,11 +195,6 @@ public class ContactResidentFragment extends Fragment {
         }
 
         return view;
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 
     @Override
@@ -389,7 +385,7 @@ public class ContactResidentFragment extends Fragment {
                     int namCT = Integer.parseInt(mSpNamCT.getSelectedItem().toString());
                     thongTinLienHe.NgayBatDauCuTru = thangCT + "/" + ngayCT + "/" + namCT;
                     thongTinLienHe.HinhThucCuTru = mSpHinhThucCT.getSelectedItemPosition() + "";
-                    thongTinLienHe.MaKyTucXa = ((KYTUCXA)mSpKyTucXa.getSelectedItem()).MaKyTucXa + "";
+                    thongTinLienHe.MaKyTucXa = ((KYTUCXA) mSpKyTucXa.getSelectedItem()).MaKyTucXa + "";
                     thongTinLienHe.DiaChi = mEtDiaChiCT.getText().toString();
 
                     thuongTru.MaQuocGia = ((QuocGia) mSpQuocGiaTR.getSelectedItem()).MaQuocGia + "";
