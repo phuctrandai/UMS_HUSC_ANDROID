@@ -1,5 +1,12 @@
 package com.practice.phuc.ums_husc.ViewModel;
 
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+
 public class VLichSuBanThan {
     private String MaSinhVien;
     private String NamTotNghiepTHPT;
@@ -18,24 +25,6 @@ public class VLichSuBanThan {
     private String NoiCongTacLLVT;
 
     public VLichSuBanThan() {
-    }
-
-    public VLichSuBanThan(String maSinhVien, String namTotNghiepTHPT, String xepLoaiTotNghiepTHPT, String noiTotNghiepTHPT, String xepLoaiHocTap10, String xepLoaiHocTap11, String xepLoaiHocTap12, String xepLoaiHanhKiem10, String xepLoaiHanhKiem11, String xepLoaiHanhKiem12, String tenLucLuongVuTrang, String ngayBatDauLLVT, String ngayKetThucLLVT, String quanHamLLVT, String noiCongTacLLVT) {
-        MaSinhVien = maSinhVien;
-        NamTotNghiepTHPT = namTotNghiepTHPT;
-        XepLoaiTotNghiepTHPT = xepLoaiTotNghiepTHPT;
-        NoiTotNghiepTHPT = noiTotNghiepTHPT;
-        XepLoaiHocTap10 = xepLoaiHocTap10;
-        XepLoaiHocTap11 = xepLoaiHocTap11;
-        XepLoaiHocTap12 = xepLoaiHocTap12;
-        XepLoaiHanhKiem10 = xepLoaiHanhKiem10;
-        XepLoaiHanhKiem11 = xepLoaiHanhKiem11;
-        XepLoaiHanhKiem12 = xepLoaiHanhKiem12;
-        TenLucLuongVuTrang = tenLucLuongVuTrang;
-        NgayBatDauLLVT = ngayBatDauLLVT;
-        NgayKetThucLLVT = ngayKetThucLLVT;
-        QuanHamLLVT = quanHamLLVT;
-        NoiCongTacLLVT = noiCongTacLLVT;
     }
 
     public String getMaSinhVien() {
@@ -156,5 +145,24 @@ public class VLichSuBanThan {
 
     public void setNoiCongTacLLVT(String noiCongTacLLVT) {
         NoiCongTacLLVT = noiCongTacLLVT;
+    }
+
+    public static VLichSuBanThan fromJson(String json) {
+        Moshi moshi = new Moshi.Builder().build();
+        Type type = Types.newParameterizedType(VLichSuBanThan.class);
+        JsonAdapter<VLichSuBanThan> adapter = moshi.adapter(type);
+        try {
+            return adapter.fromJson(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static String toJson(VLichSuBanThan obj) {
+        Moshi moshi = new Moshi.Builder().build();
+        Type type = Types.newParameterizedType(VLichSuBanThan.class);
+        JsonAdapter<VLichSuBanThan> adapter = moshi.adapter(type);
+        return adapter.toJson(obj);
     }
 }

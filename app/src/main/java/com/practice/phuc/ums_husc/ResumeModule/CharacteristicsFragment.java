@@ -60,7 +60,6 @@ public class CharacteristicsFragment extends Fragment {
 
     private VDacDiemBanThan mDacDiemBanThan;
     private Context mContext;
-    private boolean mIsCreated;
 
     private TextView mXuatThan, mUuTienBanThan, mUuTienGiaDinh, mTinhTrangHonNhan, mChieuCao,
             mNhomMau, mNgayVaoDoan, mNoiKetNapDoan, mNgayVaoDang, mNoiKetNapDang, mNgayChinhThucVaoDang;
@@ -78,24 +77,23 @@ public class CharacteristicsFragment extends Fragment {
             mNgayVaoDangAdt, mThangVaoDangAdt, mNamVaoDangAdt,
             mNgayChinhThucAdt, mThangChinhThucAdt, mNamChinhThucAdt;
 
-    private List<String> mNgayVaoDoanData, mThangVaoDoanData, mNamVaoDoanData,
-            mNgayVaoDangData, mThangVaoDangData, mNamVaoDangData,
-            mNgayChinhThucData, mThangChinhThucData, mNamChinhThucData;
+    private List<String> mNgayVaoDoanData;
+    private List<String> mNgayVaoDangData;
+    private List<String> mNgayChinhThucData;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mIsCreated = true;
 
         mNgayVaoDoanData = new ArrayList<>();
-        mThangVaoDoanData = new ArrayList<>();
-        mNamVaoDoanData = new ArrayList<>();
+        List<String> mThangVaoDoanData = new ArrayList<>();
+        List<String> mNamVaoDoanData = new ArrayList<>();
         mNgayVaoDangData = new ArrayList<>();
-        mThangVaoDangData = new ArrayList<>();
-        mNamVaoDangData = new ArrayList<>();
+        List<String> mThangVaoDangData = new ArrayList<>();
+        List<String> mNamVaoDangData = new ArrayList<>();
         mNgayChinhThucData = new ArrayList<>();
-        mThangChinhThucData = new ArrayList<>();
-        mNamChinhThucData = new ArrayList<>();
+        List<String> mThangChinhThucData = new ArrayList<>();
+        List<String> mNamChinhThucData = new ArrayList<>();
 
         for (int i = 0; i <= 31; i++) {
             mNgayVaoDoanData.add(i + "");
@@ -175,21 +173,6 @@ public class CharacteristicsFragment extends Fragment {
         setUpMainPanel(mDacDiemBanThan);
 
         return view;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mIsCreated = false;
-        mNgayVaoDoanData.clear();
-        mThangVaoDoanData.clear();
-        mNamVaoDoanData.clear();
-        mNgayVaoDangData.clear();
-        mThangVaoDangData.clear();
-        mNamVaoDangData.clear();
-        mNgayChinhThucData.clear();
-        mThangChinhThucData.clear();
-        mNamChinhThucData.clear();
     }
 
     private void setUpEvent() {

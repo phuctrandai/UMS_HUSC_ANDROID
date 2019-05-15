@@ -1,0 +1,489 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dragView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        android:padding="@dimen/normal_padding">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/normal_margin">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chỉnh sửa thông tin về lịch sử bản thân"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="HardcodedText" />
+
+            <ImageButton
+                android:id="@+id/btn_closeSlidePanel"
+                android:layout_width="48dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/radius_white_background"
+                android:src="@android:drawable/arrow_down_float"
+                android:tint="@color/colorBlack"
+                tools:ignore="ContentDescription" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin">
+
+            <LinearLayout
+                android:id="@+id/layout_namTotNghiepTHPT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/small_margin"
+                    android:drawableStart="@drawable/ic_date_range_grey_12"
+                    android:drawablePadding="@dimen/small_padding"
+                    android:text="Năm tốt nghiệp THPT"
+                    android:textSize="@dimen/small_text"
+                    tools:ignore="HardcodedText" />
+
+                <Spinner
+                    android:id="@+id/sp_namTotNghiepTHPT"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_loaiTotNghiepTHPT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/small_margin"
+                    android:drawableStart="@drawable/ic_assessment_grey_12"
+                    android:drawablePadding="@dimen/small_padding"
+                    android:text="Loại tốt nghiệp THPT"
+                    android:textSize="@dimen/small_text"
+                    tools:ignore="HardcodedText" />
+
+                <Spinner
+                    android:id="@+id/sp_loaiTotNghiepTHPT"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_noiTotNghiepTHPT"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/small_margin"
+                android:drawableStart="@drawable/ic_building_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="Nơi tốt nghiệp THPT"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <EditText
+                android:id="@+id/et_noiTotNghiepTHPT"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine|text"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="Autofill,LabelFor" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin">
+
+            <LinearLayout
+                android:id="@+id/layout_xepLoaiHocTapLop10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/small_margin"
+                    android:drawableStart="@drawable/ic_assessment_grey_12"
+                    android:drawablePadding="@dimen/small_padding"
+                    android:text="Xếp loại học tập lớp 10 "
+                    android:textSize="@dimen/small_text"
+                    tools:ignore="HardcodedText" />
+
+                <Spinner
+                    android:id="@+id/sp_xepLoaiHocTap10"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_xepLoaiHanhKiemLop10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/small_margin"
+                    android:drawableStart="@drawable/ic_assessment_grey_12"
+                    android:drawablePadding="@dimen/small_padding"
+                    android:text="Xếp loại hạnh kiểm lớp 10"
+                    android:textSize="@dimen/small_text"
+                    tools:ignore="HardcodedText" />
+
+                <Spinner
+                    android:id="@+id/sp_xepLoaiHanhKiem10"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin">
+
+            <LinearLayout
+                android:id="@+id/layout_xepLoaiHocTapLop11"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/small_margin"
+                    android:drawableStart="@drawable/ic_assessment_grey_12"
+                    android:drawablePadding="@dimen/small_padding"
+                    android:text="Xếp loại học tập lớp 11 "
+                    android:textSize="@dimen/small_text"
+                    tools:ignore="HardcodedText" />
+
+                <Spinner
+                    android:id="@+id/sp_xepLoaiHocTap11"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_xepLoaiHanhKiemLop11"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/small_margin"
+                    android:drawableStart="@drawable/ic_assessment_grey_12"
+                    android:drawablePadding="@dimen/small_padding"
+                    android:text="Xếp loại hạnh kiểm lớp 11"
+                    android:textSize="@dimen/small_text"
+                    tools:ignore="HardcodedText" />
+
+                <Spinner
+                    android:id="@+id/sp_xepLoaiHanhKiem11"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin">
+
+            <LinearLayout
+                android:id="@+id/layout_xepLoaiHocTapLop12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/small_margin"
+                    android:drawableStart="@drawable/ic_assessment_grey_12"
+                    android:drawablePadding="@dimen/small_padding"
+                    android:text="Xếp loại học tập lớp 12 "
+                    android:textSize="@dimen/small_text"
+                    tools:ignore="HardcodedText" />
+
+                <Spinner
+                    android:id="@+id/sp_xepLoaiHocTap12"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_xepLoaiHanhKiemLop12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/small_margin"
+                    android:drawableStart="@drawable/ic_assessment_grey_12"
+                    android:drawablePadding="@dimen/small_padding"
+                    android:text="Xếp loại hạnh kiểm lớp 12"
+                    android:textSize="@dimen/small_text"
+                    tools:ignore="HardcodedText" />
+
+                <Spinner
+                    android:id="@+id/sp_xepLoaiHanhKiem12"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/normal_margin">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thông tin về việc tham gia Lực lượng vũ trang"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="HardcodedText" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_lucLuongVuTrang"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/small_margin"
+                android:drawableStart="@drawable/ic_flag_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="Đã từng tham gia LLVT"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <EditText
+                android:id="@+id/et_lucLuongVuTrang"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine|text"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="Autofill,LabelFor" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_ngayNhapNgu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin">
+
+            <TextView
+                android:id="@+id/tv_ngayNhapNguLb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/small_margin"
+                android:drawableStart="@drawable/ic_date_range_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="Ngày nhập ngũ"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <Spinner
+                android:id="@+id/sp_ngayNhapNgu"
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_ngayNhapNguLb"
+                android:layout_alignParentStart="true" />
+
+            <Spinner
+                android:id="@+id/sp_thangNhapNgu"
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_ngayNhapNguLb"
+                android:layout_centerHorizontal="true" />
+
+            <Spinner
+                android:id="@+id/sp_namNhapNgu"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_ngayNhapNguLb"
+                android:layout_alignParentEnd="true" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_ngayXuatNgu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin">
+
+            <TextView
+                android:id="@+id/tv_ngayXuatNguLb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/small_margin"
+                android:drawableStart="@drawable/ic_date_range_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="Ngày xuất ngũ"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <Spinner
+                android:id="@+id/sp_ngayXuatNgu"
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_ngayXuatNguLb"
+                android:layout_alignParentStart="true" />
+
+            <Spinner
+                android:id="@+id/sp_thangXuatNgu"
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_ngayXuatNguLb"
+                android:layout_centerHorizontal="true" />
+
+            <Spinner
+                android:id="@+id/sp_namXuatNgu"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_ngayXuatNguLb"
+                android:layout_alignParentEnd="true" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_quanHam"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_star_half_grey_12"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="Quân hàm cao nhất"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <EditText
+                android:id="@+id/et_quanHamCaoNhat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="Autofill,LabelFor" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_noiCongTac"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_home_grey_12dp"
+                android:drawablePadding="@dimen/small_padding"
+                android:text="Nơi đóng quân/công tác"
+                android:textSize="@dimen/small_text"
+                tools:ignore="HardcodedText" />
+
+            <EditText
+                android:id="@+id/et_noiCongTac"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine|text"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/normal_text"
+                tools:ignore="Autofill,LabelFor" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/normal_margin">
+
+            <Button
+                android:id="@+id/btn_closeSlidePanelBtm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:background="@android:color/transparent"
+                android:elevation="0dp"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:text="Đóng"
+                android:textColor="@color/colorDarkerGrey"
+                android:textStyle="bold"
+                tools:ignore="HardcodedText,UnusedAttribute" />
+
+            <Button
+                android:id="@+id/btn_save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/radius_5dp_grey_background"
+                android:elevation="0dp"
+                android:fadingEdge="none"
+                android:fadingEdgeLength="0dp"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:text="Lưu"
+                android:textColor="@color/colorBlack"
+                android:textStyle="bold"
+                tools:ignore="HardcodedText,UnusedAttribute" />
+
+            <ProgressBar
+                android:id="@+id/pb_updateLoading"
+                style="@android:style/Widget.DeviceDefault.ProgressBar.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/normal_margin"
+                android:layout_toStartOf="@id/btn_save"
+                android:visibility="gone" />
+        </RelativeLayout>
+    </LinearLayout>
+</ScrollView>

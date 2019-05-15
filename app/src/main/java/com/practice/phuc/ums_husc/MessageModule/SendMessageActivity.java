@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -61,13 +62,16 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
     private RecyclerView rvSearchResult;
     private ProgressBar pbLoading;
     private GridView gvReceiver;
+    private WebView wvNoiDungDinhKem;
 
     private DBHelper mDBHelper;
     private SearchAccountAdapter mSearchAdapter;
     private ReceiverAdapter mReceiverAdapter;
     private TINNHAN mTinNhan;
+    private String mNoiDungDinhKem;
     private int mCurrentPage;
     private int ITEM_PER_PAGE;
+    private int MODE;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,6 +85,7 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
         gvReceiver = findViewById(R.id.gv_receiver);
         rvSearchResult = findViewById(R.id.rv_searchResult);
         slidingUpPanelLayout = findViewById(R.id.sliding_layout);
+        wvNoiDungDinhKem = findViewById(R.id.wv_noiDungDinhKem);
         ImageButton btnOpenSlidingPanel = findViewById(R.id.btn_addReceiver);
         ImageButton btnCloseSlidingPanel = findViewById(R.id.btn_closeSlidePanel);
         SearchView svSearch = findViewById(R.id.sv_query);
@@ -105,12 +110,11 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
         boolean isForward = getIntent()
                 .getBooleanExtra(Reference.getInstance().BUNDLE_EXTRA_MESSAGE_FORWARD, false);
 
-        int MODE;
         if (isNew) {
             MODE = 0;
             getSupportActionBar().setTitle("Gửi tin mới");
             etTieuDe.requestFocus();
-
+            wvNoiDungDinhKem.setVisibility(View.GONE);
         } else if (isReply) {
             MODE = 1;
             getSupportActionBar().setTitle("Trả lời");
@@ -347,13 +351,16 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
 
         if (mode == 1 && current != null) { // Reply
             tieuDe = current.TieuDe.contains("Re: ") ? current.TieuDe : "Re: " + current.TieuDe;
+            mNoiDungDinhKem = current.NoiDung;
             mReceiverAdapter.updateReceiverList(new TaiKhoan(/*Ma nguoi nhan:*/ current.MaNguoiGui, current.HoTenNguoiGui));
 
         } else if (mode == 2 && current != null) { // Forward
             tieuDe = current.TieuDe.contains("Fwd: ") ? current.TieuDe : "Fwd: " + current.TieuDe;
+            mNoiDungDinhKem = current.NoiDung;
 
         } else if (mode == 4 && current != null && current.NguoiNhans != null) { // Reply sent message
             tieuDe = current.TieuDe.contains("Re: ") ? current.TieuDe : "Re: " + current.TieuDe;
+            mNoiDungDinhKem = current.NoiDung;
 
             for (int i = 0; i < current.NguoiNhans.length; i++) {
                 mReceiverAdapter.insertReceiver(new TaiKhoan(
@@ -363,9 +370,22 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
             }
             mReceiverAdapter.notifyDataSetChanged();
         }
+        String ngayDang = DateHelper.formatYMDToDMY(current.ThoiDiemGui.substring(0, 10));
+        String gioDang = current.ThoiDiemGui.substring(11, 16);
+        String thoiDiemGui = ngayDang + " " + gioDang;
+
+        mNoiDungDinhKem = "<div style='margin-left: 8px'>" + mNoiDungDinhKem + "</div>";
+
+        mNoiDungDinhKem = "<p style='color: #646464;'>[" + current.HoTenNguoiGui + ", gửi lúc " + thoiDiemGui + "]</p>" + mNoiDungDinhKem;
+
+        mNoiDungDinhKem = "<hr style='width: 50%; border: 1px dotted #646464; margin-left: 0;'>" + mNoiDungDinhKem;
+
+        String htmlContent = "<div style='text-align: justify'>" + mNoiDungDinhKem + "</div>";
 
         etTieuDe.setText(tieuDe);
         tvNguoiGui.setText(hoTenNguoiGui);
+        wvNoiDungDinhKem.loadData(htmlContent, "text/html; charset=UTF-8", null);
+        wvNoiDungDinhKem.refreshDrawableState();
 
         toSent.TieuDe = tieuDe;
         toSent.MaNguoiGui = maNguoiGui;
@@ -410,7 +430,11 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
         builder.setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                sendMessage(etTieuDe.getText().toString(), etNoiDung.getText().toString());
+                String noiDung = etNoiDung.getText().toString();
+                if (MODE == 2) { // Fwd message
+                    noiDung += mNoiDungDinhKem;
+                }
+                sendMessage(etTieuDe.getText().toString(), noiDung);
             }
         });
         builder.setNegativeButton("Hủy", new DialogInterface.OnClickListener() {

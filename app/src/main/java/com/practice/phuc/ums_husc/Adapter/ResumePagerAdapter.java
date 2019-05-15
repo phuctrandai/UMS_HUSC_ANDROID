@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.practice.phuc.ums_husc.ResumeModule.CharacteristicsFragment;
-import com.practice.phuc.ums_husc.ResumeModule.LichSuBanThanFragment;
+import com.practice.phuc.ums_husc.ResumeModule.HistoryFragment;
 import com.practice.phuc.ums_husc.ResumeModule.ContactResidentFragment;
 import com.practice.phuc.ums_husc.ResumeModule.GeneralInfoFragment;
 import com.practice.phuc.ums_husc.ViewModel.VDacDiemBanThan;
@@ -29,14 +29,14 @@ public class ResumePagerAdapter extends FragmentPagerAdapter {
     private GeneralInfoFragment generalInfoFragment;
     private ContactResidentFragment contactResidentFragment;
     private CharacteristicsFragment characteristicsFragment;
-    private LichSuBanThanFragment lichSuBanThanFragment;
+    private HistoryFragment historyFragment;
 
     public ResumePagerAdapter(FragmentManager fm, Context context) {
         super(fm);
         generalInfoFragment = GeneralInfoFragment.newInstance(context, thongTinChung);
         contactResidentFragment = ContactResidentFragment.newInstance(context, thongTinLienHe, thuongTru, queQuan);
         characteristicsFragment = CharacteristicsFragment.newInstance(context, dacDiemBanThan);
-        lichSuBanThanFragment = LichSuBanThanFragment.newInstance(lichSuBanThan);
+        historyFragment = HistoryFragment.newInstance(context, lichSuBanThan);
     }
 
     public void setThongTin(VThongTinChung thongTinChung,
@@ -69,8 +69,8 @@ public class ResumePagerAdapter extends FragmentPagerAdapter {
                 characteristicsFragment.setThongTin(dacDiemBanThan);
                 return characteristicsFragment;
             default:
-                lichSuBanThanFragment.setThongTin(lichSuBanThan);
-                return lichSuBanThanFragment;
+                historyFragment.setThongTin(lichSuBanThan);
+                return historyFragment;
         }
     }
 
@@ -79,7 +79,7 @@ public class ResumePagerAdapter extends FragmentPagerAdapter {
         generalInfoFragment.setThongTin(thongTinChung);
         contactResidentFragment.setThongTin(thongTinLienHe, thuongTru, queQuan);
         characteristicsFragment.setThongTin(dacDiemBanThan);
-        lichSuBanThanFragment.setThongTin(lichSuBanThan);
+        historyFragment.setThongTin(lichSuBanThan);
         super.notifyDataSetChanged();
     }
 

@@ -172,4 +172,20 @@
         <item>Dân tộc - hộ nghèo</item>
         <item>Dân tộc - hộ cận nghèo</item>
     </string-array>
+    <string-array name="learning_ranking">
+        <item>----</item>
+        <item>Xuất sắc</item>
+        <item>Giỏi</item>
+        <item>Khá</item>
+        <item>Trung bình</item>
+        <item>Yếu</item>
+    </string-array>
+    <string-array name="practice_ranking">
+        <item>----</item>
+        <item>Tốt</item>
+        <item>Khá</item>
+        <item>Trung bình</item>
+        <item>Yếu</item>
+        <item>Kém</item>
+    </string-array>
 </resources>

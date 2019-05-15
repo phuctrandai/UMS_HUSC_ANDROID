@@ -153,13 +153,13 @@ public class SentMessageFragment extends Fragment
     public void onResume() {
         super.onResume();
 
-        if (Reference.getInstance().mHasNewSentMessage) {
+        if (Reference.getInstance().mHasNewSentMessage && mStatus == STATUS_SHOW_DATA) {
             List<TINNHAN> list = Reference.getInstance().getListNewSentMessage();
             for(TINNHAN item : list)
                 mAdapter.insertItem(item, 0);
-            Reference.getInstance().clearListNewSentMessage();
-            Reference.getInstance().mHasNewSentMessage = false;
         }
+        Reference.getInstance().clearListNewSentMessage();
+        Reference.getInstance().mHasNewSentMessage = false;
     }
 
     @Override
