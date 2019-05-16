@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    android:paddingTop="@dimen/normal_padding"
     tools:showIn="@layout/activity_send_message">
 
     <RelativeLayout
@@ -17,7 +16,7 @@
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/big_margin"
-            android:layout_marginTop="@dimen/normal_margin"
+            android:layout_marginTop="@dimen/big_margin"
             android:text="Từ"
             android:textSize="@dimen/normal_text"
             tools:ignore="HardcodedText" />
@@ -26,6 +25,7 @@
             android:id="@+id/tv_nguoiGui"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/normal_margin"
             android:layout_toEndOf="@id/tv_nguoiGui_lb"
             android:background="@drawable/surround_item"
             android:padding="@dimen/normal_padding"
@@ -156,5 +156,12 @@
             android:layout_below="@id/et_noiDung"
             android:layout_margin="@dimen/normal_margin"
             tools:ignore="WebViewLayout" />
+
+        <ProgressBar
+            android:visibility="gone"
+            android:id="@+id/pb_loading_send_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
     </RelativeLayout>
 </ScrollView>

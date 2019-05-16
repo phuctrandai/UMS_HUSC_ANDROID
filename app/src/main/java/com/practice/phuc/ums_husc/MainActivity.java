@@ -304,7 +304,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
+//                        ThoiKhoaBieu thoiKhoaBieu = new ThoiKhoaBieu();
+//                        thoiKhoaBieu.TenLopHocPhan = "Phân tích & thiết kế hệ thống";
+//                        thoiKhoaBieu.TietHocBatDau = 1;
+//                        thoiKhoaBieu.TietHocKetThuc = 4;
+//                        thoiKhoaBieu.HoVaTen = "Nguyễn Văn A";
+//                        thoiKhoaBieu.TenPhong = "E-404";
+//                        thoiKhoaBieu.NgayTrongTuan = 3;
                         Intent intent = new Intent(MainActivity.this, ConfigActivity.class);
+//                        intent.putExtra("data", ThoiKhoaBieu.toJson(thoiKhoaBieu));
                         MainActivity.this.startActivity(intent);
                     }
                 }, 500);

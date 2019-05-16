@@ -208,6 +208,9 @@ public class MessageTaskHelper {
                     case DO_RESTORE:
                         MessageTaskHelper.getInstance().removeAttempRestoreSentMessage(messageId);
                         MessageTaskHelper.getInstance().removeAttempRestoreReceivedMessage(messageId);
+
+                    case DO_FOREVER_DELETE:
+                        MessageTaskHelper.getInstance().removeAttempDeleteMessage(messageId);
                         break;
                 }
             }

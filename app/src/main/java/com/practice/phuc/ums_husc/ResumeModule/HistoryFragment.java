@@ -175,13 +175,14 @@ public class HistoryFragment extends Fragment {
         VLichSuBanThan lichSuBanThan = new VLichSuBanThan();
         lichSuBanThan.setMaSinhVien(Reference.getInstance().getStudentId(mContext));
         lichSuBanThan.setNamTotNghiepTHPT(mSpNamTotNghiepTHPT.getSelectedItem().toString());
+        lichSuBanThan.setXepLoaiTotNghiepTHPT(mSpLoaiTotNghiepTHPT.getSelectedItemPosition() + "");
         lichSuBanThan.setNoiTotNghiepTHPT(mEtNoiTotNghiepTHPT.getText().toString());
-        lichSuBanThan.setXepLoaiHocTap10(mSpXepLoaiHocTap10.getSelectedItem().toString());
-        lichSuBanThan.setXepLoaiHocTap11(mSpXepLoaiHocTap11.getSelectedItem().toString());
-        lichSuBanThan.setXepLoaiHocTap12(mSpXepLoaiHocTap12.getSelectedItem().toString());
-        lichSuBanThan.setXepLoaiHanhKiem10(mSpXepLoaiHanhKiem10.getSelectedItem().toString());
-        lichSuBanThan.setXepLoaiHanhKiem11(mSpXepLoaiHanhKiem11.getSelectedItem().toString());
-        lichSuBanThan.setXepLoaiHanhKiem12(mSpXepLoaiHanhKiem12.getSelectedItem().toString());
+        lichSuBanThan.setXepLoaiHocTap10(mSpXepLoaiHocTap10.getSelectedItemPosition() + "");
+        lichSuBanThan.setXepLoaiHocTap11(mSpXepLoaiHocTap11.getSelectedItemPosition() + "");
+        lichSuBanThan.setXepLoaiHocTap12(mSpXepLoaiHocTap12.getSelectedItemPosition() + "");
+        lichSuBanThan.setXepLoaiHanhKiem10(mSpXepLoaiHanhKiem10.getSelectedItemPosition() + "");
+        lichSuBanThan.setXepLoaiHanhKiem11(mSpXepLoaiHanhKiem11.getSelectedItemPosition() + "");
+        lichSuBanThan.setXepLoaiHanhKiem12(mSpXepLoaiHanhKiem12.getSelectedItemPosition() + "");
         lichSuBanThan.setNoiCongTacLLVT(mEtNoiCongTac.getText().toString());
         lichSuBanThan.setQuanHamLLVT(mEtQuanHamCaoNhat.getText().toString());
         lichSuBanThan.setTenLucLuongVuTrang(mEtLucLuongVuTrang.getText().toString());
@@ -286,11 +287,11 @@ public class HistoryFragment extends Fragment {
         mXepLoaiHanhKiemLop12.setText(practice_ranking[selectedIndex]);
 
         String ngayBdLLVT = isNullOrEmpty(lichSuBanThan.getNgayBatDauLLVT()) ? "..." :
-                lichSuBanThan.getNgayBatDauLLVT().substring(0, 10);
+                DateHelper.formatYMDToDMY(lichSuBanThan.getNgayBatDauLLVT().substring(0, 10));
         mNgayBatDauLLVT.setText(ngayBdLLVT);
 
         String ngayKtLLVT = isNullOrEmpty(lichSuBanThan.getNgayKetThucLLVT()) ? "..." :
-                lichSuBanThan.getNgayKetThucLLVT();
+                DateHelper.formatYMDToDMY(lichSuBanThan.getNgayKetThucLLVT().substring(0, 10));
         mNgayKetThucLLVT.setText(ngayKtLLVT);
         mTenLVT.setText(getValueOrEmpty(lichSuBanThan.getTenLucLuongVuTrang()));
         mQuanHamLLVT.setText(getValueOrEmpty(lichSuBanThan.getQuanHamLLVT()));

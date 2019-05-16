@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.practice.phuc.ums_husc.Adapter.ReceiverAdapter;
@@ -56,6 +57,8 @@ import static com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper.ACCOUNT_S
 public class SendMessageActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     private SlidingUpPanelLayout slidingUpPanelLayout;
+    private ScrollView layoutContent;
+    private ProgressBar pbSendLoading;
     private TextView tvNguoiGui;
     private EditText etTieuDe;
     private EditText etNoiDung;
@@ -78,6 +81,8 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_message);
 
+        layoutContent = findViewById(R.id.layout_content);
+        pbSendLoading = findViewById(R.id.pb_loading_send_message);
         etTieuDe = findViewById(R.id.tv_tieuDe);
         etNoiDung = findViewById(R.id.et_noiDung);
         pbLoading = findViewById(R.id.pb_loading);
@@ -178,6 +183,10 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
         if (etNoiDung.getText() == null || etNoiDung.getText().toString().equals("")) {
             overridePendingTransition(R.anim.fade_in_half, R.anim.slide_out_bottom);
             super.onBackPressed();
+            return;
+        }
+
+        if (pbSendLoading.getVisibility() == View.VISIBLE) {
             return;
         }
 
@@ -287,6 +296,13 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
         }
 
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pbSendLoading.setVisibility(View.VISIBLE);
+            layoutContent.setBackgroundColor(getResources().getColor(R.color.colorGrey));
+        }
+
+        @Override
         protected Boolean doInBackground(String... strings) {
             String maSinhVien = Reference.getInstance().getStudentId(SendMessageActivity.this);
             String matKhau = Reference.getInstance().getAccountPassword(SendMessageActivity.this);
@@ -314,8 +330,14 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
 
             if (mResponse.code() == NetworkUtil.OK) {
                 Log.e("DEBUG", "Send message: " + mResponse.code());
-                mMessage = "Đã gửi tin nhắn";
-                return true;
+                try {
+                    tinNhan.MaTinNhan = mResponse.body() != null ? mResponse.body().string() : "";
+                    mMessage = "Đã gửi tin nhắn";
+                    return true;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
             }
             try {
                 assert mResponse.body() != null;
@@ -331,10 +353,16 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
         protected void onPostExecute(Boolean success) {
             super.onPostExecute(success);
             pushNotification(mMessage);
+            pbSendLoading.setVisibility(View.GONE);
+            layoutContent.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+            mTinNhan.MaTinNhan = tinNhan.MaTinNhan;
+            Reference.getInstance().mHasNewSentMessage = true;
+            Reference.getInstance().getListNewSentMessage().add(mTinNhan);
+            SendMessageActivity.this.finishAfterTransition();
         }
 
     }
-
+    
     private TINNHAN setUpData(int mode) {
         String json = getIntent().getStringExtra(Reference.getInstance().BUNDLE_EXTRA_MESSAGE);
         TINNHAN current = json != null ? TINNHAN.fromJson(json) : null;
@@ -370,22 +398,25 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
             }
             mReceiverAdapter.notifyDataSetChanged();
         }
-        String ngayDang = DateHelper.formatYMDToDMY(current.ThoiDiemGui.substring(0, 10));
-        String gioDang = current.ThoiDiemGui.substring(11, 16);
-        String thoiDiemGui = ngayDang + " " + gioDang;
 
-        mNoiDungDinhKem = "<div style='margin-left: 8px'>" + mNoiDungDinhKem + "</div>";
+        if (current != null) {
+            String ngayDang = DateHelper.formatYMDToDMY(current.ThoiDiemGui.substring(0, 10));
+            String gioDang = current.ThoiDiemGui.substring(11, 16);
+            String thoiDiemGui = ngayDang + " " + gioDang;
 
-        mNoiDungDinhKem = "<p style='color: #646464;'>[" + current.HoTenNguoiGui + ", gửi lúc " + thoiDiemGui + "]</p>" + mNoiDungDinhKem;
+            mNoiDungDinhKem = "<div style='margin-left: 8px'>" + mNoiDungDinhKem + "</div>";
 
-        mNoiDungDinhKem = "<hr style='width: 50%; border: 1px dotted #646464; margin-left: 0;'>" + mNoiDungDinhKem;
+            mNoiDungDinhKem = "<p style='color: #646464;'>[" + current.HoTenNguoiGui + ", gửi lúc " + thoiDiemGui + "]</p>" + mNoiDungDinhKem;
 
-        String htmlContent = "<div style='text-align: justify'>" + mNoiDungDinhKem + "</div>";
+            mNoiDungDinhKem = "<hr style='width: 50%; border: 1px dotted #646464; margin-left: 0;'>" + mNoiDungDinhKem;
 
+            String htmlContent = "<div style='text-align: justify'>" + mNoiDungDinhKem + "</div>";
+
+            wvNoiDungDinhKem.loadData(htmlContent, "text/html; charset=UTF-8", null);
+            wvNoiDungDinhKem.refreshDrawableState();
+        }
         etTieuDe.setText(tieuDe);
         tvNguoiGui.setText(hoTenNguoiGui);
-        wvNoiDungDinhKem.loadData(htmlContent, "text/html; charset=UTF-8", null);
-        wvNoiDungDinhKem.refreshDrawableState();
 
         toSent.TieuDe = tieuDe;
         toSent.MaNguoiGui = maNguoiGui;
@@ -457,12 +488,9 @@ public class SendMessageActivity extends AppCompatActivity implements SearchView
             mTinNhan.NguoiNhans[i] = n;
             i++;
         }
-        Reference.getInstance().mHasNewSentMessage = true;
-        Reference.getInstance().getListNewSentMessage().add(mTinNhan);
 
         SendMessageTask sendMessageTask = new SendMessageTask(mTinNhan);
         sendMessageTask.execute((String) null);
-        this.finish();
     }
 
     private void setUpGridView() {
