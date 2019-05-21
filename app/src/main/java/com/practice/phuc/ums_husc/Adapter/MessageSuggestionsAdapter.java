@@ -68,7 +68,7 @@ public class MessageSuggestionsAdapter extends RecyclerView.Adapter<MessageSugge
         holder.tvTieuDe.setText(mSuggestions.get(i).TieuDe);
         holder.tvNguoiGui.setText(mSuggestions.get(i).HoTenNguoiGui);
         holder.tvNguoiNhan.setText(tenNguoiNhanCollapse);
-        holder.tvNguoiGuiLabel.setText(StringHelper.getFirstCharToCap(mSuggestions.get(i).TieuDe));
+        holder.tvNguoiGuiLabel.setText(StringHelper.getFirstCharToCap(mSuggestions.get(i).HoTenNguoiGui));
         holder.setItemClickListener(new ItemClickListener() {
             @Override
             public void onItemClickListener(View view, int position, boolean isLongClick) {

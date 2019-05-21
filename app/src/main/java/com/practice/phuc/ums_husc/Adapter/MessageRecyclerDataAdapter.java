@@ -179,6 +179,10 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
     }
 
     public void insertItem(TINNHAN item, int position) {
+        for(int i=0; i < mTinNhanList.size(); i++) {
+            if (mTinNhanList.get(i).MaTinNhan.equals(item.MaTinNhan))
+                return;
+        }
         mTinNhanList.add(position, item);
         notifyItemInserted(position);
     }
@@ -194,9 +198,13 @@ public class MessageRecyclerDataAdapter extends RecyclerView.Adapter<MessageRecy
     }
 
     public void removeItem(TINNHAN item) {
-        int position = mTinNhanList.indexOf(item);
-        mTinNhanList.remove(position);
-        notifyItemRemoved(position);
+        for (int i=0 ; i<mTinNhanList.size(); i++) {
+            if (mTinNhanList.get(i).MaTinNhan.equals(item.MaTinNhan)) {
+                mTinNhanList.remove(i);
+                notifyItemRemoved(i);
+                return;
+            }
+        }
     }
 
     public void clearDataSet() {

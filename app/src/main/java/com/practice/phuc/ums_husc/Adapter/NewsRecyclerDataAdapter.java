@@ -96,6 +96,7 @@ public class NewsRecyclerDataAdapter extends RecyclerView.Adapter<NewsRecyclerDa
         }
 
         private ItemClickListener itemClickListener;
+
         void setItemClickListener(ItemClickListener itemClickListener) {
             this.itemClickListener = itemClickListener;
         }
@@ -121,6 +122,11 @@ public class NewsRecyclerDataAdapter extends RecyclerView.Adapter<NewsRecyclerDa
     }
 
     public void insertItem(THONGBAO item, int position) {
+        for (int i = 0; i < thongBaoList.size(); i++) {
+            if (thongBaoList.get(i).getMaThongBao() == item.getMaThongBao()) {
+                return;
+            }
+        }
         thongBaoList.add(position, item);
         notifyItemInserted(position);
     }

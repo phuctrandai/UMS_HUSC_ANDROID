@@ -28,6 +28,9 @@ import com.practice.phuc.ums_husc.ViewModel.ThoiKhoaBieu;
 
 import java.util.Objects;
 
+import static com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper.ACCOUNT_SP;
+import static com.practice.phuc.ums_husc.Helper.SharedPreferenceHelper.STUDENT_SEMSTER;
+
 public class MyFireBaseMessagingService extends FirebaseMessagingService {
 
     @SuppressLint("StaticFieldLeak")
@@ -43,7 +46,7 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
 
             String accountId = SharedPreferenceHelper.getInstance()
                     .getSharedPrefStr(this,
-                            SharedPreferenceHelper.ACCOUNT_SP,
+                            ACCOUNT_SP,
                             SharedPreferenceHelper.ACCOUNT_ID, "");
 
             if (messageType != null && messageType.equals(Reference.getInstance().NEWS_NOTIFICATION)) {
@@ -71,16 +74,36 @@ public class MyFireBaseMessagingService extends FirebaseMessagingService {
                         .getSharedPrefBool(this,
                                 SettingFragment.SHARED_SETTING,
                                 SettingFragment.SHARED_PRE_TIMETABLE_ALARM, true);
+                String body = remoteMessage.getData().get("body");
+
                 if (isAllow && (!accountId.equals(""))) {
                     Log.d("DEBUG", "onMessageReceived: Rise add schedule noti");
-                    String body = remoteMessage.getData().get("body");
                     ThoiKhoaBieu thoiKhoaBieu = ThoiKhoaBieu.fromJson(body);
 
                     if (thoiKhoaBieu != null) {
-                        ScheduleTaskHelper.getInstance().addSchedule(this, thoiKhoaBieu);
                         riseNotification(createAddScheduleNotification(remoteMessage, thoiKhoaBieu));
                     } else {
                         Log.d("DEBUG", "onMessageReceived: Schedule from json is Null");
+                    }
+                }
+
+                if (!accountId.equals("")) {
+                    String title = remoteMessage.getData().get("title");
+                    ThoiKhoaBieu thoiKhoaBieu = ThoiKhoaBieu.fromJson(body);
+                    String maHocKy =  SharedPreferenceHelper.getInstance()
+                            .getSharedPrefStr(this, ACCOUNT_SP, STUDENT_SEMSTER, "12");
+
+                    if (thoiKhoaBieu != null && title != null && !title.equals("Thông báo nghỉ học")) {
+                        ScheduleTaskHelper.getInstance().fetchSchedule(this,
+                                Reference.getInstance().getStudentId(this),
+                                Reference.getInstance().getAccountPassword(this),
+                                Integer.parseInt(maHocKy));
+
+                    } else if (thoiKhoaBieu != null && title != null && title.equals("Thông báo nghỉ học")) {
+                        ScheduleTaskHelper.getInstance().fetchSchedule(this,
+                                Reference.getInstance().getStudentId(this),
+                                Reference.getInstance().getAccountPassword(this),
+                                Integer.parseInt(maHocKy));
                     }
                 }
             }

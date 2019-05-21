@@ -64,6 +64,7 @@ public class DeletedMessageFragment extends Fragment
     private boolean mIsScrolling, mIsViewDestroyed;
     private Snackbar mNotNetworkSnackbar, mErrorSnackbar, mUndoDeleteSnakbar;
     private DBHelper mDBHelper;
+    private List<TINNHAN> mRestoreList, mDeleteList;
 
     private final int ITEM_PER_PAGE = 8;
     private final int STATUS_INIT = 0;
@@ -110,6 +111,8 @@ public class DeletedMessageFragment extends Fragment
         mAdapter = new MessageRecyclerDataAdapter(mContext, new ArrayList<TINNHAN>());
         mIsScrolling = true;
         mDBHelper = new DBHelper(mContext);
+        mRestoreList = new ArrayList<>();
+        mDeleteList = new ArrayList<>();
         long countRow = mDBHelper.countRow(DBHelper.MESSAGE);
         if (countRow > 0) {
             mCurrentPage = countRow / ITEM_PER_PAGE + 1;
@@ -236,9 +239,11 @@ public class DeletedMessageFragment extends Fragment
         mAdapter.removeItem(swipedIndex);
 
         if (direction == ItemTouchHelper.LEFT) {
+            mDeleteList.add(swipedItem);
             final Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
+                    mDeleteList.remove(swipedItem);
                     MessageTaskHelper.getInstance()
                             .foreverDelete(mContext, swipedItem.MaTinNhan,
                                     Reference.getInstance().getStudentId(mContext),
@@ -247,24 +252,25 @@ public class DeletedMessageFragment extends Fragment
                 }
             };
             handler.postDelayed(runnable, 3500);
-
             showUndoSnackbar(true, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     mUndoDeleteSnakbar.dismiss();
                     mAdapter.insertItem(swipedItem, swipedIndex);
+                    mDeleteList.remove(swipedItem);
                     handler.removeCallbacks(runnable);
                 }
             });
         } else if (direction == ItemTouchHelper.RIGHT) {
+            mRestoreList.add(swipedItem);
             final Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
                     Log.d("DEBUG", "Restore message");
+                    mRestoreList.remove(swipedItem);
                     MessageTaskHelper.getInstance().restore(mContext, swipedItem.MaTinNhan,
                             Reference.getInstance().getStudentId(mContext),
                             Reference.getInstance().getAccountPassword(mContext));
-
                 }
             };
             handler.postDelayed(runnable, 3500);
@@ -397,12 +403,40 @@ public class DeletedMessageFragment extends Fragment
         if (list != null) {
 
             if (mLastAction == ACTION_REFRESH || mLastAction == ACTION_INIT) {
+                List<TINNHAN> attempDeletedList = MessageTaskHelper.getInstance().getAttempDeletemessage();
+                List<TINNHAN> data = new ArrayList<>();
 
-                if (MessageTaskHelper.getInstance().getAttempDeletemessage().size() > 0)
-                    for (TINNHAN item : MessageTaskHelper.getInstance().getAttempDeletemessage()) {
-                        if (!list.contains(item)) list.add(item);
+                for (int i = 0; i < attempDeletedList.size(); i++) {
+                    boolean exist = false;
+                    for (int j = 0; j < list.size(); j++) {
+                        if (attempDeletedList.get(i).MaTinNhan.equals(list.get(j).MaTinNhan)) {
+                            exist = true;
+                            break;
+                        }
                     }
-                mAdapter.changeDataSet(list);
+                    if (!exist) list.add(attempDeletedList.get(i));
+                }
+
+                for (int i = 0; i < list.size(); i++) {
+                    boolean allowAdd = true;
+
+                    for (int j = 0; j < mRestoreList.size(); j++) {
+                        if (list.get(i).MaTinNhan.equals(mRestoreList.get(j).MaTinNhan)) {
+                            allowAdd = false;
+                            break;
+                        }
+                    }
+
+                    for (int j = 0; j < mDeleteList.size(); j++) {
+                        if (list.get(i).MaTinNhan.equals(mDeleteList.get(j).MaTinNhan)) {
+                            allowAdd = false;
+                            break;
+                        }
+                    }
+
+                    if (allowAdd) data.add(list.get(i));
+                }
+                mAdapter.changeDataSet(data);
 
             } else if (mLastAction == ACTION_LOAD_MORE && list.size() > 0)
                 mAdapter.insertItemRange(list, mAdapter.getItemCount(), ITEM_PER_PAGE);
